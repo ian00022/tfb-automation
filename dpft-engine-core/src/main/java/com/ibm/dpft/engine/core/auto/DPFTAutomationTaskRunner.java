@@ -1,0 +1,36 @@
+package com.ibm.dpft.engine.core.auto;
+
+import com.ibm.dpft.engine.core.DPFTTaskRunner;
+import com.ibm.dpft.engine.core.auto.taskplan.DPFTAutomationProcessExecutor;
+import com.ibm.dpft.engine.core.common.GlobalConstants;
+import com.ibm.dpft.engine.core.exception.DPFTRuntimeException;
+import com.ibm.dpft.engine.core.taskplan.DPFTBaseTaskPlan;
+import com.ibm.dpft.engine.core.util.DPFTLogger;
+
+public class DPFTAutomationTaskRunner extends DPFTTaskRunner {
+
+	public DPFTAutomationTaskRunner(DPFTBaseTaskPlan tp) {
+		super(tp, ((DPFTTaskRunner)DPFTTaskRunner.currentThread()).getMgr());
+	}
+	
+	/*Thread runs here*/
+	public void run () {
+		try {
+			this.getTaskPlan().doTask();
+		} catch (InterruptedException e) {
+			DPFTLogger.info(this, "Automation Task Running instance complete...");
+		} catch (DPFTRuntimeException e) {
+			DPFTLogger.error(this, "Automation Task Abnormally ternimated...");
+		}
+	}
+
+	public void setGroupID(String gid) {
+		// TODO Auto-generated method stub
+		((DPFTAutomationProcessExecutor)this.getTaskPlan()).setGroupID(gid);
+	}
+
+	public boolean isActive() {
+		return !getTaskPlan().getStatus().equals(GlobalConstants.DPFT_TP_STAT_COMP);
+	}
+
+}

@@ -1,0 +1,4 @@
+*.classpath
+*.project
+dpft-engine-core/.settings
+JavaExt/.settings
