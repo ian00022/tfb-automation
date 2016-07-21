@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.sql.*;
 import javax.mail.*;
 import javax.mail.internet.*;
+
+import com.ibm.dpft.engine.core.DPFTEngine;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -94,7 +97,7 @@ public class EmailUtil {
 	{
 		Connection conn = null;
 //		String sql = "select NVL(g.EMAIL, m.RECEIVER) ADDR from DM_MKT.MAILBOX m left join DM_MKT.MAILGROUP g on (m.RECEIVER = g.GROUP_NAME) where m.PID = " + Long.toString(pid);
-		String sql = "select case when g.id is null then g.email else u.email end ADDR from DM_MKT.MAILBOX m left join DM_MKT.MAILGROUP g on (m.RECEIVER = g.GROUP_NAME) left join UNICAMPT.USM_USER u on (g.id = u.id) where m.PID = " + Long.toString(pid); 
+		String sql = "select case when g.id is null then g.email else u.email end ADDR from DM_MKT.MAILBOX m left join DM_MKT.MAILGROUP g on (m.RECEIVER = g.GROUP_NAME) left join " + DPFTEngine.getSystemProperties("UNICAMPP.db.user") + ".USM_USER u on (g.id = u.id) where m.PID = " + Long.toString(pid); 
 		Statement stmt = null;
 
 		// Get email addresses from MAILGROUP.
