@@ -5,7 +5,7 @@ import com.ibm.dpft.engine.core.action.DPFTActionObndTpWatch;
 import com.ibm.dpft.engine.core.action.DPFTActionSleep;
 
 public class DPFTDataOutboundPeriodicWatcher extends DPFTBaseTaskPlan {
-	private final static long sleep_time = 6000000;
+	private final static long sleep_time = 600000;
 	
 	public DPFTDataOutboundPeriodicWatcher(String id) {
 		super(id);
