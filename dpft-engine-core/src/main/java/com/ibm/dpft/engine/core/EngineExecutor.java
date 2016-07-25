@@ -32,16 +32,30 @@ public class EngineExecutor {
 			System.exit(ARG_OPTION_ERR);
 		}
 		
+		boolean isFatalError = false;
 		do{
-			if(engine.isAutomationModeActive()){
-				try {
-					engine.startAutomationMode();
-				} catch (DPFTRuntimeException e) {
-					DPFTLogger.error(EngineExecutor.class.getName(), "Runtime Error: ", e);
+			try{
+				if(isFatalError){
+					DPFTLogger.info(EngineExecutor.class.getName(), "Engine encounter fatal Errors... Try to restart...");
+					engine.resume();
 				}
-			}
-			if(engine.isResume()){
-				engine.resume();
+				if(engine.isAutomationModeActive()){
+					engine.startAutomationMode();
+				}
+				if(engine.isResume()){
+					engine.resume();
+				}
+			}catch(Exception e){
+				if(e instanceof DPFTRuntimeException){
+					try {
+						((DPFTRuntimeException) e).handleException();
+					} catch (Exception e1) {
+						DPFTLogger.error(EngineExecutor.class.getName(), "Fatal Error", e1);
+					}
+				}else{
+					DPFTLogger.error(EngineExecutor.class.getName(), "Uncaught Exception", e);
+				}
+				isFatalError = true;
 			}
 		}while(true);
 	}
