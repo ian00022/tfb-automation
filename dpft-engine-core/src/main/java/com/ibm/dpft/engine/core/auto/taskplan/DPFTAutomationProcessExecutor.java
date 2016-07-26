@@ -146,11 +146,11 @@ public class DPFTAutomationProcessExecutor extends DPFTBaseTaskPlan {
 		DPFTAutomationPsInstance inst = ((DPFTAutomationPsInstance)instSet.getDbo(0));
 		if(rc == GlobalConstants.DPFT_AUTOMATION_PS_RC_NORMAL){
 			finishing(inst);
-			Object[] params = {group_id, inst.getString("step_id")};
+			Object[] params = {group_id, inst.getString("step_id"), inst.currentStep().getString("ps_desc")};
 			DPFTUtil.pushNotification(new DPFTMessage("SYSTEM", "DPFT0040I", params));
 		}else if(rc == GlobalConstants.DPFT_AUTOMATION_PS_RC_ERROR){
 			error(inst);
-			Object[] params = {group_id, inst.getString("step_id")};
+			Object[] params = {group_id, inst.getString("step_id"), inst.currentStep().getString("ps_desc")};
 			DPFTUtil.pushNotification(new DPFTMessage("SYSTEM", "DPFT0041I", params));
 		}
 	}
@@ -168,7 +168,7 @@ public class DPFTAutomationProcessExecutor extends DPFTBaseTaskPlan {
 	private DPFTAutomationPsInstance initiateRunningState(DPFTAutomationPsInstance inst) throws DPFTRuntimeException {
 		inst.running();
 		SaveAndRefresh();
-		Object[] params = {group_id, inst.getString("step_id")};
+		Object[] params = {group_id, inst.getString("step_id"), inst.currentStep().getString("ps_desc")};
 		DPFTUtil.pushNotification(new DPFTMessage("SYSTEM", "DPFT0039I", params));
 		return ((DPFTAutomationPsInstance)instSet.getDbo(0));
 	}

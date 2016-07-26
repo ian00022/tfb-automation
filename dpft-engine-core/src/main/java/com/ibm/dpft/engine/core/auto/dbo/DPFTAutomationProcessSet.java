@@ -21,7 +21,7 @@ public class DPFTAutomationProcessSet extends DPFTDboSet {
 		return new DPFTAutomationProcess(dboname, d, this);
 	}
 
-	public void addNewProcess(String group_id, String step_id, String ps_def) throws DPFTRuntimeException {
+	public void addNewProcess(String group_id, String step_id, String desc, String ps_def) throws DPFTRuntimeException {
 		// TODO Auto-generated method stub
 		String[] args = ps_def.split(GlobalConstants.FILE_DELIMETER_SEMICOLON);
 		String[] acts = args[0].split(GlobalConstants.FILE_DELIMETER_DOT);
@@ -31,6 +31,7 @@ public class DPFTAutomationProcessSet extends DPFTDboSet {
 		DPFTAutomationProcess new_ps = (DPFTAutomationProcess) this.add();
 		new_ps.setValue("group_id", group_id);
 		new_ps.setValue("step_id", step_id);
+		new_ps.setValue("ps_desc", desc);
 		new_ps.setValue("action", action);
 		new_ps.setValue("macro", macro);
 		new_ps.setValue("argvs", argvs);

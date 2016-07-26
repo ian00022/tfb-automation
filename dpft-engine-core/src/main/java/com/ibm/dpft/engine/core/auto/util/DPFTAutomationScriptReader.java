@@ -26,7 +26,11 @@ public class DPFTAutomationScriptReader {
 			String[] ks = k.split(GlobalConstants.FILE_DELIMETER_DOT);
 			DPFTDboSet set = dboHM.get(ks[0]);
 			if(set instanceof DPFTAutomationProcessSet){
-				((DPFTAutomationProcessSet)set).addNewProcess(ks[1], ks[2], prop.getProperty(k));
+				String desc = null;
+				if(ks.length > 3)
+					desc = ks[3];
+				
+				((DPFTAutomationProcessSet)set).addNewProcess(ks[1], ks[2], desc, prop.getProperty(k));
 			}else if(set instanceof DPFTAutomationVariablesSet){
 				((DPFTAutomationVariablesSet)set).addNewVariable(ks[1], ks[2], prop.getProperty(k));
 			}else if(set instanceof DPFTAutomationConditionSet){
