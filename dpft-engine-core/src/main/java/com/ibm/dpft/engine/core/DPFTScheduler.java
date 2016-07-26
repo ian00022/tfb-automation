@@ -1,11 +1,12 @@
 package com.ibm.dpft.engine.core;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ibm.dpft.engine.core.common.GlobalConstants;
 import com.ibm.dpft.engine.core.connection.DPFTConnector;
 import com.ibm.dpft.engine.core.dbo.TaskPlanDefDboSet;
+import com.ibm.dpft.engine.core.exception.DPFTInvalidSystemSettingException;
 import com.ibm.dpft.engine.core.exception.DPFTRuntimeException;
 import com.ibm.dpft.engine.core.taskplan.DPFTBaseTaskPlan;
 import com.ibm.dpft.engine.core.taskplan.DPFTTaskPlan;
@@ -13,8 +14,7 @@ import com.ibm.dpft.engine.core.util.DPFTLogger;
 
 public class DPFTScheduler {
 	private List<DPFTTaskPlan> tplist = new ArrayList<DPFTTaskPlan>();
-	private List<DPFTTaskPlan> system_tplist = new ArrayList<DPFTTaskPlan>();
-	private List<DPFTTaskPlan> passive_tplist = new ArrayList<DPFTTaskPlan>();
+	private List<DPFTTaskPlan> deamon_tplist = new ArrayList<DPFTTaskPlan>();
 	private DPFTConnector connector = null;
 
 	public DPFTScheduler(DPFTConnector connObj) {
@@ -22,15 +22,9 @@ public class DPFTScheduler {
 		connector  = connObj;
 	}
 
-	public void registerTaskPlan(DPFTTaskPlan tp, boolean isDaemonPlan) {
-		// TODO Auto-generated method stub
-		if(isDaemonPlan){
-			DPFTLogger.debug(this, "Registered Startup Engine Task Plan class : " + tp.getClass().getName());
-			system_tplist.add(tp);
-		}else{
-			DPFTLogger.debug(this, "Registered Task Plan class : " + tp.getClass().getName());
-			tplist.add(tp);
-		}
+	public void registerTaskPlan(DPFTTaskPlan tp) {
+		DPFTLogger.debug(this, "Registered Task Plan class : " + tp.getClass().getName());
+		tplist.add(tp);
 	}
 
 	public void registerTaskPlanFromDB() throws DPFTRuntimeException {
@@ -42,10 +36,7 @@ public class DPFTScheduler {
 		try {
 			List<DPFTTaskPlan> taskplans = planSet.convert2TaskPlanList();
 			for(DPFTTaskPlan tp : taskplans){
-				if(tp.getId().indexOf(GlobalConstants.DPFT_TP_KEY_PSV) != -1)
-					registerPassiveTaskPlan(tp);
-				else
-					registerTaskPlan(tp, false);
+				registerTaskPlan(tp);
 			}
 		} catch (Exception e) {
 			throw new DPFTRuntimeException("SYSTEM", "DPFT0036E", e);
@@ -53,14 +44,9 @@ public class DPFTScheduler {
 		DPFTLogger.info(this, "DB Task Plan definitions sucessfully registered...");
 	}
 
-	private void registerPassiveTaskPlan(DPFTTaskPlan tp) {
-		DPFTLogger.debug(this, "Registered Passive Task Plan class : " + tp.getClass().getName());
-		passive_tplist.add(tp);
-	}
-
-	public List<DPFTTaskPlan> getSystemTaskPlan() {
-		// TODO Auto-generated method stub
-		return system_tplist;
+	private void registerInitialTaskPlan(DPFTTaskPlan tp) {
+		DPFTLogger.debug(this, "Registered Inital Task Plan class : " + tp.getClass().getName());
+		deamon_tplist.add(tp);
 	}
 	
 	public DPFTTaskPlan getRegisteredTaskPlanById(String tpid) {
@@ -74,7 +60,30 @@ public class DPFTScheduler {
 
 	public List<DPFTTaskPlan> getPassiveTaskPlan() {
 		// TODO Auto-generated method stub
-		return passive_tplist;
+		return deamon_tplist;
+	}
+
+	public void setInitialTaskPlan(String[] tplist) throws DPFTRuntimeException {
+		for(String tp: tplist){
+			DPFTTaskPlan init_plan = getRegisteredTaskPlanById(tp);
+			if(init_plan == null)
+				init_plan = loadTaskPlanByClassName(tp);
+			registerInitialTaskPlan(init_plan);
+		}
+	}
+
+	private DPFTTaskPlan loadTaskPlanByClassName(String tp) throws DPFTRuntimeException {
+		try {
+			return (DPFTTaskPlan) Class.forName(tp).getConstructor(String.class).newInstance(tp);
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+			Object[] params = {tp};
+			throw new DPFTInvalidSystemSettingException("SYSTEM", "DPFT0016E", params, e);
+		}
+	}
+
+	public List<DPFTTaskPlan> getInitialTaskPlan() {
+		return deamon_tplist;
 	}
 
 }

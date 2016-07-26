@@ -78,6 +78,12 @@ public class MacroVar extends DPFTAutomationMacro {
 		return GlobalConstants.DPFT_AUTOMATION_PS_RC_NORMAL;
 	}
 	
+	public int loadTaskRunner(String tpid) throws DPFTRuntimeException {
+		DPFTTaskRunner runner = ((DPFTAutomationTaskRunner)DPFTAutomationTaskRunner.currentThread()).getMgr().createNewRunnerByTaskPlanID(tpid);
+		setMacroReturnData(runner);
+		return GlobalConstants.DPFT_AUTOMATION_PS_RC_NORMAL;
+	}
+	
 	public int loadSQL(String dbname, String script) throws DPFTRuntimeException {
 		return loadSQL(null, dbname, script);
 	}

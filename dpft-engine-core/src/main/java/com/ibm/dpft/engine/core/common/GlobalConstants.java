@@ -57,6 +57,9 @@ public class GlobalConstants {
 	/*DPFT task plan id pattern keyword definition*/
 	public static final String DPFT_TP_KEY_PSV        = "PSV";
 	
+	/*DPFT default automation initial taskplan*/
+	public static final String DPFT_TP_PSV_AUTO_INIT  = "PSV_AUTO_INIT";
+	
 	/*DPFT Outbound task plan frequency definition*/
 	public static final String DPFT_OBND_FEQ_DAILY    = "DAY";
 	public static final String DPFT_OBND_FEQ_MONTHLY  = "MON";

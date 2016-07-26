@@ -21,12 +21,11 @@ public class DPFTTaskRunnerManager {
 		this.scheduler = scheduler;
 	}
 
-	public void initialize(String engine_stat) {
-		// TODO Auto-generated method stub
+	public void initialize() {
 		if(scheduler == null)
 			return;
 		
-		createInitialDaemon(engine_stat);
+		createInitialDaemon();
 	}
 	
 	public void exec() {
@@ -49,13 +48,9 @@ public class DPFTTaskRunnerManager {
 		}
 	}
 
-	private void createInitialDaemon(String engine_stat) {
-		// TODO Auto-generated method stub
+	private void createInitialDaemon() {
 		DPFTLogger.info(this, "Setting up initial daemon task runner...");
-		if(engine_stat.equals(GlobalConstants.DPFT_ENGINE_STAT_PASSIVE))
-			system_daemons = getThreadRunners(scheduler.getPassiveTaskPlan());
-		else
-			system_daemons = getThreadRunners(scheduler.getSystemTaskPlan());
+		system_daemons = getThreadRunners(scheduler.getInitialTaskPlan());
 	}
 
 	private HashMap<String, DPFTTaskRunner> getThreadRunners(List<DPFTTaskPlan> tplist) {

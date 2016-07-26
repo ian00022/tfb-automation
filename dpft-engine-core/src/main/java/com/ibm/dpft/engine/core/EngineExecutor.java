@@ -32,33 +32,25 @@ public class EngineExecutor {
 			System.exit(ARG_OPTION_ERR);
 		}
 		
-		do{
-			if(engine.isAutomationModeActive()){
-				try {
-					engine.startAutomationMode();
-				} catch (DPFTRuntimeException e) {
-					DPFTLogger.error(EngineExecutor.class.getName(), "Runtime Error: ", e);
-				}
-			}
-			if(engine.isResume()){
-				engine.resume();
-			}
-		}while(true);
+//		do{
+//			if(engine.isAutomationModeActive()){
+//				try {
+//					engine.startAutomationMode();
+//				} catch (DPFTRuntimeException e) {
+//					DPFTLogger.error(EngineExecutor.class.getName(), "Runtime Error: ", e);
+//				}
+//			}
+//			if(engine.isResume()){
+//				engine.resume();
+//			}
+//		}while(true);
 	}
 
 	private static void processArgumentValues(String arg) {
 		switch(mode){
 		case ARG_OPTION_R:
-			try {
 				engine.add2UserDefinedTaskPlanList(arg);
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException | NoSuchMethodException | SecurityException
-					| ClassNotFoundException e) {
-				DPFTLogger.error(EngineExecutor.class.getName(), "Error when add user defined taskplan...", e);
-				mode = ARG_OPTION_ERR;
-			}
 		}
-		
 	}
 
 	private static void processArguments(String arg) {
@@ -74,9 +66,9 @@ public class EngineExecutor {
 
 	private static void _init() throws DPFTRuntimeException {
 		engine.initialize();
-		if(engine.isAutomationModeActive())
-			engine.startAutomationMode();
-		else
+//		if(engine.isAutomationModeActive())
+//			engine.startAutomationMode();
+//		else
 			engine.start();	
 	}
 }
