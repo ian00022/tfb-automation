@@ -184,7 +184,7 @@ public class MacroAUTO extends DPFTAutomationMacro {
 			if(seq_run_flg.equalsIgnoreCase("y"))
 				rc = _runFlowChartByOrder(cmd, run_flowchart_orders, cctSet, logfile, type, failed_break_flg.equalsIgnoreCase("y"));
 			else
-				rc = _runFlowChart(cmd, run_flowchart_orders, cctSet, logfile);
+				rc = _runFlowChart(cmd, run_flowchart_orders, type, cctSet, logfile);
 		}catch(DPFTRuntimeException ex){
 			Object[] params = {type};
 			throw new DPFTAutomationException("SYSTEM", "AUTO0004E", params, ex);
@@ -193,7 +193,7 @@ public class MacroAUTO extends DPFTAutomationMacro {
 		return rc;
 	}
 	
-	private int _runFlowChart(String cmd, String[] run_flowchart_orders, DPFTAutomationCCTSet cctSet, String logfile) throws DPFTRuntimeException {
+	private int _runFlowChart(String cmd, String[] run_flowchart_orders, String flowchartype, DPFTAutomationCCTSet cctSet, String logfile) throws DPFTRuntimeException {
 		int idx = 0;
 		for(String filename: run_flowchart_orders){
 			DPFTBashRunner br = new DPFTBashRunner();
@@ -201,14 +201,20 @@ public class MacroAUTO extends DPFTAutomationMacro {
 			br.setLogFile(logfile + "_" + DPFTUtil.getCurrentTimeStampAsString().substring(0, GlobalConstants.DFPT_DATE_FORMAT.length()) + "_" + filename);
 			try {
 				Object[] params1 = {cctSet.getDbo(idx).getString("name")};
-				DPFTUtil.pushNotification(new DPFTMessage("SYSTEM", "DPFT0043I", params1));
+				String cmp_owner = DPFTUtil.getCampaignOwnerEmail(cctSet.parseCampaignCode(flowchartype, cctSet.getDbo(idx).getString("name")));
+				DPFTUtil.pushNotification(
+						cmp_owner,
+						new DPFTMessage("SYSTEM", "DPFT0043I", params1)
+				);
 				int rc = br.execute();
 				if(rc == GlobalConstants.DPFT_AUTOMATION_PS_RC_NORMAL){
 					cctSet.getDbo(idx).setValue("cct_status", GlobalConstants.DPFT_AUTOMATION_FLOWCHAR_RUN_INPRG);
 				}else{
 					cctSet.getDbo(idx).setValue("cct_status", GlobalConstants.DPFT_AUTOMATION_FLOWCHAR_RUN_CMD_FAILED);
-					Object[] params2 = {cctSet.getDbo(idx).getString("name")};
-					DPFTUtil.pushNotification(new DPFTMessage("SYSTEM", "DPFT0042I", params2));
+					DPFTUtil.pushNotification(
+							cmp_owner,
+							new DPFTMessage("SYSTEM", "DPFT0043I", params1)
+					);
 				}
 				cctSet.save();
 			} catch (IOException | InterruptedException e) {

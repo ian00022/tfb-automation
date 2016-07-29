@@ -176,7 +176,10 @@ public class DPFTUtil {
 	}
 	
 	public static void pushNotification(String notifier, DPFTMessage msg) throws DPFTRuntimeException {
-		notifier = notifier + GlobalConstants.FILE_DELIMETER_COMMA + msg.getMsgNotifier();
+		if(notifier == null)
+			notifier = msg.getMsgNotifier();
+		else
+			notifier = notifier + GlobalConstants.FILE_DELIMETER_COMMA + msg.getMsgNotifier();
 		pushNotification(notifier, msg.getMessage(), msg.getMessage());
 	}
 	

@@ -71,7 +71,7 @@ public class DPFTAutomationCCTSet extends DPFTDboSet {
 		return GlobalConstants.DPFT_AUTOMATION_PS_RC_TRUE;
 	}
 
-	private String parseCampaignCode(String type, String name) {
+	public String parseCampaignCode(String type, String name) {
 		int iter = 0;
 		if(type.equalsIgnoreCase(GlobalConstants.DPFT_AUTOMATION_UNICA_FLOWCHART_TYPE_C)){
 			iter = 1;
