@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import com.ibm.dpft.engine.core.action.DPFTActionDataFileOutput;
 import com.ibm.dpft.engine.core.config.FTPConfig;
-import com.ibm.dpft.engine.core.exception.DPFTActionException;
 import com.ibm.dpft.engine.core.exception.DPFTRuntimeException;
 import com.ibm.dpft.engine.core.meta.DPFTFileMetaData;
 import com.ibm.dpft.engine.core.util.DPFTFileFTPUtil;
@@ -36,12 +35,6 @@ public class EcbActionDataFileOutput extends DPFTActionDataFileOutput {
 	@Override
 	public String getChannelName() {
 		return "ECB";
-	}
-
-	@Override
-	public void handleException(DPFTActionException e) throws DPFTRuntimeException {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

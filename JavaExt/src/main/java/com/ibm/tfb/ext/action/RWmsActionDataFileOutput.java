@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import com.ibm.dpft.engine.core.action.DPFTActionDataFileOutput;
 import com.ibm.dpft.engine.core.config.FTPConfig;
-import com.ibm.dpft.engine.core.exception.DPFTActionException;
 import com.ibm.dpft.engine.core.exception.DPFTRuntimeException;
 import com.ibm.dpft.engine.core.util.DPFTFileFTPUtil;
 import com.ibm.dpft.engine.core.util.DPFTFileFormatter;
@@ -34,12 +33,6 @@ public class RWmsActionDataFileOutput extends DPFTActionDataFileOutput {
 	public String getChannelName() {
 		// TODO Auto-generated method stub
 		return "RWMS";
-	}
-
-	@Override
-	public void handleException(DPFTActionException e) throws DPFTRuntimeException {
-		// TODO Auto-generated method stub
-		
 	}
 
 }
