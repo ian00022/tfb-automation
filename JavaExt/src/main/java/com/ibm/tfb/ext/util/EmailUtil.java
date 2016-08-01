@@ -265,10 +265,10 @@ public class EmailUtil {
 	}
 
 	private boolean matchMailPattern(String input) {
-		String mailPattern = "(\\w*)\\@fbt\\.com";
+		String mailPattern = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$";
 
 // Create a Pattern object
-	      Pattern r = Pattern.compile(mailPattern);
+	      Pattern r = Pattern.compile(mailPattern, Pattern.CASE_INSENSITIVE);
 
 // Now create matcher object.
 	      Matcher m = r.matcher(input);
