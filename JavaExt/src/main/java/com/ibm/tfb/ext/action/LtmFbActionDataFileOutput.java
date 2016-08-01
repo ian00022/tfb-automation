@@ -3,7 +3,6 @@ package com.ibm.tfb.ext.action;
 import java.util.HashMap;
 
 import com.ibm.dpft.engine.core.action.DPFTActionObndPeriodicFileOutput;
-import com.ibm.dpft.engine.core.exception.DPFTActionException;
 import com.ibm.dpft.engine.core.exception.DPFTRuntimeException;
 import com.ibm.dpft.engine.core.meta.DPFTFileMetaData;
 import com.ibm.dpft.engine.core.util.DPFTFileFTPUtil;
@@ -27,12 +26,6 @@ public class LtmFbActionDataFileOutput extends DPFTActionObndPeriodicFileOutput 
 	@Override
 	public DPFTFileFormatter getFileFormatter() throws DPFTRuntimeException {
 		return new LTMReportGKFileFormatter(new DPFTFileMetaData(meta), new DPFTFileMetaData(meta, dicSet));
-	}
-
-	@Override
-	public void handleException(DPFTActionException e) throws DPFTRuntimeException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

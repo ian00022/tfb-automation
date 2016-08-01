@@ -38,6 +38,6 @@ public abstract class DPFTActionObndPeriodicDataTableWatch extends DPFTActionTab
 	
 	@Override
 	public void handleException(DPFTActionException e) throws DPFTRuntimeException {
-		
+		throw e;
 	}
 }

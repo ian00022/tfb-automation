@@ -69,7 +69,7 @@ public abstract class DPFTActionObndPeriodicFileOutput extends DPFTActionDataFil
 
 	@Override
 	public void handleException(DPFTActionException e) throws DPFTRuntimeException {
-		
+		throw e;
 	}
 
 }

@@ -251,5 +251,6 @@ public abstract class DPFTActionDataFileOutput extends DPFTAction implements DPF
 		DPFTOutboundControlDboSet ctrlSet = rSet.getControlTableRecords("process_status='" + GlobalConstants.DPFT_OBND_STAT_RUN + "'");
 		ctrlSet.error();
 		ctrlSet.close();
+		throw e;
 	}
 }

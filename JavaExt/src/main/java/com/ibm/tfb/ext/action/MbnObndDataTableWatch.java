@@ -1,8 +1,6 @@
 package com.ibm.tfb.ext.action;
 
 import com.ibm.dpft.engine.core.action.DPFTActionObndPeriodicDataTableWatch;
-import com.ibm.dpft.engine.core.exception.DPFTActionException;
-import com.ibm.dpft.engine.core.exception.DPFTRuntimeException;
 
 public class MbnObndDataTableWatch extends DPFTActionObndPeriodicDataTableWatch {
 
@@ -12,10 +10,5 @@ public class MbnObndDataTableWatch extends DPFTActionObndPeriodicDataTableWatch 
 		return "O_MBN";
 	}
 
-	@Override
-	public void handleException(DPFTActionException e) throws DPFTRuntimeException {
-		// TODO Auto-generated method stub
-		
-	}
 
 }
