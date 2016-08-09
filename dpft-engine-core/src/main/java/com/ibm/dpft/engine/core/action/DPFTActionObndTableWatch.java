@@ -43,7 +43,7 @@ public class DPFTActionObndTableWatch extends DPFTActionTableWatch {
 	@Override
 	public String getTableWatchCriteria() {
 		// TODO Auto-generated method stub
-		return "process_status='" + GlobalConstants.DPFT_OBND_STAT_STAGE + "' and ftp_time is null";
+		return "process_status='" + GlobalConstants.DPFT_OBND_STAT_STAGE + "' and ftp_time is null and rownum <= (3 - (select count(*) from h_outbound where process_status='R'))";
 	}
 
 	@Override

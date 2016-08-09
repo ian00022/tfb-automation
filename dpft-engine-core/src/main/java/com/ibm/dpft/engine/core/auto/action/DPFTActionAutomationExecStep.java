@@ -33,6 +33,12 @@ public class DPFTActionAutomationExecStep extends DPFTAction {
 		executor.readRC(GlobalConstants.DPFT_AUTOMATION_PS_RC_ERROR);
 	}
 
+	@Override
+	public void clean() throws DPFTRuntimeException {
+		// TODO Auto-generated method stub
+		
+	}
+
 	
 
 }

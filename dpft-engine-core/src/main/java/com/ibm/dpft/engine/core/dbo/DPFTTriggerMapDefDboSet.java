@@ -49,6 +49,7 @@ public class DPFTTriggerMapDefDboSet extends DPFTDboSet {
 		for(int i = 0; i < this.count(); i++){
 			DPFTLogger.info(this, "Update last active time from " + this.getDbo(i).getString("last_active_time") + " to " + parent.getTrgTimeString());
 			this.getDbo(i).setValue("last_active_time", parent.getTrgTimeString());
+			this.getDbo(i).setValue("active", "1");
 		}
 	}
 

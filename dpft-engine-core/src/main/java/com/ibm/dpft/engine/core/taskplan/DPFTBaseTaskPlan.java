@@ -29,6 +29,13 @@ public abstract class DPFTBaseTaskPlan extends DPFTTaskPlan {
 		this(tp.getId());
 	}
 	
+	public void finishUp() throws DPFTRuntimeException{
+		for(DPFTAction action: actions){
+			action.clean();
+		}
+		actions.clear();
+	}
+	
 	public void doTask() throws InterruptedException, DPFTRuntimeException{
 		changeTaskStatus(GlobalConstants.DPFT_TP_STAT_EXEC);
 		while(!status.equals(GlobalConstants.DPFT_TP_STAT_COMP)){
@@ -95,10 +102,10 @@ public abstract class DPFTBaseTaskPlan extends DPFTTaskPlan {
 		}
 	}
 
-	private void resetAction() {
+	private void resetAction() throws DPFTRuntimeException {
 		// TODO Auto-generated method stub
 		/*Reset Actions list and set current action to the first one*/
-		actions.clear();
+		finishUp();
 		setActionsForPlan();
 		current_action_index = -1;
 		current_action = getNextActionFromList();

@@ -28,6 +28,11 @@ public class DPFTTaskRunner extends Thread {
 		} catch (DPFTRuntimeException e) {
 			DPFTLogger.error(this, "Task Abnormally ternimated...");
 		}
+		try {
+			plan.finishUp();
+		} catch (DPFTRuntimeException e) {
+			DPFTLogger.error(this, "Error when Free Resource...", e);
+		}
 	}
 
 	public DPFTBaseTaskPlan getTaskPlan() {

@@ -61,6 +61,7 @@ public class CdmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 		MKTDMCustomerContactDboSet contSet = (MKTDMCustomerContactDboSet) this.getDataSet();
 		
 		/*set Addr by IBM Campaign Priority setting*/
+		long ps_start_time = System.currentTimeMillis();
 		for(int i = 0; i < dCdmSet.count(); i++){
 			DPFTDbo dCdm = dCdmSet.getDbo(i);
 			String[] addr_info = null;
@@ -74,22 +75,36 @@ public class CdmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 			dCdm.setValue("addr", addr_info[0]);
 			dCdm.setValue("zip_cod", addr_info[1]);
 			
-			/*generate SEQ if need bar code*/
-			if(dCdm.getString("has_bar_code").equalsIgnoreCase("y")){
-				if(isValidCustInfo(dCdm)){
-					String next_seq = TFBUtil.getBdmNextSeq();
-					DPFTLogger.info(this, "Generate SEQ = " + next_seq);
-					dCdm.setValue("bill_seq", next_seq.substring(1));
-					if(next_seq != null)
-						dCdm.setValue("bill_type", next_seq.substring(0, 1));
-					dCdm.setValue("bill_month", TFBUtil.getROCYearMonthString(dCdm.getDate("timestamp")));
-				}else{
-					dCdm.setValue("bill_seq", null);
-					dCdm.setValue("bill_type", null);
-					dCdm.setValue("bill_month", null);
-				}
+			if((i+1)%100 == 0)
+				DPFTLogger.debug(this, "Processed " + (i+1) + " records...");
+		}
+		
+		/*pre-generate barcode*/
+		ArrayList<Integer> need_barcode_dbo_idx = new ArrayList<Integer>();
+		for(int i = 0; i < dCdmSet.count(); i++){
+			DPFTDbo dCdm = dCdmSet.getDbo(i);
+			if(dCdm.getString("has_bar_code").equalsIgnoreCase("y") && isValidCustInfo(dCdm)){
+				need_barcode_dbo_idx.add(i);
+			}else{
+				dCdm.setValue("bill_seq", null);
+				dCdm.setValue("bill_type", null);
+				dCdm.setValue("bill_month", null);
 			}
 		}
+		String[] barcode_list = TFBUtil.generateBarCode(need_barcode_dbo_idx.size());
+		
+		/*set barcode*/
+		for(int i = 0; i < barcode_list.length; i++){
+			DPFTDbo dCdm = dCdmSet.getDbo(need_barcode_dbo_idx.get(i));
+			String next_seq = barcode_list[i];
+			dCdm.setValue("bill_seq", next_seq.substring(1));
+			if(next_seq != null)
+				dCdm.setValue("bill_type", next_seq.substring(0, 1));
+			dCdm.setValue("bill_month", TFBUtil.getROCYearMonthString(dCdm.getDate("timestamp")));
+		}
+		long ps_fin_time = System.currentTimeMillis();
+		DPFTLogger.info(this, "Processed total " + dCdmSet.count() + ", process time = " + (ps_fin_time - ps_start_time)/60000 + " min.");
+		
 		
 		/*Set Query criteria for "O_CDM"*/
 		String qString = DPFTUtil.getFKQueryString(dCdmSet.getDbo(0));
@@ -115,7 +130,6 @@ public class CdmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 			new_dbo.setValue(dCdmSet.getDbo(i));
 			if(!isValidCustInfo(new_dbo) || (new_dbo.getString("has_bar_code").equalsIgnoreCase("y") && new_dbo.isNull("bill_seq"))){
 				//Exclude records that have no Address, or need barcode but without Sequence
-				DPFTLogger.debug(this, "cust_id = " + new_dbo.getString("customer_id") + " has no Address or abnormal sequence number");
 				new_dbo.setValue("process_status", GlobalConstants.O_DATA_EXCLUDE);
 			}else{
 				new_dbo.setValue("process_status", GlobalConstants.O_DATA_OUTPUT);

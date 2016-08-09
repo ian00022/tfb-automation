@@ -92,7 +92,7 @@ public class DPFTOutboundDboSet extends DPFTDboSet {
 
 	private void initGKResult() throws DPFTRuntimeException {
 		gkresult.clear();
-		DPFTDboSet gkresultSet = this.getDBConnector().getDboSet("DM_USR.GK_RESULT");
+		DPFTDboSet gkresultSet = this.getDBConnector().getDboSet("DM_USR.GK_RESULT", "treatment_code in (" + DPFTUtil.getGKSelectTCodeINString(this) + ")");
 		for(int i = 0; i < gkresultSet.count(); i++){
 			String key = gkresultSet.getDbo(i).getString("customer_id") + gkresultSet.getDbo(i).getString("treatment_code");
 			gkresult.put(key, Boolean.valueOf(true));

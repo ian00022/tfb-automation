@@ -85,7 +85,7 @@ public class DPFTActionLocalFileWatch extends DPFTActionTableWatch {
 
 	@Override
 	public void handleException(DPFTActionException e) throws DPFTActionException {
-		
+		this.changeActionStatus(GlobalConstants.DPFT_ACTION_STAT_COMP);
 	}
 
 }

@@ -60,6 +60,7 @@ public class MtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 		MKTDMCustomerContactDboSet contSet = (MKTDMCustomerContactDboSet) this.getDataSet();
 
 		/*set Addr by IBM Campaign Priority setting*/
+		long ps_start_time = System.currentTimeMillis();
 		for(int i = 0; i < dMtmSet.count(); i++){
 			DPFTDbo dMtm = dMtmSet.getDbo(i);
 			
@@ -72,7 +73,12 @@ public class MtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 			dMtm.setValue("PHONEMOBILE", mobile);
 			dMtm.setValue("PHONEHOMETEL" , contSet.getDayTelByBizType(dMtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK));
 			dMtm.setValue("PHONEOFFICETEL" , contSet.getNightTelByBizType(dMtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK));
+			
+			if((i+1)%100 == 0)
+				DPFTLogger.debug(this, "Processed " + (i+1) + " records...");
 		}
+		long ps_fin_time = System.currentTimeMillis();
+		DPFTLogger.info(this, "Processed total " + dMtmSet.count() + ", process time = " + (ps_fin_time - ps_start_time)/60000 + " min.");
 		
 		/*Set Query criteria for "O_MTM"*/
 		String qString = DPFTUtil.getFKQueryString(dMtmSet.getDbo(0));

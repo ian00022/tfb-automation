@@ -9,6 +9,7 @@ import com.ibm.dpft.engine.core.common.GlobalConstants;
 import com.ibm.dpft.engine.core.config.DPFTConfig;
 import com.ibm.dpft.engine.core.connection.DPFTConnectionFactory;
 import com.ibm.dpft.engine.core.dbo.DPFTDbo;
+import com.ibm.dpft.engine.core.dbo.DPFTDboSet;
 import com.ibm.dpft.engine.core.dbo.DPFTNotificationDbo;
 import com.ibm.dpft.engine.core.dbo.DPFTNotificationDboSet;
 import com.ibm.dpft.engine.core.dbo.DPFTTriggerMapDefDboSet;
@@ -188,6 +189,9 @@ public class DPFTUtil {
 	}
 	
 	public static void pushNotification(String notifier, String title, String msg_body) throws DPFTRuntimeException {
+		if(notifier == null)
+			return;
+		
 		String dt = getCurrentTimeStampAsString().substring(0, GlobalConstants.DFPT_DATE_FORMAT.length());
 		DPFTNotificationDboSet nset = (DPFTNotificationDboSet) DPFTConnectionFactory.initDPFTConnector(getSystemDBConfig())
 										.getDboSet("MAILBOX", "data_dt='" + dt + "'");
@@ -212,5 +216,15 @@ public class DPFTUtil {
 		String email = cmpSet.getCampaign(cmp_code).getOwnerEmail();
 		cmpSet.close();
 		return email;
+	}
+	
+	public static String getGKSelectTCodeINString(DPFTDboSet set) throws DPFTRuntimeException {
+		if(set.isEmpty())
+			return "";
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("select distinct treatment_code from ")
+						.append("D_").append(set.getDbo(0).getString("chal_name"));
+		return sb.toString();
 	}
 }

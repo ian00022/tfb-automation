@@ -40,7 +40,7 @@ public class DPFTActionIbndTableWatch extends DPFTActionTableWatch {
 	@Override
 	public String getTableWatchCriteria() {
 		/* Watch new insert records */
-		return "process_status='" + GlobalConstants.DPFT_CTRL_STAT_INIT + "' and gk_flg='Y'";
+		return "process_status='" + GlobalConstants.DPFT_CTRL_STAT_INIT + "' and gk_flg='Y' and rownum <= (3 - (select count(*) from h_inbound where process_status='R'))";
 	}
 
 	@Override
@@ -52,8 +52,11 @@ public class DPFTActionIbndTableWatch extends DPFTActionTableWatch {
 	@Override
 	public void postAction() throws DPFTRuntimeException {
 		//if no watch data, wait for next execution
-		if(this.getDataSet().count() == 0)
+		if(this.getDataSet().count() == 0){
+			this.setPostActionSleepTime(sleep_time);
 			this.changeActionStatus(GlobalConstants.DPFT_ACTION_STAT_RUN);
+			this.getDataSet().close();
+		}
 	}
 
 	@Override

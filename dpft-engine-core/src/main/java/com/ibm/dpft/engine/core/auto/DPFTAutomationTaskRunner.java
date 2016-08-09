@@ -22,6 +22,12 @@ public class DPFTAutomationTaskRunner extends DPFTTaskRunner {
 		} catch (DPFTRuntimeException e) {
 			DPFTLogger.error(this, "Automation Task Abnormally ternimated...");
 		}
+		
+		try {
+			this.getTaskPlan().finishUp();
+		} catch (DPFTRuntimeException e) {
+			DPFTLogger.error(this, "Error when Free Resource...", e);
+		}
 	}
 
 	public void setGroupID(String gid) {

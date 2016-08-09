@@ -31,5 +31,11 @@ public class TFBActionSendMail extends DPFTAction {
 		this.changeActionStatus(GlobalConstants.DPFT_ACTION_STAT_COMP);
 	}
 
+	@Override
+	public void clean() throws DPFTRuntimeException {
+		// TODO Auto-generated method stub
+		
+	}
+
 	
 }

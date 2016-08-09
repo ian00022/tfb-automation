@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import com.ibm.dpft.engine.core.common.GlobalConstants;
 import com.ibm.dpft.engine.core.dbo.DPFTDbo;
-import com.ibm.dpft.engine.core.util.DPFTLogger;
 
 public class DPFTOutboundDbo extends DPFTDbo {
 
@@ -22,7 +21,6 @@ public class DPFTOutboundDbo extends DPFTDbo {
 			return;
 		}
 		this.setValue("process_status", GlobalConstants.O_DATA_GK_EXCLUDE);
-		DPFTLogger.debug(this, "Customer : " + cust_id + ", treatment code:" + treatment_code + " Excluded by GK");
 	}
 
 }

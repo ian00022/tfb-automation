@@ -2,6 +2,7 @@ package com.ibm.dpft.engine.core.connection;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import com.ibm.dpft.engine.core.util.DPFTLogger;
 
 public class DPFTConnector {
 	private static DPFTConnector sys_conn = null;
+	private static ArrayList<Connection> conn_pool = new ArrayList<Connection>();
 	private Connection conn = null;
 	private DPFTConfig db_cfg = null;
 	private DPFTStatement stmt = null;
@@ -23,7 +25,55 @@ public class DPFTConnector {
 		// TODO Auto-generated constructor stub
 		this.conn = conn;
 		db_cfg = cfg;
+		
+		add2ConnectionPool(conn);
+		logPoolSummary();
 	}
+	
+	private void add2ConnectionPool(Connection connection) {
+		synchronized(conn_pool){
+			conn_pool.add(connection);
+		}
+	}
+	private void logPoolSummary() {
+		synchronized(conn_pool){
+			StringBuilder sb = new StringBuilder();
+			sb.append("Connection POOL Summary:\n")
+			  .append("Total JDBC Connection Instance = " + conn_pool.size() + " \n")
+			  .append("Total Open Connection = " + getActiveConnectionCount() + " \n")
+			  .append("Total Closed Connection = " + getClosedConnectionCount() + " \n");
+			
+			DPFTLogger.debug(this, "\n" + sb.toString());
+		}
+	}
+	private int getClosedConnectionCount(){
+		int count = 0;
+		for(Connection conn: conn_pool){
+			try {
+				if(conn.isClosed())
+					count++;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return count;
+	}
+	
+	private int getActiveConnectionCount(){
+		int count = 0;
+		for(Connection conn: conn_pool){
+			try {
+				if(!conn.isClosed())
+					count++;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return count;
+	}
+	
 	public DPFTDboSet getDboSet(String tbname, String whereclause, DPFTDbo parent_dbo) throws DPFTRuntimeException {
 		DPFTDboSet dboset = getDboSetInstance(tbname, whereclause);
 		dboset.setParent(parent_dbo);
@@ -117,6 +167,7 @@ public class DPFTConnector {
 			stmt.close();
 		if(conn != null)
 			conn.close();
+		logPoolSummary();
 	}
 
 	public void setUpdate(List<DPFTDbo> updateDbolist) throws SQLException {

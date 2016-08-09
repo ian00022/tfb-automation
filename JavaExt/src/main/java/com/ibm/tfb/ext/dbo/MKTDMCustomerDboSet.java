@@ -8,11 +8,10 @@ import com.ibm.dpft.engine.core.connection.DPFTConnector;
 import com.ibm.dpft.engine.core.dbo.DPFTDbo;
 import com.ibm.dpft.engine.core.dbo.DPFTDboSet;
 import com.ibm.dpft.engine.core.exception.DPFTRuntimeException;
-import com.ibm.dpft.engine.core.util.DPFTLogger;
 import com.ibm.dpft.engine.core.util.DPFTUtil;
-import com.ibm.tfb.ext.common.TFBInvalidCustInfoException;
 
 public class MKTDMCustomerDboSet extends DPFTDboSet {
+	private HashMap<String, MKTDMCustomerDbo> vMap = null;
 
 	public MKTDMCustomerDboSet(DPFTConnector conn, String tbname, String whereclause) throws DPFTRuntimeException {
 		super(conn, tbname, whereclause);
@@ -24,15 +23,34 @@ public class MKTDMCustomerDboSet extends DPFTDboSet {
 		return new MKTDMCustomerDbo(dboname, d, this);
 	}
 	
+	@Override
+	public void load() throws DPFTRuntimeException {
+		super.load();
+		if(vMap == null)
+			vMap = new HashMap<String, MKTDMCustomerDbo>();
+		vMap.clear();
+		for(int i = 0; i < count(); i++){
+			String key = this.getDbo(i).getString("cust_id");
+			vMap.put(key, (MKTDMCustomerDbo) this.getDbo(i));
+		}
+	}
+	
+	@Override
+	public void close() throws DPFTRuntimeException {
+		super.close();
+		vMap.clear();
+		this.clear();
+	}
+	
 	private String getCustInfo(String cust_id, String colname) throws DPFTRuntimeException {
 		// TODO Auto-generated method stub
-		for(int i = 0; i < this.count(); i++){
-			MKTDMCustomerDbo dbo = (MKTDMCustomerDbo) this.getDbo(i);
-			if(dbo.find(cust_id)){
-				return dbo.getString(colname);
-			}
-		}
-		return null;
+//		for(int i = 0; i < this.count(); i++){
+//			MKTDMCustomerDbo dbo = (MKTDMCustomerDbo) this.getDbo(i);
+//			if(dbo.find(cust_id)){
+//				return dbo.getString(colname);
+//			}
+//		}
+		return vMap.get(cust_id).getString(colname);
 	}
 
 	public String getCustName(String cust_id) throws DPFTRuntimeException {
@@ -48,25 +66,25 @@ public class MKTDMCustomerDboSet extends DPFTDboSet {
 	public String getGender(String cust_id) throws DPFTRuntimeException {
 		String cust_info = getCustInfo(cust_id, "GNDR_CUST");
 		if(cust_info == null){
-			DPFTLogger.error(this, "Gender is null for cust_id = " + cust_id);
 			return null;
 		}
 		
-		if(cust_info.equals("1"))
+		if(cust_info.equals("1") || cust_info.equals("M"))
 			return DPFTEngine.getSystemProperties("tfb.gndr.male");
-		else if(cust_info.equals("2"))
+		else if(cust_info.equals("2") || cust_info.equals("F"))
 			return DPFTEngine.getSystemProperties("tfb.gndr.female");
-		Object[] params = {cust_info};
-		throw new TFBInvalidCustInfoException("CUSTOM", "TFB00002E", params);
+		return null;
+//		Object[] params = {cust_info};
+//		throw new TFBInvalidCustInfoException("CUSTOM", "TFB00002E", params);
 	}
 
 	public String getDateAsString(String cust_id, String colname) throws DPFTRuntimeException {
-		for(int i = 0; i < this.count(); i++){
-			MKTDMCustomerDbo dbo = (MKTDMCustomerDbo) this.getDbo(i);
-			if(dbo.find(cust_id)){
-				return DPFTUtil.convertDateObject2DateString(dbo.getDate(colname), GlobalConstants.DFPT_DATE_FORMAT);
-			}
-		}
-		return null;
+//		for(int i = 0; i < this.count(); i++){
+//			MKTDMCustomerDbo dbo = (MKTDMCustomerDbo) this.getDbo(i);
+//			if(dbo.find(cust_id)){
+//				return DPFTUtil.convertDateObject2DateString(dbo.getDate(colname), GlobalConstants.DFPT_DATE_FORMAT);
+//			}
+//		}
+		return DPFTUtil.convertDateObject2DateString(vMap.get(cust_id).getDate(colname), GlobalConstants.DFPT_DATE_FORMAT);
 	}
 }

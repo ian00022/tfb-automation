@@ -22,7 +22,7 @@ public class DPFTActionObndTpWatch extends DPFTActionTableWatch {
 	@Override
 	public String getTableWatchCriteria() {
 		// TODO Auto-generated method stub
-		return "obnd_rule='" + GlobalConstants.DPFT_TP_OBND_RULE_CHAL + "' and trg_time is not null";
+		return "obnd_rule='" + GlobalConstants.DPFT_TP_OBND_RULE_CHAL + "' and trg_time is not null and active=1";
 	}
 
 	@Override

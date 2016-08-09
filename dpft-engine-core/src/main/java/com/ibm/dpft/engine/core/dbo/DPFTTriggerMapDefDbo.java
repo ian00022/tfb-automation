@@ -88,7 +88,7 @@ public class DPFTTriggerMapDefDbo extends DPFTDbo {
 		StringBuilder sb = new StringBuilder();
 		sb.append("chal_name='").append(this.getString("chal_name"))
 		.append("' and planid='").append(this.getString("planid"))
-		.append("' and active=1");
+		.append("' and active=0");
 		DPFTTriggerMapDefDboSet rtnSet = (DPFTTriggerMapDefDboSet) DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig()).getDboSet(this.getDboName(), sb.toString());
 		rtnSet.setParent(this);
 		return rtnSet;

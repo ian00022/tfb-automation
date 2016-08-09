@@ -81,6 +81,10 @@ public class SsmActionContactInfoDMWatch extends DPFTActionTableWatch {
 		/*Validate records with personal info data & add record to outbound data table*/		
 		MKTDMCustomerContactDboSet custSet = (MKTDMCustomerContactDboSet) this.getDataSet();
 		ArrayList<String> cell_code_list = new ArrayList<String>();
+		String cmp_owner_email = DPFTUtil.getCampaignOwnerEmail(dSsmSet.getDbo(0).getString("camp_code"));
+		String it_adm_email = TFBUtil.getMailGroup(TFBConstants.TFB_MAILGROUP_ITADM);
+		long ps_start_time = System.currentTimeMillis();
+		
 		for(int i = 0; i < dSsmSet.count(); i++){
 			String cust_id = dSsmSet.getDbo(i).getString("customer_id");
 			String mobile_no = custSet.getMobile(cust_id);
@@ -97,15 +101,13 @@ public class SsmActionContactInfoDMWatch extends DPFTActionTableWatch {
 			}
 			
 			//get Contact email info
-			new_dbo.setValue("contactemail", TFBUtil.getSMSContactEmail(DPFTUtil.getCampaignOwnerEmail(dSsmSet.getDbo(i).getString("camp_code"))));
+			new_dbo.setValue("contactemail", TFBUtil.getSMSContactEmail(cmp_owner_email, it_adm_email));
 			
 			if(mobile_no == null){
 				//person record doesn't have mobile number info
-				DPFTLogger.debug(this, "cust_id = " + cust_id + " cannot find mobile number info");
 				new_dbo.setValue("process_status", GlobalConstants.O_DATA_EXCLUDE);
 			}else{
 				//person record has mobile number info
-				DPFTLogger.debug(this, "cust_id = " + cust_id + " find mobile number info = " + mobile_no);
 				new_dbo.setValue("destno", mobile_no);
 				new_dbo.setValue("process_status", GlobalConstants.O_DATA_OUTPUT);
 			}
@@ -114,7 +116,12 @@ public class SsmActionContactInfoDMWatch extends DPFTActionTableWatch {
 			if(!cell_code_list.contains(new_dbo.getString("cell_code"))){
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
+			
+			if((i+1)%100 == 0)
+				DPFTLogger.debug(this, "Processed " + (i+1) + " records...");
 		}
+		long ps_fin_time = System.currentTimeMillis();
+		DPFTLogger.info(this, "Processed total " + dSsmSet.count() + ", process time = " + (ps_fin_time - ps_start_time)/60000 + " min.");
 		oSsmSet.save();
 		
 		/*Wrtie Usage Code to O_USAGECODE*/

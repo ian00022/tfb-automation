@@ -19,6 +19,7 @@ public abstract class DPFTAction {
 	
 	abstract public void action() throws DPFTRuntimeException;
 	abstract public void finish() throws DPFTRuntimeException;
+	abstract public void clean() throws DPFTRuntimeException;
 	abstract public void handleException(DPFTActionException e) throws DPFTRuntimeException;
 	
 	public boolean isActionComplete(){

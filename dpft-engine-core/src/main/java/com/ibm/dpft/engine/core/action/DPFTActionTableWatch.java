@@ -55,6 +55,19 @@ public abstract class DPFTActionTableWatch extends DPFTAction implements DPFTTab
 		conn = null;
 	}
 	
+	@Override
+	public void clean() throws DPFTRuntimeException {
+		if(ds != null){
+			finish();
+			ds.clear();
+			ds = null;
+		}
+		if(this.getResultSet() != null){
+			this.getResultSet().clear();
+			this.setResultSet(null);
+		}
+	}
+	
 	void initDBConnector() throws DPFTRuntimeException {
 		try {
 			setDBConnector(DPFTConnectionFactory.initDPFTConnector(this.getDBConfig()));

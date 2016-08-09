@@ -33,4 +33,10 @@ public class DPFTActionAutomationReadScript extends DPFTActionReadScript {
 		throw e;
 	}
 
+	@Override
+	public void clean() throws DPFTRuntimeException {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

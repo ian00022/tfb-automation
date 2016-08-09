@@ -59,6 +59,19 @@ public abstract class DPFTActionDataFileOutput extends DPFTAction implements DPF
 	public String getFileEncoding() throws DPFTRuntimeException {
 		return meta.getFileEncoding();
 	}
+	
+	@Override
+	public void clean() throws DPFTRuntimeException {
+		if(meta != null)
+			meta.clear();
+		if(dicSet != null)
+			dicSet.clear();
+		if(this.getResultSet() != null)
+			this.getResultSet().clear();
+		success_ftp_files.clear();
+		meta = null;
+		dicSet = null;
+	}
 
 	@Override
 	public void action() throws DPFTRuntimeException {

@@ -81,6 +81,7 @@ public class EdmActionPersonalDataTableWatch extends DPFTActionTableWatch {
 		/*Validate records with personal info data & add record to outbound data table*/		
 		MKTDMCustomerContactDboSet custSet = (MKTDMCustomerContactDboSet) this.getDataSet();
 		ArrayList<String> cell_code_list = new ArrayList<String>();
+		long ps_start_time = System.currentTimeMillis();
 		for(int i = 0; i < dEdmSet.count(); i++){
 			String cust_id = dEdmSet.getDbo(i).getString("customer_id");
 			String email = custSet.getEmail(cust_id);
@@ -97,11 +98,9 @@ public class EdmActionPersonalDataTableWatch extends DPFTActionTableWatch {
 			
 			if(email == null){
 				//person record doesn't have email info
-				DPFTLogger.debug(this, "cust_id = " + cust_id + " cannot find email info");
 				new_dbo.setValue("process_status", GlobalConstants.O_DATA_EXCLUDE);
 			}else{
 				//person record has email info
-				DPFTLogger.debug(this, "cust_id = " + cust_id + " find email info = " + email);
 				new_dbo.setValue("email", email);
 				new_dbo.setValue("process_status", GlobalConstants.O_DATA_OUTPUT);
 			}
@@ -109,7 +108,12 @@ public class EdmActionPersonalDataTableWatch extends DPFTActionTableWatch {
 			if(!cell_code_list.contains(new_dbo.getString("cell_code"))){
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
+			
+			if((i+1)%100 == 0)
+				DPFTLogger.debug(this, "Processed " + (i+1) + " records...");
 		}
+		long ps_fin_time = System.currentTimeMillis();
+		DPFTLogger.info(this, "Processed total " + dEdmSet.count() + ", process time = " + (ps_fin_time - ps_start_time)/60000 + " min.");
 		oEdmSet.save();
 		
 		/*Write usage codes to O_USAGECODE Table*/

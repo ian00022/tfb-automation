@@ -2,6 +2,7 @@ package com.ibm.dpft.engine.core.action;
 
 import com.ibm.dpft.engine.core.common.GlobalConstants;
 import com.ibm.dpft.engine.core.exception.DPFTActionException;
+import com.ibm.dpft.engine.core.exception.DPFTRuntimeException;
 
 public class DPFTActionSleep extends DPFTAction {
 	private long sleepTime = 0;
@@ -25,6 +26,12 @@ public class DPFTActionSleep extends DPFTAction {
 
 	@Override
 	public void handleException(DPFTActionException e) throws DPFTActionException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void clean() throws DPFTRuntimeException {
 		// TODO Auto-generated method stub
 		
 	}

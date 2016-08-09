@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 import com.ibm.dpft.engine.core.DPFTEngine;
 import com.ibm.dpft.engine.core.common.GlobalConstants;
@@ -30,6 +31,8 @@ public class TFBUtil {
 	private static final Object lock = new Object();
 	private static final Object lock2 = new Object();
 	private static final Object lock3 = new Object();
+	private static final int    MAX_CUST_MAP_SIZE = 1000000;
+	private static HashMap<String, String> custMap = new HashMap<String, String>();
 	
 	public static String getCustomerSelectINString(DPFTDboSet set, String colname) throws DPFTRuntimeException {
 		if(set.isEmpty())
@@ -81,54 +84,6 @@ public class TFBUtil {
 		new_dbo.setValue("priority", DPFTEngine.getSystemProperties("TFB_ESM_PRIORITY"));
 		new_dbo.setValue("mid"     , DPFTEngine.getSystemProperties("TFB_ESM_MID"));
 		new_dbo.setValue("objectid", DPFTEngine.getSystemProperties("TFB_ESM_OBJID"));
-	}
-
-	public static String getBdmNextSeq() throws DPFTRuntimeException {
-		synchronized(lock){
-			DPFTDboSet seqSet = DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig()).getDboSet("DPFT_SEQ", "active=1 and id='" + TFBConstants.BDM_BARCODE_SEQ_ID + "'");
-			seqSet.load();
-			if(seqSet.isEmpty()){
-				Object[] params = {TFBConstants.BDM_BARCODE_SEQ_ID};
-				throw new DPFTInvalidSystemSettingException("SYSTEM", "DPFT0009E", params);
-			}
-			DPFTDbo seq = seqSet.getDbo(0);
-			int current_seq = Integer.valueOf(seq.getString("value"));
-			int max_seq = Integer.valueOf(seq.getString("max_value"));
-			int st_seq = Integer.valueOf(seq.getString("start_value"));
-			String type = seq.getString("type");
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-			Date upd_date = seq.getDate("upd_date");
-			Date sys_date = new Date();
-			if(!sdf.format(upd_date).equals(sdf.format(sys_date))
-					&& seq.getString("is_daily_reset").equalsIgnoreCase("y")){
-				/*reset sequence*/
-				seq.setValue("value", String.valueOf(st_seq));
-				seq.setValue("type", TFBConstants.BDM_BARCODE_SEQ_TYPE_S);
-				seq.setValue("upd_date", sys_date);
-				current_seq = st_seq;
-				type = TFBConstants.BDM_BARCODE_SEQ_TYPE_S;
-			}else{
-				current_seq++;
-				if(current_seq > max_seq && type.equals(TFBConstants.BDM_BARCODE_SEQ_TYPE_S)){
-					/*reset sequence change type to P*/
-					seq.setValue("value", String.valueOf(st_seq));
-					seq.setValue("type", TFBConstants.BDM_BARCODE_SEQ_TYPE_P);
-					seq.setValue("upd_date", sys_date);
-					type = TFBConstants.BDM_BARCODE_SEQ_TYPE_P;
-					current_seq = st_seq;
-				}else{
-					if(current_seq > max_seq){
-						Object[] params = {TFBConstants.BDM_BARCODE_SEQ_ID, max_seq};
-						throw new DPFTInvalidSystemSettingException("SYSTEM", "DPFT0010E", params);
-					}
-					seq.setValue("value", String.valueOf(current_seq));
-					seq.setValue("upd_date", sys_date);
-				}
-			}
-			seqSet.save();
-			seqSet.close();
-			return type + String.format("%06d", current_seq);
-		}
 	}
 
 	public static String getNextActionPlanID() throws DPFTRuntimeException {
@@ -262,39 +217,33 @@ public class TFBUtil {
 
 	public static String getNextBranchNo(String cust_id) throws DPFTRuntimeException {
 		synchronized(lock3){
-			DPFTDboSet seqSet = DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig()).getDboSet("CUST_BRCH_NO", "customer_id='" + cust_id + "'");
-			seqSet.load();
-			if(seqSet.isEmpty()){
-				DPFTDbo seq = seqSet.add();
-				seq.setValue("customer_id", cust_id);
-				seq.setValue("branch_no", "001");
-				seqSet.save();
-				seqSet.close();
+			if(custMap.size() > MAX_CUST_MAP_SIZE)
+				custMap.clear();
+			
+			String branch_no = custMap.get(cust_id);
+			if(branch_no == null){
+				custMap.put(cust_id, "001");
 				return "001";
 			}
-			DPFTDbo seq = seqSet.getDbo(0);
-			int current_seq = Integer.valueOf(seq.getString("branch_no"));
+			int current_seq = Integer.valueOf(branch_no);
 			current_seq++;
 			if(current_seq > 999){
 				DPFTLogger.info(TFBUtil.class.getName(), "Info: Sequence exceed limit Reset Value...");
 				current_seq = 1;
 			}
-			String val = String.format("%03d", current_seq);
-			seq.setValue("branch_no", val);
-			seqSet.save();
-			seqSet.close();
-			return val;
-			
+			branch_no = String.format("%03d", current_seq);
+			custMap.put(cust_id, branch_no);
+			return branch_no;
 		}
 	}
 
-	public static String getSMSContactEmail(String cmp_owner_email) throws DPFTRuntimeException {
+	public static String getSMSContactEmail(String cmp_owner_email, String it_adm_mail) throws DPFTRuntimeException {
 		if(cmp_owner_email != null){
 			StringBuilder sb = new StringBuilder();
-			sb.append(getMailGroup(TFBConstants.TFB_MAILGROUP_ITADM)).append(GlobalConstants.FILE_DELIMETER_COMMA).append(cmp_owner_email);
+			sb.append(it_adm_mail).append(GlobalConstants.FILE_DELIMETER_COMMA).append(cmp_owner_email);
 			return sb.toString();
 		}
-		return getMailGroup(TFBConstants.TFB_MAILGROUP_ITADM);
+		return it_adm_mail;
 	}
 
 	public static String getMailGroup(String group_id) throws DPFTRuntimeException {
@@ -308,6 +257,62 @@ public class TFBUtil {
 		if(sb.length() > 0)
 			return sb.substring(0, sb.length()-1);
 		return null;
+	}
+
+	public static String[] generateBarCode(int total_seq) throws DPFTRuntimeException {
+		synchronized(lock){
+			DPFTDboSet seqSet = DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig()).getDboSet("DPFT_SEQ", "active=1 and id='" + TFBConstants.BDM_BARCODE_SEQ_ID + "'");
+			seqSet.load();
+			if(seqSet.isEmpty()){
+				Object[] params = {TFBConstants.BDM_BARCODE_SEQ_ID};
+				throw new DPFTInvalidSystemSettingException("SYSTEM", "DPFT0009E", params);
+			}
+			DPFTDbo seq = seqSet.getDbo(0);
+			String[] rtnlist = new String[total_seq];
+			for(int i = 0; i < total_seq; i++){
+				rtnlist[i] = nextBarCode(seq);
+			}
+			seqSet.save();
+			seqSet.close();
+			return rtnlist;
+		}
+	}
+	
+	private static String nextBarCode(DPFTDbo seq) throws DPFTRuntimeException{
+		int current_seq = Integer.valueOf(seq.getString("value"));
+		int max_seq = Integer.valueOf(seq.getString("max_value"));
+		int st_seq = Integer.valueOf(seq.getString("start_value"));
+		String type = seq.getString("type");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+		Date upd_date = seq.getDate("upd_date");
+		Date sys_date = new Date();
+		if(!sdf.format(upd_date).equals(sdf.format(sys_date))
+				&& seq.getString("is_daily_reset").equalsIgnoreCase("y")){
+			/*reset sequence*/
+			seq.setValue("value", String.valueOf(st_seq));
+			seq.setValue("type", TFBConstants.BDM_BARCODE_SEQ_TYPE_S);
+			seq.setValue("upd_date", sys_date);
+			current_seq = st_seq;
+			type = TFBConstants.BDM_BARCODE_SEQ_TYPE_S;
+		}else{
+			current_seq++;
+			if(current_seq > max_seq && type.equals(TFBConstants.BDM_BARCODE_SEQ_TYPE_S)){
+				/*reset sequence change type to P*/
+				seq.setValue("value", String.valueOf(st_seq));
+				seq.setValue("type", TFBConstants.BDM_BARCODE_SEQ_TYPE_P);
+				seq.setValue("upd_date", sys_date);
+				type = TFBConstants.BDM_BARCODE_SEQ_TYPE_P;
+				current_seq = st_seq;
+			}else{
+				if(current_seq > max_seq){
+					Object[] params = {TFBConstants.BDM_BARCODE_SEQ_ID, max_seq};
+					throw new DPFTInvalidSystemSettingException("SYSTEM", "DPFT0010E", params);
+				}
+				seq.setValue("value", String.valueOf(current_seq));
+				seq.setValue("upd_date", sys_date);
+			}
+		}
+		return type + String.format("%06d", current_seq);
 	}
 
 }

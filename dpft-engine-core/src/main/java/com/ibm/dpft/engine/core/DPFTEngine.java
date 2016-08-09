@@ -13,6 +13,7 @@ import com.ibm.dpft.engine.core.common.GlobalConstants;
 import com.ibm.dpft.engine.core.config.DPFTConfig;
 import com.ibm.dpft.engine.core.connection.DPFTConnectionFactory;
 import com.ibm.dpft.engine.core.connection.DPFTConnector;
+import com.ibm.dpft.engine.core.dbo.DPFTPrioritySettingDboSet;
 import com.ibm.dpft.engine.core.dbo.SystemPropDboSet;
 import com.ibm.dpft.engine.core.exception.DPFTInvalidSystemSettingException;
 import com.ibm.dpft.engine.core.exception.DPFTRuntimeException;
@@ -34,6 +35,7 @@ public class DPFTEngine {
 	private String stat = GlobalConstants.DPFT_ENGINE_STAT_INIT;
 	private ArrayList<DPFTTaskPlan> rtplist = new ArrayList<DPFTTaskPlan>();
 	private ArrayList<DPFTTaskPlan> utplist = new ArrayList<DPFTTaskPlan>();
+	private static DPFTPrioritySettingDboSet pSet = null;
 	
 	public DPFTEngine() throws DPFTRuntimeException {
 		// TODO Auto-generated constructor stub
@@ -55,6 +57,7 @@ public class DPFTEngine {
 		
 		DPFTLogger.info(this, "Engine load Remote properties from System Table...");
 		loadRemoteSystemProperties();
+		loadPriorityCodeSetting();
 		DPFTLogger.info(this, "Engine successfully load Remote properties...");
 		
 		DPFTLogger.info(this, "Engine Scheduler instantiate...");
@@ -72,6 +75,15 @@ public class DPFTEngine {
 		
 	}
 	
+	private void loadPriorityCodeSetting() throws DPFTRuntimeException {
+		if(pSet == null){
+			pSet = (DPFTPrioritySettingDboSet) DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig())
+					.getDboSet("DPFT_PRIORITY_CODE_DEF", "active=1");
+			pSet.load();
+			pSet.close();
+		}		
+	}
+
 	private DPFTTaskPlan[] getEngineDefinedTaskPlanList() {
 		if(utplist.size() == 0){
 			rtplist.add(new DPFTDataInboundWatcher(GlobalConstants.DPFT_SYS_SCHEDULE_RUNNER_ID));
@@ -98,6 +110,10 @@ public class DPFTEngine {
 					prop.put(rprop, value);
 			}
 		}
+	}
+	
+	public static DPFTPrioritySettingDboSet getPriorityCodeSetting(){
+		return pSet;
 	}
 
 	public static String getSystemProperties(String key){

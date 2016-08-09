@@ -17,4 +17,13 @@ public class DPFTPrioritySettingDboSet extends DPFTDboSet {
 		return new DPFTPrioritySettingDbo(dboname, d, this);
 	}
 
+	public DPFTPrioritySettingDbo getPrioritySetting(String template, String p_code) throws DPFTRuntimeException {
+		for(int i = 0; i < count(); i++){
+			if(this.getDbo(i).getString("template").equalsIgnoreCase(template)
+					&& this.getDbo(i).getString("priority_code").equalsIgnoreCase(p_code))
+				return (DPFTPrioritySettingDbo) this.getDbo(i);
+		}
+		return null;
+	}
+
 }

@@ -63,6 +63,7 @@ public class CtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 		MKTDMCustomerContactDboSet contSet = (MKTDMCustomerContactDboSet) this.getDataSet();
 
 		/*set Addr by IBM Campaign Priority setting*/
+		long ps_start_time = System.currentTimeMillis();
 		for(int i = 0; i < dCtmSet.count(); i++){
 			DPFTDbo dCtm = dCtmSet.getDbo(i);
 			String[] addr_info = null;
@@ -95,7 +96,12 @@ public class CtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 				email = contSet.getPrioritizedEmail(dCtm.getString("customer_id"), "CTM_MAIL", dCtm.getString("email_priority"));
 			}
 			dCtm.setValue("email", email);
+			
+			if((i+1)%100 == 0)
+				DPFTLogger.debug(this, "Processed " + (i+1) + " records...");
 		}
+		long ps_fin_time = System.currentTimeMillis();
+		DPFTLogger.info(this, "Processed total " + dCtmSet.count() + ", process time = " + (ps_fin_time - ps_start_time)/60000 + " min.");
 		
 		/*Set Query criteria for "O_CTM"*/
 		String qString = DPFTUtil.getFKQueryString(dCtmSet.getDbo(0));

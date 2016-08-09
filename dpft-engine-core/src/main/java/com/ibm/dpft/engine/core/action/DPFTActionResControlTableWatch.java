@@ -62,6 +62,11 @@ public class DPFTActionResControlTableWatch extends DPFTActionTableWatch {
 			if(data_reader == null)
 				continue;
 			try{
+				if(!data_reader.exist(d_file_name)){
+					Object[] params = {d_file_name};
+					throw new DPFTFileReadException("CUSTOM", "TFB00014E", params);
+				}
+				
 				if(data_reader.read(d_file_name)){
 					data_reader.write2TargetTable(timestamp);
 					h.setValue("process_time", timestamp);
@@ -84,7 +89,7 @@ public class DPFTActionResControlTableWatch extends DPFTActionTableWatch {
 
 	@Override
 	public void handleException(DPFTActionException e) throws DPFTActionException {
-		
+		this.changeActionStatus(GlobalConstants.DPFT_ACTION_STAT_COMP);
 	}
 
 }

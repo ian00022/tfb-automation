@@ -78,6 +78,11 @@ public class DPFTDboSet {
 		}
 	}
 	
+	public void clear() {
+		if(dboset != null)
+			dboset.clear();
+	}
+	
 	List<DPFTDbo> convert2DboInstances(List<HashMap<String, Object>> data) {
 		// TODO Auto-generated method stub
 		List<DPFTDbo> ds = new ArrayList<DPFTDbo>();

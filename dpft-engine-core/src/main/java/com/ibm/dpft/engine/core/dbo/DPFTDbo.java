@@ -81,13 +81,12 @@ public class DPFTDbo {
 						changed_values.remove(col);
 				}
 			}else{
+				if(!rowData.containsKey(col))
+					setNewValue(col, value);
+				
 				//null
 				if(rowData.get(col) == null && value != null){
-					if(rowData.containsKey(col)){
-						changed_values.put(col, value);
-					}else{
-						setNewValue(col, value);
-					}
+					changed_values.put(col, value);
 					tobeSaved = true;
 				}else if(rowData.get(col) != null && value == null){
 					changed_values.put(col, value);

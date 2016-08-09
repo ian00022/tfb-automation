@@ -40,6 +40,12 @@ public abstract class DPFTActionTaskTrigger extends DPFTAction implements DPFTTa
 			tmapSet.close();
 		}
 	}
+	
+	@Override
+	public void clean() throws DPFTRuntimeException {
+		if(this.getResultSet() != null)
+			this.getResultSet().clear();
+	}
 
 	@Override
 	public void finish() {
