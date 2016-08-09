@@ -2,6 +2,7 @@ package com.ibm.dpft.engine.core.action;
 
 import com.ibm.dpft.engine.core.config.DPFTConfig;
 import com.ibm.dpft.engine.core.dbo.DPFTTriggerMapDefDbo;
+import com.ibm.dpft.engine.core.dbo.DPFTTriggerMapDefDboSet;
 import com.ibm.dpft.engine.core.exception.DPFTActionException;
 import com.ibm.dpft.engine.core.exception.DPFTRuntimeException;
 import com.ibm.dpft.engine.core.util.DPFTMessage;
@@ -38,6 +39,10 @@ public abstract class DPFTActionObndPeriodicDataTableWatch extends DPFTActionTab
 	
 	@Override
 	public void handleException(DPFTActionException e) throws DPFTRuntimeException {
+		DPFTTriggerMapDefDbo tmap = (DPFTTriggerMapDefDbo) this.getInitialData();
+		DPFTTriggerMapDefDboSet tmapSet = tmap.getControlTableRecords();
+		tmapSet.updateLastActiveTime();
+		tmapSet.save();
 		throw e;
 	}
 }

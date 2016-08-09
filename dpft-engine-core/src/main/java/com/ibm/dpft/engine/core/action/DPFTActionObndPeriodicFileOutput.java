@@ -69,6 +69,10 @@ public abstract class DPFTActionObndPeriodicFileOutput extends DPFTActionDataFil
 
 	@Override
 	public void handleException(DPFTActionException e) throws DPFTRuntimeException {
+		DPFTTriggerMapDefDbo tmap = (DPFTTriggerMapDefDbo) this.getInitialData();
+		DPFTTriggerMapDefDboSet tmapSet = tmap.getControlTableRecords();
+		tmapSet.updateLastActiveTime();
+		tmapSet.save();
 		throw e;
 	}
 
