@@ -161,6 +161,8 @@ public class DPFTUtil {
 	}
 
 	public static String convertDateObject2DateString(Date date, String format) {
+		if(date == null)return null;
+		
 		SimpleDateFormat sdf = new SimpleDateFormat(format);
 		return sdf.format(date);
 	}
