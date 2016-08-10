@@ -39,6 +39,7 @@ public class DPFTScheduler {
 		TaskPlanDefDboSet planSet = (TaskPlanDefDboSet) connector.getDboSet("DPFT_TASKPLAN_DEF", "active=?");
 		planSet.setBoolean(1, true);
 		planSet.load();
+		planSet.close();
 		try {
 			List<DPFTTaskPlan> taskplans = planSet.convert2TaskPlanList();
 			for(DPFTTaskPlan tp : taskplans){

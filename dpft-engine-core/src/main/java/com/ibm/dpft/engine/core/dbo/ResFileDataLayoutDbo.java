@@ -17,6 +17,7 @@ public class ResFileDataLayoutDbo extends DPFTDbo {
 		if(detail == null){
 			ResFileDataLayoutDetailDboSet set = (ResFileDataLayoutDetailDboSet) this.getDboSet("DPFT_RES_DATA_LAYOUT_DETAIL", "data_layout_id='" + this.getString("data_layout_id") + "'");
 			set.load();
+			set.close();
 			detail = set;
 		}
 		return detail;

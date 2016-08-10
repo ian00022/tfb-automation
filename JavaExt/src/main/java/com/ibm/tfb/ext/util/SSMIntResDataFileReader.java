@@ -57,6 +57,7 @@ public class SSMIntResDataFileReader extends DPFTFileReader {
 	private DPFTDbo getRelatedOutboundData(DPFTDbo new_data) throws DPFTRuntimeException {
 		DPFTDboSet set = new_data.getDboSet("O_SSM", "destno='" + new_data.getString("resv1") + "' and isinteractive='Y'");
 		set.orderby("timestamp", DPFTDboSet.TYPE_DATETIME);
+		set.close();
 		return set.getDbo(0);
 	}
 

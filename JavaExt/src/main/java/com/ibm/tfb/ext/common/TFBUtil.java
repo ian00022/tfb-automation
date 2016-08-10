@@ -91,6 +91,7 @@ public class TFBUtil {
 			DPFTDboSet seqSet = DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig()).getDboSet("DPFT_SEQ", "active=1 and id='" + TFBConstants.WMS_APLN_SEQ_ID + "'");
 			seqSet.load();
 			if(seqSet.isEmpty()){
+				seqSet.close();
 				Object[] params = {TFBConstants.WMS_APLN_SEQ_ID};
 				throw new DPFTInvalidSystemSettingException("SYSTEM", "DPFT0009E", params);
 			}
@@ -254,6 +255,7 @@ public class TFBUtil {
 			TFBMailGroupDbo mg = (TFBMailGroupDbo) gSet.getDbo(i);
 			sb.append(mg.getEmail()).append(GlobalConstants.FILE_DELIMETER_COMMA);
 		}
+		gSet.close();
 		if(sb.length() > 0)
 			return sb.substring(0, sb.length()-1);
 		return null;
@@ -264,6 +266,7 @@ public class TFBUtil {
 			DPFTDboSet seqSet = DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig()).getDboSet("DPFT_SEQ", "active=1 and id='" + TFBConstants.BDM_BARCODE_SEQ_ID + "'");
 			seqSet.load();
 			if(seqSet.isEmpty()){
+				seqSet.close();
 				Object[] params = {TFBConstants.BDM_BARCODE_SEQ_ID};
 				throw new DPFTInvalidSystemSettingException("SYSTEM", "DPFT0009E", params);
 			}

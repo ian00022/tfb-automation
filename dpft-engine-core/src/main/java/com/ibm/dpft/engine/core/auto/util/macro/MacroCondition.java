@@ -46,8 +46,10 @@ public class MacroCondition extends DPFTAutomationMacro {
 		DPFTAutomationProcessSet pSet = (DPFTAutomationProcessSet) DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig())
 				.getDboSet("DPFT_AUTOMATION_PROCESS", "group_id='" + group_id + "'");
 		if(pSet.isFinished()){
+			pSet.close();
 			return GlobalConstants.DPFT_AUTOMATION_PS_RC_TRUE;
 		}
+		pSet.close();
 		return GlobalConstants.DPFT_AUTOMATION_PS_RC_FALSE;
 	}
 }

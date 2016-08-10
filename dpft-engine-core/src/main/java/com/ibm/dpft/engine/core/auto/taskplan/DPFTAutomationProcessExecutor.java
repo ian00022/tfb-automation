@@ -42,7 +42,20 @@ public class DPFTAutomationProcessExecutor extends DPFTBaseTaskPlan {
 			ex.handleException();
 			throw ex;
 		}
-		super.doTask();
+		try{
+			super.doTask();
+		}catch(Exception e){
+			closeSession();
+			throw e;
+		}
+		
+	}
+
+	private void closeSession() throws DPFTRuntimeException {
+		if(instSet != null)
+			instSet.close();
+		instSet = null;
+		psSet = null;
 	}
 
 	private void checkin() throws DPFTRuntimeException {
@@ -139,6 +152,7 @@ public class DPFTAutomationProcessExecutor extends DPFTBaseTaskPlan {
 			inst.exit();
 			SaveAndRefresh();
 			this.changeTaskStatus(GlobalConstants.DPFT_TP_STAT_COMP);
+			closeSession();
 		}
 	}
 

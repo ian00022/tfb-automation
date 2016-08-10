@@ -34,6 +34,7 @@ public class MacroCMD extends DPFTAutomationMacro {
 			String group_id = getProcess().getString("group_id");
 			DPFTAutomationPsInstanceSet set = (DPFTAutomationPsInstanceSet) DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig()).getDboSet("DPFT_AUTOMATION_PS_INST", "group_id='" + group_id + "'");
 			if(set.isEmpty()){
+				set.close();
 				Object[] params = {group_id};
 				throw new DPFTAutomationException("SYSTEM", "AUTO0010E", params);
 			}
@@ -77,6 +78,7 @@ public class MacroCMD extends DPFTAutomationMacro {
 	private DPFTAutomationProcessSet getProcessSet(String group_id) throws DPFTRuntimeException {
 		DPFTAutomationProcessSet psSet = (DPFTAutomationProcessSet) DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig()).getDboSet("DPFT_AUTOMATION_PROCESS", "group_id='" + group_id + "'");
 		if(psSet.isEmpty()){
+			psSet.close();
 			Object[] params = {group_id};
 			throw new DPFTAutomationException("SYSTEM", "AUTO0012E", params);
 		}

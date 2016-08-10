@@ -26,6 +26,7 @@ public class DPFTAutomationPsInstanceSet extends DPFTDboSet {
 	public ArrayList<DPFTAutomationTaskRunner> initRunnerInstancePool() throws DPFTRuntimeException {
 		DPFTAutomationProcessSet psSet = (DPFTAutomationProcessSet) this.getDBConnector().getDboSet("DPFT_AUTOMATION_PROCESS");
 		String[] gids = psSet.getGroupIDList();
+		psSet.close();
 		ArrayList<DPFTAutomationTaskRunner> pool = new ArrayList<DPFTAutomationTaskRunner>();
 		for(String gid: gids){
 			DPFTAutomationPsInstance new_instance = (DPFTAutomationPsInstance) this.add();
@@ -52,6 +53,15 @@ public class DPFTAutomationPsInstanceSet extends DPFTDboSet {
 		super.save();
 		hisSet.save();
 		hisSet.close();
+	}
+	
+	@Override
+	public void close() throws DPFTRuntimeException {
+		super.close();
+		for(int i = 0; i < count(); i++){
+			DPFTAutomationPsInstance inst = (DPFTAutomationPsInstance) this.getDbo(i);
+			inst.close();
+		}
 	}
 
 }

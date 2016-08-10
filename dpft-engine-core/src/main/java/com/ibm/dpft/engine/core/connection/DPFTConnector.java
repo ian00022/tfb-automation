@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import com.ibm.dpft.engine.core.common.GlobalConstants;
@@ -254,6 +255,20 @@ public class DPFTConnector {
 		stmt.setSQL("truncate table " + tablename);
 		stmt.prepareStatement();
 		stmt.doSQL();
+	}
+
+	public static void clearClosedConnection() {
+		synchronized(conn_pool){
+			Iterator<Connection> ir = conn_pool.iterator();
+			while(ir.hasNext()){
+				Connection con = ir.next();
+				try {
+					if(con.isClosed())
+						ir.remove();
+				} catch (SQLException e) {
+				}
+			}
+		}
 	}
 	
 }

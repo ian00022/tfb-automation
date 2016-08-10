@@ -108,4 +108,8 @@ public class DPFTAutomationPsInstance extends DPFTDbo {
 		return currentStep().isError();
 	}
 
+	public void close() throws DPFTRuntimeException {
+		if(psSet != null)
+			psSet.close();
+	}
 }

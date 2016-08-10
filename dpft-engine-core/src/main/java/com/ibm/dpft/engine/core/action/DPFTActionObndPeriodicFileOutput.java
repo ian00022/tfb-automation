@@ -35,6 +35,7 @@ public abstract class DPFTActionObndPeriodicFileOutput extends DPFTActionDataFil
 		DPFTTriggerMapDefDboSet tmapSet = tmap.getControlTableRecords();
 		tmapSet.updateLastActiveTime();
 		tmapSet.save();
+		tmapSet.close();
 		
 		if(needNotification()){
 			for(String sf: success_ftp_files){
@@ -73,6 +74,7 @@ public abstract class DPFTActionObndPeriodicFileOutput extends DPFTActionDataFil
 		DPFTTriggerMapDefDboSet tmapSet = tmap.getControlTableRecords();
 		tmapSet.updateLastActiveTime();
 		tmapSet.save();
+		tmapSet.close();
 		throw e;
 	}
 

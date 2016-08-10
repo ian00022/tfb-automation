@@ -65,6 +65,8 @@ public class BDMResDataFileReader extends DPFTFileReader {
 		} catch (ParseException e) {
 			throw new DPFTDataFormatException("SYSTEM", "DPFT0008E", e);
 		}
+		oBdmSet.load();
+		oBdmSet.close();
 		if(oBdmSet.isEmpty())
 			return null;
 		return oBdmSet.getDbo(0);

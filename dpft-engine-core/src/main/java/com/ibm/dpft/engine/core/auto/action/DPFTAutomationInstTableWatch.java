@@ -83,6 +83,7 @@ public class DPFTAutomationInstTableWatch extends DPFTActionTableWatch {
 	private DPFTAutomationProcessSet getProcessSet(String group_id) throws DPFTRuntimeException {
 		DPFTAutomationProcessSet psSet = (DPFTAutomationProcessSet) getAutoProcessSet(group_id);
 		if(psSet.isEmpty()){
+			psSet.close();
 			Object[] params = {group_id};
 			throw new DPFTAutomationException("SYSTEM", "AUTO0012E", params);
 		}

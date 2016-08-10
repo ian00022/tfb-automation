@@ -43,6 +43,7 @@ public abstract class DPFTActionObndPeriodicDataTableWatch extends DPFTActionTab
 		DPFTTriggerMapDefDboSet tmapSet = tmap.getControlTableRecords();
 		tmapSet.updateLastActiveTime();
 		tmapSet.save();
+		tmapSet.close();
 		throw e;
 	}
 }

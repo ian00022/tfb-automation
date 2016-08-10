@@ -46,6 +46,7 @@ public class DPFTResMainDboSet extends DPFTDboSet {
 			}
 		}
 		delSet.save();
+		delSet.close();
 		super.save();
 	}
 	

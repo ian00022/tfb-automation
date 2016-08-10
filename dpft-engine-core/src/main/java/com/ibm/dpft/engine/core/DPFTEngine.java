@@ -110,6 +110,7 @@ public class DPFTEngine {
 					prop.put(rprop, value);
 			}
 		}
+		propSet.close();
 	}
 	
 	public static DPFTPrioritySettingDboSet getPriorityCodeSetting(){
@@ -160,6 +161,7 @@ public class DPFTEngine {
 		DPFTLogger.info(this, "Engine Switching to Automation Mode...");
 		taskrunnerMgr.stopAllRunners();
 		taskrunnerMgr.clearDeamonsQueue();
+		DPFTConnector.clearClosedConnection();
 		stat = GlobalConstants.DPFT_ENGINE_STAT_PASSIVE;
 		DPFTLogger.info(this, "Engine initializing system deamons for Automation Mode...");
 		taskrunnerMgr.initialize(stat);
@@ -173,6 +175,7 @@ public class DPFTEngine {
 	public static void updateSystemProp(String p, String value) throws DPFTRuntimeException {
 		SystemPropDboSet propSet = (SystemPropDboSet) connObj.getDboSet("DPFT_SYSTEM_PROP", "prop='" + p + "' and active=1");
 		if(propSet.isEmpty()){
+			propSet.close();
 			Object[] params = {p};
 			throw new DPFTInvalidSystemSettingException("SYSTEM", "DPFT0035E", params);
 		}
@@ -222,6 +225,7 @@ public class DPFTEngine {
 		DPFTLogger.info(this, "Engine Resuming to Default Running Mode...");
 		taskrunnerMgr.stopAllRunners();
 		taskrunnerMgr.clearDeamonsQueue();
+		DPFTConnector.clearClosedConnection();
 		stat = GlobalConstants.DPFT_ENGINE_STAT_RUN;
 		DPFTLogger.info(this, "Engine initializing system deamons for Default Running Mode...");
 		taskrunnerMgr.initialize(stat);
