@@ -302,9 +302,9 @@ public class TFBUtil {
 			if(current_seq > max_seq && type.equals(TFBConstants.BDM_BARCODE_SEQ_TYPE_S)){
 				/*reset sequence change type to P*/
 				seq.setValue("value", String.valueOf(st_seq));
-				seq.setValue("type", TFBConstants.BDM_BARCODE_SEQ_TYPE_P);
+				seq.setValue("type", TFBConstants.BDM_BARCODE_SEQ_TYPE_R);
 				seq.setValue("upd_date", sys_date);
-				type = TFBConstants.BDM_BARCODE_SEQ_TYPE_P;
+				type = TFBConstants.BDM_BARCODE_SEQ_TYPE_R;
 				current_seq = st_seq;
 			}else{
 				if(current_seq > max_seq){

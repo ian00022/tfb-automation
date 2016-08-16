@@ -18,7 +18,7 @@ public class TFBConstants {
 	public static final String BDM_BARCODE_SEQ_ID       = "tfb.bdm.barcode";
 	public static final String WMS_APLN_SEQ_ID          = "tfb.wms.actionplan";
 	public static final String BDM_BARCODE_SEQ_TYPE_S   = "S";
-	public static final String BDM_BARCODE_SEQ_TYPE_P   = "P";
+	public static final String BDM_BARCODE_SEQ_TYPE_R   = "R";
 	
 	public static final String FCB_PLACE_TYPE_PIC  = "P";
 	public static final String FCB_PLACE_TYPE_TEXT = "T";
