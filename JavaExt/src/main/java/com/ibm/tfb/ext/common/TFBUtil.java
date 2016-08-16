@@ -13,6 +13,7 @@ import com.ibm.dpft.engine.core.connection.DPFTConnectionFactory;
 import com.ibm.dpft.engine.core.connection.DPFTConnector;
 import com.ibm.dpft.engine.core.dbo.DPFTDbo;
 import com.ibm.dpft.engine.core.dbo.DPFTDboSet;
+import com.ibm.dpft.engine.core.dbo.DPFTInboundControlDbo;
 import com.ibm.dpft.engine.core.dbo.DPFTInboundControlDboSet;
 import com.ibm.dpft.engine.core.util.DPFTLogger;
 import com.ibm.dpft.engine.core.util.DPFTMessage;
@@ -316,6 +317,88 @@ public class TFBUtil {
 			}
 		}
 		return type + String.format("%06d", current_seq);
+	}
+
+	public static String[] generateSEQ(String seq_id, int size) throws DPFTRuntimeException {
+		synchronized(lock){
+			DPFTDboSet seqSet = DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig()).getDboSet("DPFT_SEQ", "active=1 and id='" + seq_id + "'");
+			seqSet.load();
+			if(seqSet.isEmpty()){
+				seqSet.close();
+				Object[] params = {seq_id};
+				throw new DPFTInvalidSystemSettingException("SYSTEM", "DPFT0009E", params);
+			}
+			DPFTDbo seq = seqSet.getDbo(0);
+			String[] rtnlist = new String[size];
+			for(int i = 0; i < size; i++){
+				rtnlist[i] = nextSEQ(seq);
+			}
+			seqSet.save();
+			seqSet.close();
+			return rtnlist;
+		}
+	}
+
+	private static String nextSEQ(DPFTDbo seq) {
+		int current_seq = Integer.valueOf(seq.getString("value"));
+		int max_seq = Integer.valueOf(seq.getString("max_value"));
+		int st_seq = Integer.valueOf(seq.getString("start_value"));
+		String type = seq.getString("type");
+		Date sys_date = new Date();
+		current_seq++;
+		if(current_seq > max_seq){
+			DPFTLogger.info(TFBUtil.class.getName(), "Info: Sequence exceed limit Reset Value...");
+			current_seq = st_seq;
+		}
+		seq.setValue("value", String.valueOf(current_seq));
+		seq.setValue("upd_date", sys_date);
+		return type + String.format("%08d", current_seq);
+	}
+
+	public static void generateLZIbndCtrlRecord(String target_ds, String data_datetime, String chal_name) throws DPFTRuntimeException {
+		DPFTInboundControlDboSet cSet = (DPFTInboundControlDboSet) DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig())
+											.getDboSet("H_INBOUND", "timestamp='" + data_datetime + "' and chal_name='" + chal_name + "'");
+		DPFTInboundControlDbo ctrl = (DPFTInboundControlDbo) cSet.add();
+		ctrl.setValue("timestamp", data_datetime);
+		ctrl.setValue("target_ds", target_ds);
+		ctrl.setValue("chal_name", chal_name);
+		ctrl.setValue("process_status", GlobalConstants.DPFT_CTRL_STAT_INIT);
+		ctrl.setValue("gk_flg"   , "Y");
+		cSet.save();
+	}
+
+	public static String buildLZQueryString(String timestamp, String chal_name) throws DPFTRuntimeException {
+		StringBuilder sb = new StringBuilder();
+		sb.append("camp_code is null and ")
+			.append("timestamp='").append(timestamp).append("' and ")
+			.append("chal_name='").append(chal_name).append("'");
+		return sb.toString();
+	}
+
+	public static void generateObndCtrlForLZRecord(DPFTConnector connector, String chal_name, String timestamp, String target_tbl, int quantity) throws DPFTRuntimeException {		
+		/*Set Query criteria for target Table*/
+		String qString = TFBUtil.buildLZQueryString(timestamp, chal_name);
+		
+		DPFTOutboundControlDboSet hObndSet = (DPFTOutboundControlDboSet) connector.getDboSet("H_OUTBOUND", qString);
+		hObndSet.load();
+		if(hObndSet.count() > 0){
+			DPFTLogger.info(TFBUtil.class.getName(), "Records exist in H_OUTBOUND...Delete All Records...");
+			hObndSet.deleteAll();
+		}
+
+		DPFTOutboundControlDbo new_hobnd = (DPFTOutboundControlDbo) hObndSet.add();
+		new_hobnd.setValue("timestamp", timestamp);
+		new_hobnd.setValue("cell_code", timestamp.substring(GlobalConstants.DFPT_DATE_FORMAT.length()));
+		new_hobnd.setValue("chal_name", chal_name);
+		new_hobnd.setValue("target_ds", target_tbl);
+		new_hobnd.setValue("quantity" , String.valueOf(quantity));
+		new_hobnd.setValue("del_quantity" , "0");
+		hObndSet.save();
+		hObndSet.close();
+		
+		DPFTInboundControlDboSet hIbndSet = (DPFTInboundControlDboSet) connector.getDboSet("H_INBOUND", qString);
+		hIbndSet.taskComplete();
+		hIbndSet.close();
 	}
 
 }

@@ -17,6 +17,8 @@ public class TFBConstants {
 	
 	public static final String BDM_BARCODE_SEQ_ID       = "tfb.bdm.barcode";
 	public static final String WMS_APLN_SEQ_ID          = "tfb.wms.actionplan";
+	public static final String SFA_LZ_CUST_SEQ_ID       = "tfb.sfa.custid";
+	public static final String SFA_LZ_TCODE_SEQ_ID      = "tfb.sfa.tcode";
 	public static final String BDM_BARCODE_SEQ_TYPE_S   = "S";
 	public static final String BDM_BARCODE_SEQ_TYPE_R   = "R";
 	
@@ -24,4 +26,9 @@ public class TFBConstants {
 	public static final String FCB_PLACE_TYPE_TEXT = "T";
 	
 	public static final String TFB_MAILGROUP_ITADM = "ITADM";
+	
+	public static final String SFA_LZ_LEADTYPE_HL = "05";
+	public static final String SFA_LZ_LEADTYPE_PL = "06";
+	public static final String SFA_LZ_LEADTYPE_EBN_PRE_LOGON = "08";
+	public static final String SFA_LZ_LEADTYPE_EBN_POST_LOGON = "07";
 }

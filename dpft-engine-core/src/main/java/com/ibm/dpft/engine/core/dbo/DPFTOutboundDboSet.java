@@ -82,12 +82,7 @@ public class DPFTOutboundDboSet extends DPFTDboSet {
 
 	@Override
 	public void save() throws DPFTRuntimeException {
-		if(this.tobeAdded())
-			initGKResult();
-			
-		checkGateKeeper();
-		gkresult.clear();
-		super.save();
+		 save(true);
 	}
 
 	private void initGKResult() throws DPFTRuntimeException {
@@ -108,6 +103,34 @@ public class DPFTOutboundDboSet extends DPFTDboSet {
 				continue;
 			dbo.validateWithGateKeeper(gkresult);
 		}
+	}
+
+	public void save(boolean validate_gk) throws DPFTRuntimeException {
+		if(validate_gk){
+			if(this.tobeAdded())
+				initGKResult();
+				
+			checkGateKeeper();
+			gkresult.clear();
+		}
+		super.save();
+	}
+
+	public DPFTOutboundControlDboSet getLzControlTableRecords(String addiWhere) throws DPFTRuntimeException {
+		String q = buildLzCtrlQueryString();
+		if(addiWhere != null)
+			q = q + " and " + addiWhere;
+		DPFTLogger.debug(this, "Outbound Records Query String to Ctrl Table:" + q );
+		DPFTOutboundControlDboSet oCtrlSet = (DPFTOutboundControlDboSet) DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig()).getDboSet("H_OUTBOUND", q);
+		oCtrlSet.load();
+		return oCtrlSet;
+	}
+
+	private String buildLzCtrlQueryString() throws DPFTRuntimeException {
+		StringBuilder sb = new StringBuilder();
+		sb.append("chal_name='").append(this.getDbo(0).getString("chal_name")).append("' and ")
+		  .append("timestamp='").append(this.getDbo(0).getString("timestamp")).append("'");
+		return sb.toString();
 	}
 
 }
