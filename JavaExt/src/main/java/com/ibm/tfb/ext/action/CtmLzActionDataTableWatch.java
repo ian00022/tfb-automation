@@ -1,8 +1,7 @@
-package com.ibm.tfb.ext.tp.ibnd;
+package com.ibm.tfb.ext.action;
 
 import com.ibm.dpft.engine.core.dbo.DPFTDbo;
 import com.ibm.dpft.engine.core.dbo.DPFTOutboundDbo;
-import com.ibm.tfb.ext.action.LzActionDataTableWatch;
 
 public class CtmLzActionDataTableWatch extends LzActionDataTableWatch {
 

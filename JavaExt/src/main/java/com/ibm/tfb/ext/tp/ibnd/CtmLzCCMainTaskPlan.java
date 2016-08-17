@@ -1,6 +1,7 @@
 package com.ibm.tfb.ext.tp.ibnd;
 
 import com.ibm.dpft.engine.core.taskplan.DPFTBaseTaskPlan;
+import com.ibm.tfb.ext.action.CtmLzActionDataTableWatch;
 
 public class CtmLzCCMainTaskPlan extends DPFTBaseTaskPlan {
 	public CtmLzCCMainTaskPlan(String id) {
