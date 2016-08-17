@@ -82,6 +82,7 @@ public class MacroCMD extends DPFTAutomationMacro {
 			Object[] params = {group_id};
 			throw new DPFTAutomationException("SYSTEM", "AUTO0012E", params);
 		}
+		psSet.close();
 		return psSet;
 	}
 

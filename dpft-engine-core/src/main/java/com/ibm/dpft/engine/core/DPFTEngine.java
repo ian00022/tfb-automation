@@ -161,7 +161,7 @@ public class DPFTEngine {
 		DPFTLogger.info(this, "Engine Switching to Automation Mode...");
 		taskrunnerMgr.stopAllRunners();
 		taskrunnerMgr.clearDeamonsQueue();
-		DPFTConnector.clearClosedConnection();
+		resetSystemConnectorPool();
 		stat = GlobalConstants.DPFT_ENGINE_STAT_PASSIVE;
 		DPFTLogger.info(this, "Engine initializing system deamons for Automation Mode...");
 		taskrunnerMgr.initialize(stat);
@@ -221,11 +221,11 @@ public class DPFTEngine {
 		return !taskrunnerMgr.getAutomationManager().isActive();
 	}
 
-	public void resume() {
+	public void resume() throws DPFTRuntimeException {
 		DPFTLogger.info(this, "Engine Resuming to Default Running Mode...");
 		taskrunnerMgr.stopAllRunners();
 		taskrunnerMgr.clearDeamonsQueue();
-		DPFTConnector.clearClosedConnection();
+		resetSystemConnectorPool();
 		stat = GlobalConstants.DPFT_ENGINE_STAT_RUN;
 		DPFTLogger.info(this, "Engine initializing system deamons for Default Running Mode...");
 		taskrunnerMgr.initialize(stat);
@@ -233,6 +233,13 @@ public class DPFTEngine {
 		taskrunnerMgr.exec();
 		DPFTLogger.info(this, "Engine successfully started...");
 		
+	}
+	
+	private void resetSystemConnectorPool() throws DPFTRuntimeException {
+		DPFTConnector.closeAllConnection();
+		DPFTConnector.clearClosedConnection();
+		connObj  = DPFTConnectionFactory.initDPFTConnector(cfg, false);
+		DPFTConnector.setSystemDBConnectorInstance(connObj);
 	}
 
 }

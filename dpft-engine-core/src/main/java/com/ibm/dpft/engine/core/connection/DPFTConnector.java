@@ -270,5 +270,19 @@ public class DPFTConnector {
 			}
 		}
 	}
+
+	public static void closeAllConnection() {
+		synchronized(conn_pool){
+			Iterator<Connection> ir = conn_pool.iterator();
+			while(ir.hasNext()){
+				Connection con = ir.next();
+				try {
+					if(!con.isClosed())
+						con.close();
+				} catch (SQLException e) {
+				}
+			}
+		}
+	}
 	
 }
