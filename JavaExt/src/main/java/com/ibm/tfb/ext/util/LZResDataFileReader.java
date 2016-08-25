@@ -1,6 +1,7 @@
 package com.ibm.tfb.ext.util;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -17,7 +18,8 @@ import com.ibm.dpft.engine.core.util.DPFTFileReader;
 import com.ibm.tfb.ext.common.TFBUtil;
 
 public class LZResDataFileReader extends DPFTFileReader {
-	private final static Pattern schedule_time_pattern = Pattern.compile("_\\d{4}_");
+	private final static Pattern schedule_time_pattern = Pattern.compile("(20\\d{2}|19\\d{2})(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])(0[0-9]|1[0-9]|2[0-3])([0-5][0-9])");
+	private final static Pattern schedule_time_pattern2 = Pattern.compile("[_.](0[0-9]|1[0-9]|2[0-3])([0-5][0-9])[_.]");
 
 	public LZResDataFileReader(String dir, ResFileDataLayoutDbo resFileDataLayoutDbo, String chal_name) {
 		super(dir, resFileDataLayoutDbo, chal_name);
@@ -54,7 +56,21 @@ public class LZResDataFileReader extends DPFTFileReader {
 		}
 		targetSet.save();
 		
-		TFBUtil.generateLZIbndCtrlRecord(layout.getString("target_tbl"), data_datetime, chal_name);
+		ArrayList<String> bu_code_list = new ArrayList<String>();
+		for(int i = 0; i < targetSet.count(); i++){
+			if(!targetSet.getDbo(i).isNull("bu_code")){
+				if(!bu_code_list.contains(targetSet.getDbo(i).getString("bu_code")))
+					bu_code_list.add(targetSet.getDbo(i).getString("bu_code"));
+			}
+		}
+		if(bu_code_list.isEmpty()){
+			TFBUtil.generateLZIbndCtrlRecord(layout.getString("target_tbl"), data_datetime, chal_name);
+		}else{
+			for(String bu_code: bu_code_list){
+				TFBUtil.generateLZIbndCtrlRecord(layout.getString("target_tbl"), data_datetime, chal_name + "_" + bu_code);
+			}
+		}
+		targetSet.close();
 	}
 
 	private String getDD() {
@@ -65,11 +81,18 @@ public class LZResDataFileReader extends DPFTFileReader {
 	}
 	
 	public String parseScheduledTime(String name) {
+		//test Pattern 1
 		Matcher m = schedule_time_pattern.matcher(name);
 		String time = null;
 		if(m.find()){
-			time = m.group(0);
-			time = time.substring(1, time.length() - 1);
+			time = m.group(4) + m.group(5);
+		}
+		if(time == null){
+			//test Pattern 2
+			m = schedule_time_pattern2.matcher(name);
+			if(m.find()){
+				time = m.group(1) + m.group(2);
+			}
 		}
 		return time;
 	}

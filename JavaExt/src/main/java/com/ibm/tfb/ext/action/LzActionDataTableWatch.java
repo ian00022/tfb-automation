@@ -109,6 +109,7 @@ public abstract class LzActionDataTableWatch extends DPFTActionTableWatch {
 			new_dbo.setValue("customer_id", dLzSet.getDbo(i).getString("customer_id"));
 			new_dbo.setValue("treatment_code", dLzSet.getDbo(i).getString("treatment_code"));
 			new_dbo.setValue("cell_code", timestamp.substring(GlobalConstants.DFPT_DATE_FORMAT.length()));
+			new_dbo.setValue("offr_effectivedate", timestamp.substring(0, GlobalConstants.DFPT_DATE_FORMAT.length()));
 			for(String target_col: map.keySet()){
 				new_dbo.setValue(target_col, getSourceValue(dLzSet.getDbo(i), map.get(target_col)));
 			}

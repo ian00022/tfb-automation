@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
+import com.ibm.dpft.engine.core.DPFTEngine;
 import com.ibm.dpft.engine.core.common.GlobalConstants;
 import com.ibm.dpft.engine.core.dbo.DPFTDbo;
 import com.ibm.dpft.engine.core.dbo.DPFTDboSet;
@@ -183,7 +184,16 @@ public class DPFTCSVFileFormatter extends DPFTFileFormatter {
 				}		
 				SimpleDateFormat sdf = new SimpleDateFormat(dataformat);
 				return sdf.format(new Date());
+			}else if(pstr.indexOf(GlobalConstants.FILE_PATTERN_CNST_SYSPROP) != -1){
+				//$SYSPROP
+				String[] strs = pstr.split(":");
+				if(strs.length != 2){
+					Object[] params = {pstr};
+					throw new DPFTInvalidSystemSettingException("SYSTEM", "DPFT0022E", params);
+				}
+				return DPFTEngine.getSystemProperties(strs[1]);
 			}
+			
 		}
 		return dbo.getString(pstr);
 	}

@@ -50,24 +50,47 @@ public class DPFTActionLocalFileWatch extends DPFTActionTableWatch {
 				reader = f.getLocalFileReader();
 				filename = f.getDataFileName();
 			}
-			
-			if(reader.read(filename, f.hasControlFile())){
-				//folder contain target control file
-				DPFTInboundControlDbo h = (DPFTInboundControlDbo) hSet.add();
-				h.setValue("chal_name", f.getString("chal_name"));
-				h.setValue("d_file"   , f.getDataFileName());
-				h.setValue("h_file"   , f.getControlFileName());
-				if(f.hasControlFile())
-					h.setValue("quantity" , reader.get("quantity"));
-				else
-					h.setValue("quantity" , reader.getReadDataCount());
-				
-				h.setValue("process_status", GlobalConstants.DPFT_CTRL_STAT_RUN);
-				h.setValue("process_time", DPFTUtil.getCurrentTimeStampAsString());
-				
-				//send Notification
-				Object[] params = {h.getString("d_file"), h.getString("process_time")};
-				DPFTUtil.pushNotification(new DPFTMessage("CUSTOM", "TFB00013I", params));
+			if(reader.isPattern(filename)){
+				String[] flist = reader.matchPattern(filename);
+				for(String fname: flist){
+					if(reader.read(fname, f.hasControlFile())){
+						//folder contain target control file
+						DPFTInboundControlDbo h = (DPFTInboundControlDbo) hSet.add();
+						h.setValue("chal_name", f.getString("chal_name"));
+						h.setValue("d_file"   , (f.hasControlFile())?f.getDataFileName():fname);
+						h.setValue("h_file"   , (f.hasControlFile())?fname:null);
+						if(f.hasControlFile())
+							h.setValue("quantity" , reader.get("quantity"));
+						else
+							h.setValue("quantity" , reader.getReadDataCount());
+						
+						h.setValue("process_status", GlobalConstants.DPFT_CTRL_STAT_RUN);
+						h.setValue("process_time", DPFTUtil.getCurrentTimeStampAsString());
+						
+						//send Notification
+						Object[] params = {h.getString("d_file"), h.getString("process_time")};
+						DPFTUtil.pushNotification(new DPFTMessage("CUSTOM", "TFB00013I", params));
+					}
+				}
+			}else{
+				if(reader.read(filename, f.hasControlFile())){
+					//folder contain target control file
+					DPFTInboundControlDbo h = (DPFTInboundControlDbo) hSet.add();
+					h.setValue("chal_name", f.getString("chal_name"));
+					h.setValue("d_file"   , f.getDataFileName());
+					h.setValue("h_file"   , f.getControlFileName());
+					if(f.hasControlFile())
+						h.setValue("quantity" , reader.get("quantity"));
+					else
+						h.setValue("quantity" , reader.getReadDataCount());
+					
+					h.setValue("process_status", GlobalConstants.DPFT_CTRL_STAT_RUN);
+					h.setValue("process_time", DPFTUtil.getCurrentTimeStampAsString());
+					
+					//send Notification
+					Object[] params = {h.getString("d_file"), h.getString("process_time")};
+					DPFTUtil.pushNotification(new DPFTMessage("CUSTOM", "TFB00013I", params));
+				}
 			}
 		}
 		hSet.save();

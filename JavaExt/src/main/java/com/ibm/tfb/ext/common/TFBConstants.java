@@ -31,4 +31,13 @@ public class TFBConstants {
 	public static final String SFA_LZ_LEADTYPE_PL = "06";
 	public static final String SFA_LZ_LEADTYPE_EBN_PRE_LOGON = "08";
 	public static final String SFA_LZ_LEADTYPE_EBN_POST_LOGON = "07";
+	public static final String SFA_PROP_CAPACITY_FOLDER = "sfa.capacity.dir";
+	
+	public static final String EBL_PROP_BILL_MONTH = "ebl.billmonth";
+	public static final String EBL_PROCESS_STAT_IGNORE = "Ignore";
+	
+	public static final String ECB_RES_CODE_FAILED = "F";
+	public static final String ECB_RES_CODE_OPENED = "O";
+	public static final String ECB_RES_CODE_CLICKED= "C";
+	public static final Object ECB_RES_CODE_DISPATCH = "D";
 }

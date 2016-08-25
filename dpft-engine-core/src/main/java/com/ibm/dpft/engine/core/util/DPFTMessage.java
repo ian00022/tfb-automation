@@ -16,4 +16,12 @@ public class DPFTMessage extends DPFTRuntimeException {
 	public DPFTMessage(String gid, String msgid) throws DPFTRuntimeException {
 		super(gid, msgid);
 	}
+	
+	public DPFTMessage(String gid, String msgid, Object[] params, Throwable e) throws DPFTRuntimeException {
+		super(gid, msgid, params, e);
+	}
+	
+	public DPFTMessage(String gid, String msgid, Throwable e) throws DPFTRuntimeException {
+		super(gid, msgid, e);
+	}
 }

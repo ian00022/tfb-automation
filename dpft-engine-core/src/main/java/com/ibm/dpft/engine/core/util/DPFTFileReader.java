@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.ibm.dpft.engine.core.common.GlobalConstants;
 import com.ibm.dpft.engine.core.dbo.DPFTDbo;
 import com.ibm.dpft.engine.core.dbo.DPFTDboSet;
 import com.ibm.dpft.engine.core.dbo.ResFileDataLayoutDbo;
@@ -234,6 +235,25 @@ public class DPFTFileReader extends DPFTDataReader{
 
 	public String getReadDataCount() {
 		return String.valueOf(read_data.size());
+	}
+
+	public boolean isPattern(String filename) {
+		return filename.indexOf(GlobalConstants.FILE_PATTERN_CNST_STAR) != -1;
+	}
+
+	public String[] matchPattern(String file_pattern) throws DPFTRuntimeException {
+		final String pattern = file_pattern.replace(".","\\.").replace(GlobalConstants.FILE_PATTERN_CNST_STAR,".*");
+		File folder = new File(fdir);
+		if(!folder.isDirectory() || !folder.exists()){
+			Object[] params = {fdir};
+			throw new DPFTInvalidSystemSettingException("SYSTEM", "DPFT0047E", params);
+		}
+		ArrayList<String> flist = new ArrayList<String>();
+		for(File f: folder.listFiles()){
+			if(f.isFile() && f.getName().matches(pattern))
+				flist.add(f.getName());
+		}
+		return flist.toArray(new String[flist.size()]);
 	}
 
 }

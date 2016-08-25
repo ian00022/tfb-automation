@@ -59,8 +59,10 @@ public class GlobalConstants {
 	
 	/*DPFT Outbound task plan frequency definition*/
 	public static final String DPFT_OBND_FEQ_DAILY    = "DAY";
-	public static final String DPFT_OBND_FEQ_MONTHLY  = "MON";
+	public static final String DPFT_OBND_FEQ_MONTHLY  = "MONTH";
 	public static final String DPFT_OBND_FEQ_YEARLY   = "YEAR";
+	public static final String DPFT_OBND_TT_MONTH_ENDDAY    = "ED";
+	public static final String DPFT_OBND_TT_MONTH_FIRSTDAY  = "FD";
 	
 	/*DPFT action status definition*/
 	public static final String DPFT_ACTION_STAT_INIT = "INIT";
@@ -129,6 +131,8 @@ public class GlobalConstants {
 	/*File name pattern constants*/
 	public static final String FILE_PATTERN_CNST_SYSDATE     = "$SYSDATE";
 	public static final String FILE_PATTERN_CNST_SYSDATETIME = "$SYSDATETIME";
+	public static final String FILE_PATTERN_CNST_STAR        = "*";
+	public static final String FILE_PATTERN_CNST_SYSPROP     = "$SYSPROP";
 	
 	/*FTP Constants*/
 	public static final int FTP_MODE_BINARY = 1;
@@ -191,10 +195,5 @@ public class GlobalConstants {
 	public static final String DPFT_AUTOMATION_UNICA_FLOWCHART_TYPE_G = "G";		//GK
 	public static final String DPFT_AUTOMATION_UNICA_FLOWCHART_TYPE_R = "R";
 	public static final String DPFT_AUTOMATION_UNICA_FLOWCHART_TYPE_RP = "RP";
-	
-	
-	
-	
-	
 
 }

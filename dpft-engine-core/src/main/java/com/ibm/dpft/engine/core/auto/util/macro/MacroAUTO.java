@@ -213,7 +213,7 @@ public class MacroAUTO extends DPFTAutomationMacro {
 					cctSet.getDbo(idx).setValue("cct_status", GlobalConstants.DPFT_AUTOMATION_FLOWCHAR_RUN_CMD_FAILED);
 					DPFTUtil.pushNotification(
 							cmp_owner,
-							new DPFTMessage("SYSTEM", "DPFT0043I", params1)
+							new DPFTMessage("SYSTEM", "DPFT0042I", params1)
 					);
 				}
 				cctSet.save();

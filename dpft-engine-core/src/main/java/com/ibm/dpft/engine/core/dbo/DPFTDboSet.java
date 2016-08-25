@@ -12,16 +12,19 @@ import com.ibm.dpft.engine.core.exception.DPFTDboException;
 import com.ibm.dpft.engine.core.exception.DPFTRuntimeException;
 import com.ibm.dpft.engine.core.util.DPFTDatetimeComparator;
 import com.ibm.dpft.engine.core.util.DPFTLogger;
+import com.ibm.dpft.engine.core.util.DPFTNumberComparator;
 
 public class DPFTDboSet {
 	public static final int TYPE_DATETIME = 1;
+	public static final int TYPE_NUMBER = 2;
 	public static final int ORDER_DESC = 0;
 	public static final int ORDER_ASC = 1;
-	
 	
 	private DPFTConnector connector = null;
 	private String dboname = null; 
 	private List<DPFTDbo> dboset = null;
+	private List<DPFTDbo> _dboset = null;
+	private HashMap<String, String> filter = new HashMap<String, String>();
 	private String whereclause = null;
 	private boolean tobeLoaded = false;
 	private DPFTDbo parent = null;
@@ -304,5 +307,48 @@ public class DPFTDboSet {
 		
 		if(type == TYPE_DATETIME)
 			Collections.sort(dboset, new DPFTDatetimeComparator(col, order));
+		if(type == TYPE_NUMBER)
+			Collections.sort(dboset, new DPFTNumberComparator(col, order));
+	}
+
+	public void filter(String column, String value) {
+		//Filter records where column value = value
+		filter.put(column, value);
+		_applyfilter();
+	}
+	
+	public void unfilter(String column) {
+		if(filter.containsKey(column))
+			filter.remove(column);
+		_applyfilter();
+	}
+	
+	public void unfilter(){
+		filter.clear();
+		_applyfilter();
+	}
+
+	private void _applyfilter() {
+		if(_dboset == null)
+			_dboset = dboset;
+		
+		if(filter.isEmpty()){
+			dboset = _dboset;
+			_dboset = null;
+			return;
+		}
+		
+		ArrayList<DPFTDbo> filtered_dboset = new ArrayList<DPFTDbo>();
+		for(DPFTDbo dbo: _dboset){
+			int match_count = 0;
+			for(String col: filter.keySet()){
+				if(dbo.getColumnValue(col) instanceof String){
+					if(dbo.getString(col).equals(filter.get(col)))match_count++;
+				}
+			}
+			if(match_count == filter.size())
+				filtered_dboset.add(dbo);
+		}
+		dboset = filtered_dboset;
 	}
 }

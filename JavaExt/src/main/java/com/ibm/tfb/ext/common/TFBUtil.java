@@ -365,6 +365,7 @@ public class TFBUtil {
 		ctrl.setValue("process_status", GlobalConstants.DPFT_CTRL_STAT_INIT);
 		ctrl.setValue("gk_flg"   , "Y");
 		cSet.save();
+		cSet.close();
 	}
 
 	public static String buildLZQueryString(String timestamp, String chal_name) throws DPFTRuntimeException {

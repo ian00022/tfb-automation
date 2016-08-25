@@ -44,8 +44,10 @@ public class DPFTOutboundDboSet extends DPFTDboSet {
 		
 		for(int i = 0; i < count(); i++){
 			DPFTOutboundDbo dbo = (DPFTOutboundDbo) this.getDbo(i);
-			if(cmp_code_list.indexOf(dbo.getString("camp_code")) == -1)
-				cmp_code_list.append("'").append(dbo.getString("camp_code")).append("',");
+			if(!dbo.isNull("camp_code")){
+				if(cmp_code_list.indexOf(dbo.getString("camp_code")) == -1)
+					cmp_code_list.append("'").append(dbo.getString("camp_code")).append("',");
+			}
 			if(t_list.indexOf(dbo.getString("timestamp")) == -1)
 				t_list.append("'").append(dbo.getString("timestamp")).append("',");
 			if(cell_list.indexOf(dbo.getString("cell_code")) == -1)
@@ -55,6 +57,8 @@ public class DPFTOutboundDboSet extends DPFTDboSet {
 		StringBuilder qString = new StringBuilder();
 		if(cmp_code_list.length() > 0){
 			qString.append("camp_code in (").append(cmp_code_list.substring(0, cmp_code_list.length()-1)).append(")");
+		}else{
+			qString.append("camp_code is null");
 		}
 		if(t_list.length() > 0){
 			qString.append(" and timestamp in (").append(t_list.substring(0, t_list.length()-1)).append(")");
