@@ -114,7 +114,7 @@ public class ECBOpnDataFileReader extends DPFTFileReader {
 
 	private DPFTDboSet get10DaysResDataSet() throws DPFTRuntimeException {
 		StringBuilder query = new StringBuilder();
-		query.append("to_date(res_date, 'YYYYMMDD') >= sysdate-10 and ");
+		query.append("to_date(res_date, 'YYYYMMDDHH24miss') >= sysdate-10 and ");
 		query.append("chal_name='").append(chal_name).append("'")
 			 .append(" and res_code='").append(TFBConstants.ECB_RES_CODE_DISPATCH).append("'");
 		DPFTDboSet rtnSet = DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig())

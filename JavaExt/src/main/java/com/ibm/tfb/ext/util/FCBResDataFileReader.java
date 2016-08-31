@@ -2,6 +2,7 @@ package com.ibm.tfb.ext.util;
 
 import java.util.HashMap;
 
+import com.ibm.dpft.engine.core.common.GlobalConstants;
 import com.ibm.dpft.engine.core.connection.DPFTConnectionFactory;
 import com.ibm.dpft.engine.core.dbo.DPFTDbo;
 import com.ibm.dpft.engine.core.dbo.DPFTDboSet;
@@ -48,9 +49,21 @@ public class FCBResDataFileReader extends DPFTFileReader {
 				continue;
 			
 			new_data.setValue("customer_id"   , oFcb.getString("customer_id"));
+			new_data.setValue("res_date"      , getNormalizedDateString(new_data.getString("res_date")));
 		}
 		targetSet.save();
 		targetSet.close();
+	}
+
+	private String getNormalizedDateString(String date_string) {
+		if(date_string == null)
+			return null;
+		int digit = GlobalConstants.DFPT_DATETIME_FORMAT.length();
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < digit - date_string.length(); i++){
+			sb.append("0");
+		}
+		return date_string + sb.toString();
 	}
 
 	private DPFTDbo getRelatedOutboundData(DPFTDbo new_data) throws DPFTRuntimeException {

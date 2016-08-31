@@ -67,7 +67,7 @@ public class DPFTFileReader extends DPFTDataReader{
 				String line = null;
 				int line_no = 1;
 				read_data.clear();
-				while((line = reader.readLine()) != null){
+				while((line = readline(reader)) != null){
 					if(line_no == 1 && layout.getString("contain_header").equalsIgnoreCase("y")){
 						line_no++;
 						continue;
@@ -100,6 +100,30 @@ public class DPFTFileReader extends DPFTDataReader{
 		return false;
 	}
 	
+	private String readline(BufferedReader reader) throws IOException {
+		int prev_c = 0, c;
+		StringBuilder sb = new StringBuilder();
+		while((c = reader.read()) != -1){
+			if(prev_c == 0){
+				if(c != '\r')
+					sb.append((char)c);
+				prev_c = c;
+				continue;
+			}
+			if(prev_c == '\r' && c == '\n'){
+				//EOL reach, return appended characters
+				return sb.toString();
+			}
+			if(c != '\r')
+				sb.append((char)c);
+			prev_c = c;
+		
+		}
+		if(sb.length() > 0)
+			return sb.toString();
+		return null;
+	}
+
 	@Override
 	public void write2TargetTable(String timestamp) throws DPFTRuntimeException {
 		if(layout == null){
