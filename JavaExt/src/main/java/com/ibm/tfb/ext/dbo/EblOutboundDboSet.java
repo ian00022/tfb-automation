@@ -8,6 +8,7 @@ import com.ibm.dpft.engine.core.dbo.DPFTDboSet;
 import com.ibm.dpft.engine.core.dbo.DPFTOutboundDboSet;
 import com.ibm.dpft.engine.core.exception.DPFTRuntimeException;
 import com.ibm.tfb.ext.common.TFBConstants;
+import com.ibm.tfb.ext.util.EblDboComparator;
 
 public class EblOutboundDboSet extends DPFTOutboundDboSet {
 	private HashMap<String, Integer> custMap = new HashMap<String, Integer>();
@@ -40,8 +41,8 @@ public class EblOutboundDboSet extends DPFTOutboundDboSet {
 			}
 		}
 		this.save(false);
+		
+		//order by cust_id, priority_id
+		this.orderby(new EblDboComparator());
 	}
-	
-	
-
 }

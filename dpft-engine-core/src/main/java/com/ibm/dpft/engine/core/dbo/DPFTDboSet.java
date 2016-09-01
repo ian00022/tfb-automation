@@ -11,14 +11,18 @@ import com.ibm.dpft.engine.core.connection.DPFTConnector;
 import com.ibm.dpft.engine.core.exception.DPFTDboException;
 import com.ibm.dpft.engine.core.exception.DPFTRuntimeException;
 import com.ibm.dpft.engine.core.util.DPFTDatetimeComparator;
+import com.ibm.dpft.engine.core.util.DPFTDboComparator;
 import com.ibm.dpft.engine.core.util.DPFTLogger;
 import com.ibm.dpft.engine.core.util.DPFTNumberComparator;
+import com.ibm.dpft.engine.core.util.DPFTStringComparator;
 
 public class DPFTDboSet {
 	public static final int TYPE_DATETIME = 1;
 	public static final int TYPE_NUMBER = 2;
+	public static final int TYPE_CHAR = 3;
 	public static final int ORDER_DESC = 0;
 	public static final int ORDER_ASC = 1;
+	
 	
 	private DPFTConnector connector = null;
 	private String dboname = null; 
@@ -309,6 +313,14 @@ public class DPFTDboSet {
 			Collections.sort(dboset, new DPFTDatetimeComparator(col, order));
 		if(type == TYPE_NUMBER)
 			Collections.sort(dboset, new DPFTNumberComparator(col, order));
+		if(type == TYPE_CHAR)
+			Collections.sort(dboset, new DPFTStringComparator(col, order));
+	}
+	
+	public void orderby(DPFTDboComparator comparator) throws DPFTRuntimeException {
+		if(tobeLoaded)
+			load();
+		Collections.sort(dboset, comparator);
 	}
 
 	public void filter(String column, String value) {
