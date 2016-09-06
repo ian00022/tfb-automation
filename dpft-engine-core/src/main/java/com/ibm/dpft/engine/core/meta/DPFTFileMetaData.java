@@ -12,6 +12,7 @@ public class DPFTFileMetaData {
 	private HashMap<String, Integer> column_length_define_map = null;
 	private HashMap<String, String>  o_f_col_dictionary = null;
 	private HashMap<String, Boolean> column_full_width_map = null;
+	private HashMap<String, String> column_date_format_map = null;
 	private String[] cols_order = null;
 	private String[] numeric_cols = null;
 	private String  filename = null;
@@ -147,6 +148,11 @@ public class DPFTFileMetaData {
 		setNumericCols(dicSet.getNumericColumns());
 		setColDictionary(dicSet.getColumnNameDictionary());
 		setColFullWidthDefinition(dicSet.setColFullWidthDefinition());
+		setDateFormatDefinition(dicSet.getDateFormatDictionary());
+	}
+
+	private void setDateFormatDefinition(HashMap<String, String> map) {
+		column_date_format_map = map;
 	}
 
 	private void setColFullWidthDefinition(HashMap<String, Boolean> map) {
@@ -236,6 +242,14 @@ public class DPFTFileMetaData {
 
 	public void setFileEncode(String encode) {
 		this.encode = encode;
+	}
+
+	public boolean isDatetime(String col) {
+		return column_date_format_map.containsKey(col);
+	}
+
+	public String getDateFormat(String col) {
+		return column_date_format_map.get(col);
 	}
 
 }

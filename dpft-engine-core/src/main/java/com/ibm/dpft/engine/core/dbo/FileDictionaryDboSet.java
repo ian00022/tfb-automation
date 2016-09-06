@@ -67,4 +67,13 @@ public class FileDictionaryDboSet extends DPFTDboSet {
 		return map;
 	}
 
+	public HashMap<String, String> getDateFormatDictionary() throws DPFTRuntimeException {
+		HashMap<String, String> map = new HashMap<String, String>();
+		for(int i = 0; i < count(); i++){
+			if(this.getDbo(i).getString("is_datetime").equalsIgnoreCase("y"))
+				map.put(this.getDbo(i).getString("o_tbl_col"), this.getDbo(i).getString("date_format"));
+		}
+		return map;
+	}
+
 }

@@ -213,17 +213,30 @@ public class DPFTCSVFileFormatter extends DPFTFileFormatter {
 		StringBuilder sb = new StringBuilder();
 		if(meta.isStaticColLength()){
 			for(String col: meta.getColsOrder()){
-				String val = getStringWithStaticColLength(dbo.getColumnValue(col), meta.getColumnStaticLength(col), meta.isColumnNumeric(col), meta.isFullWidth(col), meta.getStaticLengUnit());
-				sb.append(val);
+				if(meta.isDatetime(col)){
+					String val = getStringWithStaticColLength(getDateString(dbo.getDate(col), meta.getDateFormat(col)), meta.getColumnStaticLength(col), meta.isColumnNumeric(col), meta.isFullWidth(col), meta.getStaticLengUnit());
+					sb.append(val);
+				}else{
+					String val = getStringWithStaticColLength(dbo.getColumnValue(col), meta.getColumnStaticLength(col), meta.isColumnNumeric(col), meta.isFullWidth(col), meta.getStaticLengUnit());
+					sb.append(val);
+				}
 			}
 		}else{
 			for(String col: meta.getColsOrder()){
-				sb.append(getStringWithoutDelimeter(dbo.getColumnValue(col))).append(delimeter);
+				if(meta.isDatetime(col))
+					sb.append(getDateString(dbo.getDate(col), meta.getDateFormat(col))).append(delimeter);
+				else
+					sb.append(getStringWithoutDelimeter(dbo.getColumnValue(col))).append(delimeter);
 			}
 		}	
 		if(meta.isStaticColLength())
 			return sb.toString();
 		return sb.substring(0, sb.length()-1);
+	}
+
+	private String getDateString(Date date, String dateFormat) {
+		SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+		return sdf.format(date);
 	}
 
 	private String getStringWithStaticColLength(Object columnValue, int length, boolean isColNumeric, boolean isFullWidth, String static_len_unit) throws DPFTRuntimeException {

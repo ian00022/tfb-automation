@@ -203,11 +203,11 @@ public class DPFTFileReader extends DPFTDataReader{
 		return rtnData;
 	}
 	
-	private HashMap<String, String> readlineWithStaticLength(String line, ResFileDataLayoutDetailDboSet layout_detail) throws NumberFormatException, DPFTRuntimeException {
+	private HashMap<String, String> readlineWithStaticLength(String line, ResFileDataLayoutDetailDboSet layout_detail) throws NumberFormatException, DPFTRuntimeException, UnsupportedEncodingException {
 		String[] cols =  layout_detail.getColumnsInOrder();
 		HashMap<String, Integer> byte_len_map = layout_detail.getColumnsLengthMapping();
 		HashMap<String, String> rtnData = new HashMap<String, String>();
-		byte[] line_data = line.getBytes();
+		byte[] line_data = line.getBytes(layout.getEncoding());
 		int index = 0;
 		for(String col: cols){
 			int sub_len = byte_len_map.get(col);
@@ -218,7 +218,7 @@ public class DPFTFileReader extends DPFTDataReader{
 					index = i+1;
 			}
 
-			String value = normalizedColValue(new String(subline_data), layout_detail.isNumber(col));
+			String value = normalizedColValue(new String(subline_data, layout.getEncoding()), layout_detail.isNumber(col));
 			if(layout_detail.isDate(col))
 				value = layout_detail.normalizedDateString(col, value);
 			
@@ -235,7 +235,7 @@ public class DPFTFileReader extends DPFTDataReader{
         Matcher matcher = p.matcher(value);
         if(matcher.lookingAt()){
         	//find String pattern like "String"
-        	return value.substring(1, value.length()-1).trim();
+        	value = value.substring(1, value.length()-1);
         }
         
         if(isNumber){
@@ -243,9 +243,17 @@ public class DPFTFileReader extends DPFTDataReader{
             Matcher matcher2 = p2.matcher(value);
             if(matcher2.lookingAt()){
             	//find String pattern like "String"
-            	return value.replaceFirst("^0+(?!$)", "");
+            	value = value.replaceFirst("^0+(?!$)", "");
             }
         }
+		return _trim(value);
+	}
+
+	private String _trim(String value) {
+		Pattern p = Pattern.compile("[|]$");
+		Matcher matcher = p.matcher(value);
+		if(matcher.find())
+			value = matcher.replaceAll("");
 		return value.trim();
 	}
 
