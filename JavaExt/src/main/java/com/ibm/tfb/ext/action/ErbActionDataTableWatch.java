@@ -87,7 +87,7 @@ public class ErbActionDataTableWatch extends DPFTActionTableWatch {
 		TFBUtil.processUsageCode(oErbSet, "ERB");
 		
 		/*Write results to H_OUTBOUND Table*/
-		TFBUtil.generateObndCtrlRecord(this.getDBConnector(), oErbSet, cell_code_list, "ERB", true);
+		TFBUtil.generateObndCtrlRecord(this.getDBConnector(), oErbSet, cell_code_list, "ERB", false);
 
 	}
 

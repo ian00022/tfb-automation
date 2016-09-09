@@ -7,6 +7,7 @@ import java.io.InputStream;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
+import com.ibm.dpft.engine.core.common.GlobalConstants;
 import com.ibm.dpft.engine.core.config.FTPConfig;
 
 public class DPFTBasicFTPUtil extends DPFTFileFTPUtil {
@@ -56,9 +57,9 @@ public class DPFTBasicFTPUtil extends DPFTFileFTPUtil {
 	}
 
 	@Override
-	public void doFTP_Get(String[] c_in_list, String[] file_in_list) {
+	public int doFTP_Get(String[] c_in_list, String[] file_in_list) {
 		// TODO Auto-generated method stub
-		
+		return GlobalConstants.ERROR_LEVEL_TRF_SUCCESS;
 	}
 	
 }

@@ -28,33 +28,25 @@ public class DPFTcdFTPUtil extends DPFTFileFTPUtil {
 	}
 	
 	@Override
-	public void doFTP_Get(String[] c_in_list, String[] file_in_list) throws DPFTRuntimeException {
-		lock();
-		try{
-			DPFTLogger.info(this, "Initializing cdFTP+ Process...");
-			initFTP(c_in_list, file_in_list);
-			DPFTLogger.info(this, "Ready to transfer Data files...");
-			get_D_File_OUT_FTPCmd2LocalDir();
-			DPFTLogger.info(this, "Executing cdFTP+ Command from bash...");
-			int rtnCode1 = execCdFTP();
-			DPFTLogger.info(this, "Ready to transfer Data files...");
-			get_H_File_OUT_FTPCmd2LocalDir();
-			DPFTLogger.info(this, "Executing cdFTP+ Command from bash...");
-			int rtnCode2 = execCdFTP();
-			if(rtnCode1 == GlobalConstants.ERROR_LEVEL_TRF_SUCCESS && rtnCode2 == GlobalConstants.ERROR_LEVEL_TRF_SUCCESS){
-				DPFTLogger.info(this, "Get File Success, removing files from remote cd server...");
-				del_Remote_File_OUT_FTPCmd2LocalDir();
-				DPFTLogger.info(this, "Executing cdFTP+ Command from bash...");
-				execCdFTP();
-			}
-		}catch(Exception e){
-			unlock();
-			throw e;
+	public int doFTP_Get(String[] c_in_list, String[] file_in_list) throws DPFTRuntimeException {
+		DPFTLogger.info(this, "Initializing cdFTP+ Process...");
+		initFTP(c_in_list, file_in_list);
+		DPFTLogger.info(this, "Ready to transfer Data files...");
+		get_D_File_OUT_FTPCmd2LocalDir();
+		DPFTLogger.info(this, "Executing cdFTP+ Command from bash...");
+		int rtnCode1 = execCdFTP();
+		DPFTLogger.info(this, "Ready to transfer Data files...");
+		get_H_File_OUT_FTPCmd2LocalDir();
+		DPFTLogger.info(this, "Executing cdFTP+ Command from bash...");
+		int rtnCode2 = execCdFTP();
+		if(rtnCode1 == GlobalConstants.ERROR_LEVEL_TRF_SUCCESS && rtnCode2 == GlobalConstants.ERROR_LEVEL_TRF_SUCCESS){
+			return GlobalConstants.ERROR_LEVEL_TRF_SUCCESS;
+		}else{
+			return GlobalConstants.ERROR_LEVEL_TRF_FAILURE;
 		}
-		unlock();
 	}
 
-	private void unlock() {
+	public void unlock() {
 		//Remove .lock file
 		File outfile = new File(getLocalDir() + File.separator + "lock");
 		if(outfile.delete()){
@@ -62,7 +54,7 @@ public class DPFTcdFTPUtil extends DPFTFileFTPUtil {
 		}
 	}
 
-	private void lock() throws DPFTRuntimeException {
+	public void lock() throws DPFTRuntimeException {
 		//Write .lock file to local Directory to prevent other thread from modifying contents
 		String ldir = getLocalDir();
 		File fdir = new File(ldir);
@@ -330,6 +322,15 @@ public class DPFTcdFTPUtil extends DPFTFileFTPUtil {
 				throw new DPFTFileTransferException("SYSTEM", "DPFT0019E", e);
 			}
 		}
+	}
+
+	public void doFTP_Del(String[] del_clist, String[] del_flist) throws DPFTRuntimeException {
+		DPFTLogger.info(this, "Initializing cdFTP+ Process...");
+		initFTP(del_clist, del_flist);
+		DPFTLogger.info(this, "Get File Success, removing files from remote cd server...");
+		del_Remote_File_OUT_FTPCmd2LocalDir();
+		DPFTLogger.info(this, "Executing cdFTP+ Command from bash...");
+		execCdFTP();
 	}
 
 

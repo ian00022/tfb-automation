@@ -40,45 +40,43 @@ public class DPFTActionLocalFileWatch extends DPFTActionTableWatch {
 		ResFileDirSettingDboSet fSet = (ResFileDirSettingDboSet) this.getDataSet();
 		DPFTInboundControlDboSet hSet = (DPFTInboundControlDboSet) getRespondControlSet();
 		for(int i = 0; i < fSet.count(); i++){
-			ResFileDirSettingDbo f = (ResFileDirSettingDbo) fSet.getDbo(i);
-			DPFTFileReader reader = null;
-			String filename = null;
-			if(f.hasControlFile()){
-				reader = f.getLocalControlFileReader();
-				filename = f.getControlFileName();
-			}else{
-				reader = f.getLocalFileReader();
-				filename = f.getDataFileName();
-			}
-			if(reader.isPattern(filename)){
-				String[] flist = reader.matchPattern(filename);
-				for(String fname: flist){
-					if(reader.read(fname, f.hasControlFile())){
-						//folder contain target control file
-						DPFTInboundControlDbo h = (DPFTInboundControlDbo) hSet.add();
-						h.setValue("chal_name", f.getString("chal_name"));
-						h.setValue("d_file"   , (f.hasControlFile())?f.getDataFileName():fname);
-						h.setValue("h_file"   , (f.hasControlFile())?fname:null);
-						if(f.hasControlFile())
-							h.setValue("quantity" , reader.get("quantity"));
-						else
-							h.setValue("quantity" , reader.getReadDataCount());
-						
-						h.setValue("process_status", GlobalConstants.DPFT_CTRL_STAT_RUN);
-						h.setValue("process_time", DPFTUtil.getCurrentTimeStampAsString());
-						
-						//send Notification
-						Object[] params = {h.getString("d_file"), h.getString("process_time")};
-						DPFTUtil.pushNotification(new DPFTMessage("CUSTOM", "TFB00013I", params));
-					}
+			try{
+				readLocalFiles((ResFileDirSettingDbo) fSet.getDbo(i), hSet);
+			}catch(Exception e){
+				if(e instanceof DPFTRuntimeException){
+					((DPFTRuntimeException)e).handleException();
+				}else{
+					DPFTRuntimeException ex = new DPFTRuntimeException("SYSTEM", "DPFT0008E", e);
+					ex.handleException();
 				}
-			}else{
-				if(reader.read(filename, f.hasControlFile())){
+			}
+				
+			
+		}
+		hSet.save();
+		hSet.close();
+		this.setResultSet(fSet);
+	}
+
+	private void readLocalFiles(ResFileDirSettingDbo f, DPFTInboundControlDboSet hSet) throws DPFTRuntimeException {
+		DPFTFileReader reader = null;
+		String filename = null;
+		if(f.hasControlFile()){
+			reader = f.getLocalControlFileReader();
+			filename = f.getControlFileName();
+		}else{
+			reader = f.getLocalFileReader();
+			filename = f.getDataFileName();
+		}
+		if(reader.isPattern(filename)){
+			String[] flist = reader.matchPattern(filename);
+			for(String fname: flist){
+				if(reader.read(fname, f.hasControlFile())){
 					//folder contain target control file
 					DPFTInboundControlDbo h = (DPFTInboundControlDbo) hSet.add();
 					h.setValue("chal_name", f.getString("chal_name"));
-					h.setValue("d_file"   , f.getDataFileName());
-					h.setValue("h_file"   , f.getControlFileName());
+					h.setValue("d_file"   , (f.hasControlFile())?f.getDataFileName():fname);
+					h.setValue("h_file"   , (f.hasControlFile())?fname:null);
 					if(f.hasControlFile())
 						h.setValue("quantity" , reader.get("quantity"));
 					else
@@ -92,10 +90,26 @@ public class DPFTActionLocalFileWatch extends DPFTActionTableWatch {
 					DPFTUtil.pushNotification(new DPFTMessage("CUSTOM", "TFB00013I", params));
 				}
 			}
-		}
-		hSet.save();
-		hSet.close();
-		this.setResultSet(fSet);
+		}else{
+			if(reader.read(filename, f.hasControlFile())){
+				//folder contain target control file
+				DPFTInboundControlDbo h = (DPFTInboundControlDbo) hSet.add();
+				h.setValue("chal_name", f.getString("chal_name"));
+				h.setValue("d_file"   , f.getDataFileName());
+				h.setValue("h_file"   , f.getControlFileName());
+				if(f.hasControlFile())
+					h.setValue("quantity" , reader.get("quantity"));
+				else
+					h.setValue("quantity" , reader.getReadDataCount());
+				
+				h.setValue("process_status", GlobalConstants.DPFT_CTRL_STAT_RUN);
+				h.setValue("process_time", DPFTUtil.getCurrentTimeStampAsString());
+				
+				//send Notification
+				Object[] params = {h.getString("d_file"), h.getString("process_time")};
+				DPFTUtil.pushNotification(new DPFTMessage("CUSTOM", "TFB00013I", params));
+			}
+		}		
 	}
 
 	private DPFTInboundControlDboSet getRespondControlSet() throws DPFTRuntimeException {

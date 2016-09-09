@@ -15,7 +15,7 @@ public abstract class DPFTFileFTPUtil {
 	}
 	
 	public abstract void doFTP_Out(String[] c_out_list, String[] file_out_list) throws DPFTRuntimeException;
-	public abstract void doFTP_Get(String[] c_in_list, String[] file_in_list) throws DPFTRuntimeException;
+	public abstract int doFTP_Get(String[] c_in_list, String[] file_in_list) throws DPFTRuntimeException;
 
 	public String getLocalDir() {
 		return localDir;

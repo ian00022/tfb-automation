@@ -1,13 +1,10 @@
 package com.ibm.dpft.engine.core.util;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -54,7 +51,6 @@ public class DPFTFileReader extends DPFTDataReader{
 
 	public boolean read(String filename, boolean move2Archive) throws DPFTRuntimeException {
 		if(exist(filename) && canRead() && layout != null){
-			BufferedReader reader = null;
 			fname = filename;
 			ResFileDataLayoutDetailDboSet layout_detail = layout.getLayoutDetail();
 			if(layout_detail == null){
@@ -63,18 +59,19 @@ public class DPFTFileReader extends DPFTDataReader{
 				throw new DPFTInvalidSystemSettingException("SYSTEM", "DPFT0031E", params);
 			}
 			try {
-				reader = getBufferedReader(filename, layout.getEncoding());	
-				String line = null;
+				DPFTBytesBuffer buffer = new DPFTBytesBuffer(new File(fdir + File.separator + filename), layout.getEncoding());
+				buffer.wrap();
 				int line_no = 1;
 				read_data.clear();
-				while((line = readline(reader)) != null){
+
+				for(int i = 0; i < buffer.getLineCount(); i++){
 					if(line_no == 1 && layout.getString("contain_header").equalsIgnoreCase("y")){
 						line_no++;
 						continue;
 					}
 					//parse line string
-					DPFTLogger.debug(this, "Read Line No." + line_no + " from " + filename + " =>" + line);
-					HashMap<String, String> row_data = (layout.isStaticMode())?readlineWithStaticLength(line, layout_detail):readline(line, layout_detail);
+					DPFTLogger.debug(this, "Read Line No." + line_no + " from " + filename + " =>" + buffer.getLineAsString(line_no));
+					HashMap<String, String> row_data = (layout.isStaticMode())?readlineWithStaticLength(buffer.getLine(line_no), layout_detail):readline(buffer.getLineAsString(line_no), layout_detail);
 					read_data.add(row_data);
 					line_no++;
 				}
@@ -86,7 +83,6 @@ public class DPFTFileReader extends DPFTDataReader{
 				throw new DPFTFileReadException("SYSTEM", "DPFT0032E", params, e);
 			}finally{
 				try {
-					if (reader != null)reader.close();
 					if(move2Archive)
 						moveFile2CompleteFolder(filename);
 				} catch (IOException ex) {
@@ -98,30 +94,6 @@ public class DPFTFileReader extends DPFTDataReader{
 		}
 		current_index = -1;
 		return false;
-	}
-	
-	private String readline(BufferedReader reader) throws IOException {
-		int prev_c = 0, c;
-		StringBuilder sb = new StringBuilder();
-		while((c = reader.read()) != -1){
-			if(prev_c == 0){
-				if(c != '\r')
-					sb.append((char)c);
-				prev_c = c;
-				continue;
-			}
-			if(prev_c == '\r' && c == '\n'){
-				//EOL reach, return appended characters
-				return sb.toString();
-			}
-			if(c != '\r')
-				sb.append((char)c);
-			prev_c = c;
-		
-		}
-		if(sb.length() > 0)
-			return sb.toString();
-		return null;
 	}
 
 	@Override
@@ -180,12 +152,12 @@ public class DPFTFileReader extends DPFTDataReader{
         }
 	}
 
-	private BufferedReader getBufferedReader(String filename, String encode) throws FileNotFoundException, UnsupportedEncodingException {
-		if(encode.toLowerCase().indexOf("utf") != -1)
-			return new BufferedReader(new UnicodeReader(new FileInputStream(fdir + File.separator + filename), encode));
-		else
-			return new BufferedReader(new InputStreamReader(new FileInputStream(fdir + File.separator + filename), encode));
-	}
+//	private BufferedReader getBufferedReader(String filename, String encode) throws FileNotFoundException, UnsupportedEncodingException {
+//		if(encode.toLowerCase().indexOf("utf") != -1)
+//			return new BufferedReader(new UnicodeReader(new FileInputStream(fdir + File.separator + filename), encode));
+//		else
+//			return new BufferedReader(new InputStreamReader(new FileInputStream(fdir + File.separator + filename), encode));
+//	}
 
 	private HashMap<String, String> readline(String line, ResFileDataLayoutDetailDboSet layout_detail) throws NumberFormatException, DPFTRuntimeException {
 		String[] col_values = line.split(layout.getDelimeter(), -1);
@@ -203,11 +175,10 @@ public class DPFTFileReader extends DPFTDataReader{
 		return rtnData;
 	}
 	
-	private HashMap<String, String> readlineWithStaticLength(String line, ResFileDataLayoutDetailDboSet layout_detail) throws NumberFormatException, DPFTRuntimeException, UnsupportedEncodingException {
+	private HashMap<String, String> readlineWithStaticLength(byte[] line_data, ResFileDataLayoutDetailDboSet layout_detail) throws NumberFormatException, DPFTRuntimeException, UnsupportedEncodingException {
 		String[] cols =  layout_detail.getColumnsInOrder();
 		HashMap<String, Integer> byte_len_map = layout_detail.getColumnsLengthMapping();
 		HashMap<String, String> rtnData = new HashMap<String, String>();
-		byte[] line_data = line.getBytes(layout.getEncoding());
 		int index = 0;
 		for(String col: cols){
 			int sub_len = byte_len_map.get(col);
