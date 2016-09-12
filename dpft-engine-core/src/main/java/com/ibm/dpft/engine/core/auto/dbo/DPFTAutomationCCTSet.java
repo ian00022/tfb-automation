@@ -29,6 +29,7 @@ public class DPFTAutomationCCTSet extends DPFTDboSet {
 
 	public int isAllFlowChartFinished(String flowchart_type) throws DPFTRuntimeException {
 		StringBuilder sb = new StringBuilder();
+		ArrayList<Integer> notif_ary = new ArrayList<Integer>();
 		for(int i = 0; i < count(); i++){
 			if(!this.getDbo(i).getString("flowcharttype").equalsIgnoreCase(flowchart_type))
 				continue;
@@ -53,18 +54,23 @@ public class DPFTAutomationCCTSet extends DPFTDboSet {
 					sb.append("flowchart = ").append(this.getDbo(i).getString("name"))
 					.append(", status = ").append(this.getDbo(i).getString("cct_status")).append(GlobalConstants.FILE_EOL);
 				}else{
-					//Notify Campaign Owner
-					StringBuilder sb1 = new StringBuilder();
-					sb1.append("flowchart = ").append(this.getDbo(i).getString("name"))
-					.append(", status = ").append(this.getDbo(i).getString("cct_status")).append(GlobalConstants.FILE_EOL);
-					Object[] p1 = {sb1.toString()};
-					DPFTUtil.pushNotification(
-							DPFTUtil.getCampaignOwnerEmail(parseCampaignCode(flowchart_type, this.getDbo(i).getString("name"))), 
-							new DPFTMessage("SYSTEM", "DPFT0044I", p1)
-					);
-					sb.append(sb1.toString());
+					//Keep finished flowchart index
+					notif_ary.add(i);
 				}
 			}
+		}
+		for(int i = 0; i < notif_ary.size(); i++){
+			//Notify Campaign Owner
+			int idx = notif_ary.get(i);
+			StringBuilder sb1 = new StringBuilder();
+			sb1.append("flowchart = ").append(this.getDbo(idx).getString("name"))
+			.append(", status = ").append(this.getDbo(idx).getString("cct_status")).append(GlobalConstants.FILE_EOL);
+			Object[] p1 = {sb1.toString()};
+			DPFTUtil.pushNotification(
+					DPFTUtil.getCampaignOwnerEmail(parseCampaignCode(flowchart_type, this.getDbo(idx).getString("name"))), 
+					new DPFTMessage("SYSTEM", "DPFT0044I", p1)
+			);
+			sb.append(sb1.toString());
 		}
 		Object[] params = {sb.toString()};
 		DPFTUtil.pushNotification(new DPFTMessage("SYSTEM", "DPFT0044I", params));

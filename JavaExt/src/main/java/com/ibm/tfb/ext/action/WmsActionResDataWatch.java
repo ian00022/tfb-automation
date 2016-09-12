@@ -38,7 +38,7 @@ public class WmsActionResDataWatch extends DPFTActionTableWatch {
 		String t_minus_1 = sdf.format(cal.getTime());
 		cal.add(Calendar.DAY_OF_MONTH, -1);
 		String t_minus_2 = sdf.format(cal.getTime());
-		return "ROW_LASTMANT_DTTM >= to_date('" + t_minus_2 + "','YYYYMMDD') and ROW_LASTMANT_DTTM < to_date('" + t_minus_1 + "', 'YYYYMMDD')";
+		return "ROW_LASTMANT_DTTM >= to_date('" + t_minus_2 + "','YYYYMMDD') and ROW_LASTMANT_DTTM < to_date('" + t_minus_1 + "', 'YYYYMMDD') and actionplan_id is not null";
 	}
 
 	@Override
@@ -71,15 +71,16 @@ public class WmsActionResDataWatch extends DPFTActionTableWatch {
 				data.setValue("process_time", time);
 				leads_ids.add(set.getDbo(i).getString("sa_lead_id"));
 			}
+			rspSet.save();
+			
 			DPFTDboSet hSet = DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig()).getDboSet("H_INBOUND_RES", "chal_name='WMS'");
 			DPFTDbo h = hSet.add();
 			h.setValue("chal_name", "WMS");
 			h.setValue("process_time", time);
 			h.setValue("d_file", getTableName() + "." + res_date);
-			h.setValue("quantity", rspSet.getValidResCount());
+			h.setValue("quantity", String.valueOf(rspSet.getValidResCount()));
 			h.setValue("process_status", GlobalConstants.DPFT_CTRL_STAT_COMP);
 			hSet.save();
-			rspSet.save();
 			rspSet.close();
 			hSet.close();
 			tmap.clear();

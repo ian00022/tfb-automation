@@ -57,6 +57,7 @@ public class DPFTResMainDboSet extends DPFTDboSet {
 	private void validate(DPFTDbo dbo) {
 		if(dbo.isNull("customer_id") || dbo.isNull("treatment_code")){
 			dbo.delete();
+			return;
 		}
 		valid_count++;
 	}
