@@ -210,8 +210,11 @@ public class TFBUtil {
 		for(int i = 0; i < oSet.count(); i++){
 			if(oSet.getDbo(i).isNull("usagecode"))
 				continue;
-			TFBUsageCodeDbo new_usgcode = (TFBUsageCodeDbo) oUsgSet.add();
-			new_usgcode.setInitialData(oSet.getDbo(i), chal_name);
+			String[] usageArray = oSet.getDbo(i).getString(("usagecode")).split(";");
+			for(String usage : usageArray) {
+				TFBUsageCodeDbo new_usgcode = (TFBUsageCodeDbo) oUsgSet.add();
+				new_usgcode.setInitialData(oSet.getDbo(i), chal_name, usage.toUpperCase());	// distinct ? 
+			}
 		}
 		oUsgSet.save();
 		oUsgSet.close();
