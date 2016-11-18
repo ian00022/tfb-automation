@@ -120,7 +120,8 @@ public class DPFTStatement {
 		stmt_builder.append(template.getDboName()).append(" (");
 		StringBuilder sb_cols = new StringBuilder();
 		StringBuilder sb_vals = new StringBuilder();
-		insert_cols = template.getColumns();
+		List<String> col_list = template.getThisDboSet().getInsertCols();
+		insert_cols = col_list.toArray(new String[col_list.size()]);
 		for(String col: insert_cols){
 			sb_cols.append(buildStmtColname(col)).append(",");
 			sb_vals.append("?").append(",");
