@@ -71,8 +71,18 @@ public class DPFTFileReader extends DPFTDataReader{
 					}
 					//parse line string
 					DPFTLogger.debug(this, "Read Line No." + line_no + " from " + filename + " =>" + buffer.getLineAsString(line_no));
-					HashMap<String, String> row_data = (layout.isStaticMode())?readlineWithStaticLength(buffer.getLine(line_no), layout_detail):readline(buffer.getLineAsString(line_no), layout_detail);
-					read_data.add(row_data);
+					try{
+						HashMap<String, String> row_data = (layout.isStaticMode())?readlineWithStaticLength(buffer.getLine(line_no), layout_detail):readline(buffer.getLineAsString(line_no), layout_detail);
+						if(isValidData(row_data)){
+							read_data.add(row_data);
+						}else{
+							Object[] params = {filename ,String.valueOf(line_no)};
+							DPFTUtil.pushNotification(new DPFTMessage("SYSTEM", "DPFT0050E", params));
+						}
+					}catch(Exception e){
+						Object[] params = {filename ,String.valueOf(line_no)};
+						DPFTUtil.pushNotification(new DPFTMessage("SYSTEM", "DPFT0050E", params, e));
+					}
 					line_no++;
 				}
 				current_index = 0;
@@ -94,6 +104,11 @@ public class DPFTFileReader extends DPFTDataReader{
 		}
 		current_index = -1;
 		return false;
+	}
+
+	private boolean isValidData(HashMap<String, String> row_data) throws NumberFormatException, DPFTRuntimeException {
+		int data_count = layout.getLayoutDetail().count();
+		return data_count == row_data.size();
 	}
 
 	@Override

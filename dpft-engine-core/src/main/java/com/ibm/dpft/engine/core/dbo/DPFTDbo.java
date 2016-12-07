@@ -130,6 +130,7 @@ public class DPFTDbo {
 	private void setNewValue(String colname, Object value) {
 		// TODO Auto-generated method stub
 		rowData.put(colname, value);
+		this.getThisDboSet().regInsertCol(colname);
 	}
 
 	public boolean tobeSaved() {

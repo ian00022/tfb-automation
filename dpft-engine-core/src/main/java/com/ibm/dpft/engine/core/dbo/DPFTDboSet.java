@@ -29,6 +29,7 @@ public class DPFTDboSet {
 	private List<DPFTDbo> dboset = null;
 	private List<DPFTDbo> _dboset = null;
 	private HashMap<String, String> filter = new HashMap<String, String>();
+	private List<String> insert_cols = null;
 	private String whereclause = null;
 	private boolean tobeLoaded = false;
 	private DPFTDbo parent = null;
@@ -284,7 +285,8 @@ public class DPFTDboSet {
 	public DPFTDbo add() throws DPFTRuntimeException {
 		if(tobeLoaded)
 			load();
-		
+		if(insert_cols == null)
+			insert_cols = new ArrayList<String>();
 		HashMap<String, Object> new_data = new HashMap<String, Object>();
 		return getNewDboInstance(this.dboname, new_data);
 	}
@@ -362,5 +364,16 @@ public class DPFTDboSet {
 				filtered_dboset.add(dbo);
 		}
 		dboset = filtered_dboset;
+	}
+	
+	public List<String> getInsertCols(){
+		return insert_cols;
+	}
+
+	public void regInsertCol(String colname) {
+		if(insert_cols == null)
+			return;
+		if(!insert_cols.contains(colname))
+			insert_cols.add(colname);
 	}
 }

@@ -89,6 +89,7 @@ public class LtmActionDataTableWatch extends DPFTActionTableWatch {
 		
 		/*Wrtie Usage code to O_USAGECODE*/
 		//TFBUtil.processUsageCode(oLtmSet, "LTM");
+
 		
 		/*Write results to H_OUTBOUND Table*/
 		TFBUtil.generateObndCtrlRecord(this.getDBConnector(), oLtmSet, cell_code_list, "LTM", true);
