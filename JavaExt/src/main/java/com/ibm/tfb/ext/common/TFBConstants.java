@@ -9,7 +9,11 @@ public class TFBConstants {
 	public static final String MKTDM_CONT_CD_ADDR_COMM  = "212";
 	public static final String MKTDM_CONT_CD_ZIPCD_COMM = "211";
 	public static final String MKTDM_CONT_CD_TEL_DAY    = "131";
-	public static final String MKTDM_CONT_CD_TEL_NIGHT  = "132";
+	public static final String MKTDM_CONT_CD_TEL_NIGHT  = "132";	
+	public static final String MKTDM_CONT_CD_RES_ZIP    = "201";
+	public static final String MKTDM_CONT_CD_RES_ADDR   = "202";
+	public static final String MKTDM_CONT_CD_TEL_OFF    = "122";
+	public static final String MKTDM_CONT_CD_TEL_OFF_EXT= "123";
 	
 	public static final String MKTDM_CONT_BIZTYPE_BNK   = "BNK";
 	public static final String MKTDM_CONT_BIZTYPE_CC    = "CC" ;

@@ -109,7 +109,8 @@ public abstract class DPFTActionDataFileOutput extends DPFTAction implements DPF
 							file_out_list.put(k1, fl.get(k1));	
 						}
 						for(String k2 : fc.keySet()){
-							file_out_list.put(k2, fc.get(k2));	
+//							file_out_list.put(k2, fc.get(k2));	
+							file_charset_list.put(k2, fc.get(k2));
 						}
 					}
 				}

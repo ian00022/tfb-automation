@@ -123,6 +123,15 @@ public class TFBUtil {
 		sb.append(String.valueOf(cal.get(Calendar.YEAR) - 1911)).append(String.format("%02d", cal.get(Calendar.MONTH)+1));
 		return sb.toString();
 	}
+	
+	// YYYY-MM-DD to yyyMMdd 
+	public static String getROCYearMonthDay(Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.valueOf(cal.get(Calendar.YEAR) - 1911)).append(String.format("%02d", cal.get(Calendar.MONTH)+1)).append(String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)));
+		return sb.toString();
+	}
 
 	public static void generateObndCtrlRecord(DPFTConnector connector, DPFTDboSet oSet, ArrayList<String> cell_code_list, String chal_name, boolean hasHObnd) throws DPFTRuntimeException {
 		DPFTDbo dbo = oSet.getDbo(0);
@@ -213,7 +222,7 @@ public class TFBUtil {
 			String[] usageArray = oSet.getDbo(i).getString(("usagecode")).split(";");
 			for(String usage : usageArray) {
 				TFBUsageCodeDbo new_usgcode = (TFBUsageCodeDbo) oUsgSet.add();
-				new_usgcode.setInitialData(oSet.getDbo(i), chal_name, usage.toUpperCase());	// distinct ? 
+				new_usgcode.setInitialData(oSet.getDbo(i), chal_name, usage.toUpperCase()); 
 			}
 		}
 		oUsgSet.save();

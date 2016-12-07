@@ -10,7 +10,7 @@ import com.ibm.dpft.engine.core.util.DPFTLogger;
 import com.ibm.dpft.engine.core.util.DPFTMessage;
 import com.ibm.dpft.engine.core.util.DPFTUtil;
 
-public class FudActionDataTableWatch extends DPFTActionTableWatch {
+public class NtmActionDataTableWatch extends DPFTActionTableWatch {
 
 	@Override
 	public DPFTConfig getDBConfig() {
@@ -19,11 +19,11 @@ public class FudActionDataTableWatch extends DPFTActionTableWatch {
 
 	@Override
 	public String getTableName() {
-		return "D_FUD";
+		return "D_NTM";
 	}
 
 	@Override
-	public String getTableWatchCriteria() throws DPFTRuntimeException {
+	public String getTableWatchCriteria() {
 		String where = DPFTUtil.getFKQueryString(getInitialData());
 		DPFTLogger.info(this, "Table select where = " + where);
 		return where;
@@ -31,13 +31,13 @@ public class FudActionDataTableWatch extends DPFTActionTableWatch {
 
 	@Override
 	public String getTriggerKeyCol() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
-	
 	@Override
 	public void postAction() throws DPFTRuntimeException {
-		Object[] params = {"基金400"};
+		Object[] params = {"非卡友信貸"};
 		if(this.getDataSet().isEmpty())
 			throw new DPFTActionException(this, "CUSTOM", "TFB00001E", params);
 		DPFTUtil.pushNotification(
@@ -45,7 +45,7 @@ public class FudActionDataTableWatch extends DPFTActionTableWatch {
 				new DPFTMessage("CUSTOM", "TFB00008I", params)
 		);
 	}
-	
+
 	@Override
 	public void handleException(DPFTActionException e) throws DPFTRuntimeException {
 		//set correspond h_inbound record to error
