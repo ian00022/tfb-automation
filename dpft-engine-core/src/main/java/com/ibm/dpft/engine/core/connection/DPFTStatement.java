@@ -246,6 +246,7 @@ public class DPFTStatement {
 				DPFTLogger.debug(this, "Execute Batch Update, updated record count:" + count);
 			}
 		}
+		pstmt.executeBatch();
 		DPFTLogger.info(this, update_dbos.get(0).getDboName() + " successfully updated " + update_dbos.size() + " records...");
 	}
 	
@@ -261,6 +262,7 @@ public class DPFTStatement {
 				DPFTLogger.debug(this, "Execute Batch Insert, Inserted record count:" + count);
 			}
 		}
+		pstmt.executeBatch();
 		DPFTLogger.info(this, insert_dbos.get(0).getDboName() + " successfully inserted " + insert_dbos.size() + " records...");
 	}
 	
@@ -277,6 +279,7 @@ public class DPFTStatement {
 				DPFTLogger.debug(this, "Execute Batch Delete, Deleted record count:" + count);
 			}
 		}
+		pstmt.executeBatch();
 		DPFTLogger.info(this, delete_dbos.get(0).getDboName() + " successfully deleted " + delete_dbos.size() + " records...");
 	}
 	
