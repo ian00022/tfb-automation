@@ -24,6 +24,7 @@ public class DPFTStatement {
 	private List<DPFTDbo> update_dbos = null;
 	private List<DPFTDbo> insert_dbos = null;
 	private List<DPFTDbo> delete_dbos = null;
+	private final int MAX_BATCH_SIZE = 50000;
 
 	public DPFTStatement(String stmtype, DPFTConnector conn) {
 		// TODO Auto-generated constructor stub
@@ -237,7 +238,14 @@ public class DPFTStatement {
 		if(pstmt == null || update_dbos.isEmpty())
 			return;
 		DPFTLogger.debug(this, "Execute Update SQL :" + stmt_builder.toString());
-		prepareBatch(update_dbos, update_cols, true);
+		int count = 0;
+		for(DPFTDbo dbo: update_dbos){
+			prepareBatch(dbo, update_cols, true);
+			if(++count % MAX_BATCH_SIZE == 0){
+				pstmt.executeBatch();
+				DPFTLogger.debug(this, "Execute Batch Update, updated record count:" + count);
+			}
+		}
 		pstmt.executeBatch();
 		DPFTLogger.info(this, update_dbos.get(0).getDboName() + " successfully updated " + update_dbos.size() + " records...");
 	}
@@ -246,7 +254,14 @@ public class DPFTStatement {
 		if(pstmt == null || insert_dbos.isEmpty())
 			return;
 		DPFTLogger.debug(this, "Execute Insert SQL :" + stmt_builder.toString());
-		prepareBatch(insert_dbos, insert_cols, false);
+		int count = 0;
+		for(DPFTDbo dbo: insert_dbos){
+			prepareBatch(dbo, insert_cols, false);
+			if(++count % MAX_BATCH_SIZE == 0){
+				pstmt.executeBatch();
+				DPFTLogger.debug(this, "Execute Batch Insert, Inserted record count:" + count);
+			}
+		}
 		pstmt.executeBatch();
 		DPFTLogger.info(this, insert_dbos.get(0).getDboName() + " successfully inserted " + insert_dbos.size() + " records...");
 	}
@@ -256,7 +271,14 @@ public class DPFTStatement {
 		if(pstmt == null || delete_dbos.isEmpty())
 			return;
 		DPFTLogger.debug(this, "Execute Delete SQL :" + stmt_builder.toString());
-		prepareBatch(delete_dbos, null, true);
+		int count = 0;
+		for(DPFTDbo dbo: delete_dbos){
+			prepareBatch(dbo, null, true);
+			if(++count % MAX_BATCH_SIZE == 0){
+				pstmt.executeBatch();
+				DPFTLogger.debug(this, "Execute Batch Delete, Deleted record count:" + count);
+			}
+		}
 		pstmt.executeBatch();
 		DPFTLogger.info(this, delete_dbos.get(0).getDboName() + " successfully deleted " + delete_dbos.size() + " records...");
 	}
@@ -268,30 +290,27 @@ public class DPFTStatement {
 		pstmt.execute();
 	}
 
-	private void prepareBatch(List<DPFTDbo> dbos, String[] cols, boolean has_pid) throws SQLException, DPFTRuntimeException {
-		// TODO Auto-generated method stub
-		for(DPFTDbo dbo: dbos){
-			int col_length = 0;
-			if(cols != null){
-				for(int i = 0; i < cols.length; i++){
-					int index = i+1;
-					if(dbo.getColumnValue(cols[i]) == null){
-						setString(index, "");
-					}
-					if(dbo.getColumnValue(cols[i]) instanceof String){
-						setString(index, dbo.getString(cols[i]));
-					}else if(dbo.getColumnValue(cols[i]) instanceof Date){
-						setDate(index, dbo.getDate(cols[i]));
-					}
+	private void prepareBatch(DPFTDbo dbo, String[] cols, boolean has_pid) throws SQLException, DPFTRuntimeException {
+		int col_length = 0;
+		if(cols != null){
+			for(int i = 0; i < cols.length; i++){
+				int index = i+1;
+				if(dbo.getColumnValue(cols[i]) == null){
+					setString(index, "");
 				}
-				col_length = cols.length;
+				if(dbo.getColumnValue(cols[i]) instanceof String){
+					setString(index, dbo.getString(cols[i]));
+				}else if(dbo.getColumnValue(cols[i]) instanceof Date){
+					setDate(index, dbo.getDate(cols[i]));
+				}
 			}
-			if(has_pid){
-				/*set whereclause pid*/
-				setInteger(col_length + 1, dbo.getPrimaryKeyValue());
-			}
-			pstmt.addBatch();
-		}	
+			col_length = cols.length;
+		}
+		if(has_pid){
+			/*set whereclause pid*/
+			setInteger(col_length + 1, dbo.getPrimaryKeyValue());
+		}
+		pstmt.addBatch();
 	}
 
 	public void close() throws SQLException {
