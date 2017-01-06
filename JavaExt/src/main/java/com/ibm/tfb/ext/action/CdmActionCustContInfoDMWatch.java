@@ -67,10 +67,10 @@ public class CdmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 			String[] addr_info = null;
 			if(dCdm.isNull("addr_priority")){
 				/*use default addr priority rule*/
-				addr_info = contSet.getPrioritizedAddr(dCdm.getString("customer_id"), "CDM", GlobalConstants.DPFT_DEFAULT_PRIORITY_CODE);
+				addr_info = contSet.getPrioritizedAddrWithoutAddrCode(dCdm.getString("customer_id"), "CDM", GlobalConstants.DPFT_DEFAULT_PRIORITY_CODE);
 			}else{
 				/*use ADDR_PRIORITY Setting*/
-				addr_info = contSet.getPrioritizedAddr(dCdm.getString("customer_id"), "CDM", dCdm.getString("addr_priority"));
+				addr_info = contSet.getPrioritizedAddrWithoutAddrCode(dCdm.getString("customer_id"), "CDM", dCdm.getString("addr_priority"));
 			}
 			dCdm.setValue("addr", addr_info[0]);
 			dCdm.setValue("zip_cod", addr_info[1]);
@@ -139,6 +139,7 @@ public class CdmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
 		}
+		oCdmSet.setRefresh(false);
 		oCdmSet.save();
 		
 		/*Write usage codes to O_USAGECODE Table*/

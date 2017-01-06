@@ -85,6 +85,7 @@ public class MbnActionDataTableWatch extends DPFTActionTableWatch {
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
 		}
+		oMbnSet.setRefresh(false);
 		oMbnSet.save();
 		
 		/*Wrtie Usage code to O_USAGECODE*/

@@ -81,6 +81,7 @@ public class EblActionDataTableWatch extends DPFTActionTableWatch {
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
 		}
+		oEblSet.setRefresh(false);
 		oEblSet.save();
 		
 		/*Wrtie Usage code to O_USAGECODE*/

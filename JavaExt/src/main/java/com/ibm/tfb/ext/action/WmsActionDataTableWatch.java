@@ -88,6 +88,7 @@ public class WmsActionDataTableWatch extends DPFTActionTableWatch {
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
 		}
+		oWmsSet.setRefresh(false);
 		oWmsSet.save();
 		
 		/*Write Usage code to O_USAGECODE*/

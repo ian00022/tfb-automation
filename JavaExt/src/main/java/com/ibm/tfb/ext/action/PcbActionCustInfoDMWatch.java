@@ -94,6 +94,7 @@ public class PcbActionCustInfoDMWatch extends DPFTActionTableWatch {
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
 		}
+		oPcbSet.setRefresh(false);
 		oPcbSet.save();
 		
 		/*Write usage codes to O_USAGECODE Table*/

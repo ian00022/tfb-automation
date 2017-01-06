@@ -85,6 +85,7 @@ public class LtmActionDataTableWatch extends DPFTActionTableWatch {
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
 		}
+		oLtmSet.setRefresh(false);
 		oLtmSet.save();
 		
 		/*Wrtie Usage code to O_USAGECODE*/

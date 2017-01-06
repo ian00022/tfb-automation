@@ -113,6 +113,7 @@ public class MtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
 		}
+		oMtmSet.setRefresh(false);
 		oMtmSet.save();
 		
 		/*Write usage codes to O_USAGECODE Table*/

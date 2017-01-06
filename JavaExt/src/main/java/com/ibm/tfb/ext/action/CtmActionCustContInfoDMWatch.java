@@ -69,10 +69,10 @@ public class CtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 			String[] addr_info = null;
 			if(dCtm.isNull("addr_priority")){
 				/*use default addr priority rule*/
-				addr_info = contSet.getPrioritizedAddr(dCtm.getString("customer_id"), "CTM_ADDR", GlobalConstants.DPFT_DEFAULT_PRIORITY_CODE);
+				addr_info = contSet.getPrioritizedAddrWithoutAddrCode(dCtm.getString("customer_id"), "CTM_ADDR", GlobalConstants.DPFT_DEFAULT_PRIORITY_CODE);
 			}else{
 				/*use ADDR_PRIORITY Setting*/
-				addr_info = contSet.getPrioritizedAddr(dCtm.getString("customer_id"), "CTM_ADDR", dCtm.getString("addr_priority"));
+				addr_info = contSet.getPrioritizedAddrWithoutAddrCode(dCtm.getString("customer_id"), "CTM_ADDR", dCtm.getString("addr_priority"));
 			}
 			dCtm.setValue("addr", addr_info[0]);
 			dCtm.setValue("zip_cod", addr_info[1]);
@@ -136,10 +136,11 @@ public class CtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
 		}
+		oCtmSet.setRefresh(false);
 		oCtmSet.save();
 		
 		/*Write usage codes to O_USAGECODE Table*/
-		TFBUtil.processUsageCode(oCtmSet, "CDM");
+		TFBUtil.processUsageCode(oCtmSet, "CTM");
 		
 		/*Write results to H_OUTBOUND Table*/
 		TFBUtil.generateObndCtrlRecord(connector, oCtmSet, cell_code_list, "CTM", true);

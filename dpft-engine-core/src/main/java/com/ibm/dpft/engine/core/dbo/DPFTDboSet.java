@@ -33,6 +33,7 @@ public class DPFTDboSet {
 	private String whereclause = null;
 	private boolean tobeLoaded = false;
 	private DPFTDbo parent = null;
+	private boolean tobeRefreshed = true;
 	
 	public DPFTDboSet(DPFTConnector conn, String tbname) throws DPFTRuntimeException {
 		// TODO Auto-generated constructor stub
@@ -171,7 +172,8 @@ public class DPFTDboSet {
 		if(tobeSaved() || tobeAdded() || tobeDeleted()){
 			removeResidualsDbo();
 			doSave();
-			refresh();
+			if(tobeRefreshed)
+				refresh();
 		}
 		
 	}
@@ -375,5 +377,13 @@ public class DPFTDboSet {
 			return;
 		if(!insert_cols.contains(colname))
 			insert_cols.add(colname);
+	}
+
+	public boolean isTobeRefresh() {
+		return tobeRefreshed;
+	}
+
+	public void setRefresh(boolean tobeRefreshed) {
+		this.tobeRefreshed = tobeRefreshed;
 	}
 }

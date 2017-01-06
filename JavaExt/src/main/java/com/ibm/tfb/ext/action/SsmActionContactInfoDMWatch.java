@@ -122,6 +122,7 @@ public class SsmActionContactInfoDMWatch extends DPFTActionTableWatch {
 		}
 		long ps_fin_time = System.currentTimeMillis();
 		DPFTLogger.info(this, "Processed total " + dSsmSet.count() + ", process time = " + (ps_fin_time - ps_start_time)/60000 + " min.");
+		oSsmSet.setRefresh(false);
 		oSsmSet.save();
 		
 		/*Wrtie Usage Code to O_USAGECODE*/
