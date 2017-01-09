@@ -80,6 +80,7 @@ public class PcbActionCustInfoDMWatch extends DPFTActionTableWatch {
 		}
 		
 		ArrayList<String> cell_code_list = new ArrayList<String>();
+		ArrayList<String> cell_name_list = new ArrayList<String>();
 		for(int i = 0; i < dPcbSet.count(); i++){
 			DPFTOutboundDbo new_dbo = (DPFTOutboundDbo) oPcbSet.add();
 			new_dbo.setValue(dPcbSet.getDbo(i));
@@ -93,6 +94,9 @@ public class PcbActionCustInfoDMWatch extends DPFTActionTableWatch {
 			if(!cell_code_list.contains(new_dbo.getString("cell_code"))){
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
+			if(!cell_name_list.contains(new_dbo.getString("cellname"))){
+				cell_name_list.add(new_dbo.getString("cellname"));
+			}
 		}
 		oPcbSet.save();
 		
@@ -100,7 +104,7 @@ public class PcbActionCustInfoDMWatch extends DPFTActionTableWatch {
 		TFBUtil.processUsageCode(oPcbSet, "PCB");
 		
 		/*Write results to H_OUTBOUND Table*/
-		TFBUtil.generateObndCtrlRecord(connector, oPcbSet, cell_code_list, "PCB", true);
+		TFBUtil.generateObndCtrlRecord(connector, oPcbSet, cell_code_list, cell_name_list, "PCB", true);
 		oPcbSet.close();
 
 	}

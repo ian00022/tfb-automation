@@ -69,6 +69,7 @@ public class FudActionBusinessDayTableWatch extends DPFTActionTableWatch {
 		
 		//Validate records with personal info data & add record to outbound data table//
 		ArrayList<String> cell_code_list = new ArrayList<String>();
+		ArrayList<String> cell_name_list = new ArrayList<String>();
 		long ps_start_time = System.currentTimeMillis();
 		
 		CalendarUtil  cal = new CalendarUtil();
@@ -95,6 +96,9 @@ public class FudActionBusinessDayTableWatch extends DPFTActionTableWatch {
 			if(!cell_code_list.contains(new_dbo.getString("cell_code"))){
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
+			if(!cell_name_list.contains(new_dbo.getString("cellname"))){
+				cell_name_list.add(new_dbo.getString("cellname"));
+			}
 		}
 
 		long ps_fin_time = System.currentTimeMillis();
@@ -105,7 +109,7 @@ public class FudActionBusinessDayTableWatch extends DPFTActionTableWatch {
 		TFBUtil.processUsageCode(oFudSet, "FUD");
 		
 		//Write results to H_OUTBOUND Table//
-		TFBUtil.generateObndCtrlRecord(connector, oFudSet, cell_code_list, "FUD", false);
+		TFBUtil.generateObndCtrlRecord(connector, oFudSet, cell_code_list, cell_name_list, "FUD", false);
 		oFudSet.close();
 		
 		//Set Result set for next action

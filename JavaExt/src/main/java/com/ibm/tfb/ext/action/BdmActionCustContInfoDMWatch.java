@@ -42,7 +42,7 @@ public class BdmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 		StringBuilder sb = new StringBuilder();
 		sb.append("cust_id in (");
 		sb.append(TFBUtil.getCustomerSelectINString(this.getPreviousAction().getResultSet(), "customer_id"));
-		sb.append(") and cont_cd in ('" + TFBConstants.MKTDM_CONT_CD_ZIPCD_COMM + "','" + TFBConstants.MKTDM_CONT_CD_ADDR_COMM + "','" + TFBConstants.MKTDM_CONT_CD_ADDRCD_COMM + "')");
+		sb.append(") and cont_cd in ('" + TFBConstants.MKTDM_CONT_CD_ZIPCD_COMM + "','" + TFBConstants.MKTDM_CONT_CD_ADDR_COMM + "','" + TFBConstants.MKTDM_CONT_CD_ADDRCD_COMM + "','" + TFBConstants.MKTDM_CONT_CD_HOU_COMM + "')");
 		DPFTLogger.info(this, "Table select where = " + sb.toString());
 		return sb.toString();
 	}
@@ -131,6 +131,7 @@ public class BdmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 		String data_date = sdf.format(current_timestamp).substring(0, 8);
 		String data_time = sdf.format(current_timestamp).substring(8, 14);
 		ArrayList<String> cell_code_list = new ArrayList<String>();
+		ArrayList<String> cell_name_list = new ArrayList<String>();
 		for(int i = 0; i < dBdmSet.count(); i++){
 			DPFTOutboundDbo new_dbo = (DPFTOutboundDbo) oBdmSet.add();
 			new_dbo.setValue(dBdmSet.getDbo(i));
@@ -147,7 +148,9 @@ public class BdmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 			if(!cell_code_list.contains(new_dbo.getString("cell_code"))){
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
-				
+			if(!cell_name_list.contains(new_dbo.getString("cellname"))){
+				cell_name_list.add(new_dbo.getString("cellname"));
+			}
 		}
 		oBdmSet.save();
 		
@@ -155,7 +158,7 @@ public class BdmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 		TFBUtil.processUsageCode(oBdmSet, "BDM");
 		
 		/*Write results to H_OUTBOUND Table*/ 
-		TFBUtil.generateObndCtrlRecord(connector, oBdmSet, cell_code_list, "BDM", true);
+		TFBUtil.generateObndCtrlRecord(connector, oBdmSet, cell_code_list, cell_name_list, "BDM", true);
 		oBdmSet.close();
 	}
 

@@ -122,6 +122,7 @@ public class CtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 		}
 		
 		ArrayList<String> cell_code_list = new ArrayList<String>();
+		ArrayList<String> cell_name_list = new ArrayList<String>();
 		for(int i = 0; i < dCtmSet.count(); i++){
 			DPFTOutboundDbo new_dbo = (DPFTOutboundDbo) oCtmSet.add();
 			new_dbo.setValue(dCtmSet.getDbo(i));
@@ -135,6 +136,9 @@ public class CtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 			if(!cell_code_list.contains(new_dbo.getString("cell_code"))){
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
+			if(!cell_name_list.contains(new_dbo.getString("cellname"))){
+				cell_name_list.add(new_dbo.getString("cellname"));
+			}
 		}
 		oCtmSet.save();
 		
@@ -142,7 +146,7 @@ public class CtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 		TFBUtil.processUsageCode(oCtmSet, "CDM");
 		
 		/*Write results to H_OUTBOUND Table*/
-		TFBUtil.generateObndCtrlRecord(connector, oCtmSet, cell_code_list, "CTM", true);
+		TFBUtil.generateObndCtrlRecord(connector, oCtmSet, cell_code_list, cell_name_list, "CTM", true);
 		oCtmSet.close();
 	}
 

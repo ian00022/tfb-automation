@@ -81,6 +81,7 @@ public class EsmActionContactInfoDMWatch extends DPFTActionTableWatch {
 		/*Validate records with personal info data & add record to outbound data table*/		
 		MKTDMCustomerContactDboSet custSet = (MKTDMCustomerContactDboSet) this.getDataSet();
 		ArrayList<String> cell_code_list = new ArrayList<String>();
+		ArrayList<String> cell_name_list = new ArrayList<String>();
 		String cmp_owner_email = DPFTUtil.getCampaignOwnerEmail(dEsmSet.getDbo(0).getString("camp_code"));
 		String it_adm_email = TFBUtil.getMailGroup(TFBConstants.TFB_MAILGROUP_ITADM);
 		long ps_start_time = System.currentTimeMillis();
@@ -106,6 +107,8 @@ public class EsmActionContactInfoDMWatch extends DPFTActionTableWatch {
 			if(mobile_no == null){
 				//person record doesn't have mobile number info
 				new_dbo.setValue("process_status", GlobalConstants.O_DATA_EXCLUDE);
+			}else if(!mobile_no.startsWith("09")){	//	sms判斷+09開頭
+				new_dbo.setValue("process_status", GlobalConstants.O_DATA_EXCLUDE);
 			}else{
 				//person record has mobile number info
 				new_dbo.setValue("destno", mobile_no);
@@ -114,6 +117,9 @@ public class EsmActionContactInfoDMWatch extends DPFTActionTableWatch {
 			//find distinct cell code
 			if(!cell_code_list.contains(new_dbo.getString("cell_code"))){
 				cell_code_list.add(new_dbo.getString("cell_code"));
+			}
+			if(!cell_name_list.contains(new_dbo.getString("cellname"))){
+				cell_name_list.add(new_dbo.getString("cellname"));
 			}
 			
 			if((i+1)%100 == 0)
@@ -127,7 +133,7 @@ public class EsmActionContactInfoDMWatch extends DPFTActionTableWatch {
 		TFBUtil.processUsageCode(oEsmSet, "ESM");
 		
 		/*Write results to H_OUTBOUND Table*/
-		TFBUtil.generateObndCtrlRecord(connector, oEsmSet, cell_code_list, "ESM", true);
+		TFBUtil.generateObndCtrlRecord(connector, oEsmSet, cell_code_list, cell_name_list, "ESM", true);
 		oEsmSet.close();
 	}
 

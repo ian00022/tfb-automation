@@ -75,6 +75,7 @@ public class MbnActionDataTableWatch extends DPFTActionTableWatch {
 		
 		/*Validate records with personal info data & add record to outbound data table*/		
 		ArrayList<String> cell_code_list = new ArrayList<String>();
+		ArrayList<String> cell_name_list = new ArrayList<String>();
 		for(int i = 0; i < dMbnSet.count(); i++){
 			DPFTOutboundDbo new_dbo = (DPFTOutboundDbo) oMbnSet.add();
 			new_dbo.setValue(dMbnSet.getDbo(i));
@@ -84,6 +85,9 @@ public class MbnActionDataTableWatch extends DPFTActionTableWatch {
 			if(!cell_code_list.contains(new_dbo.getString("cell_code"))){
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
+			if(!cell_name_list.contains(new_dbo.getString("cellname"))){
+				cell_name_list.add(new_dbo.getString("cellname"));
+			}
 		}
 		oMbnSet.save();
 		
@@ -91,7 +95,7 @@ public class MbnActionDataTableWatch extends DPFTActionTableWatch {
 		TFBUtil.processUsageCode(oMbnSet, "MBN");
 		
 		/*Write results to H_OUTBOUND Table*/
-		TFBUtil.generateObndCtrlRecord(this.getDBConnector(), oMbnSet, cell_code_list, "MBN", false);
+		TFBUtil.generateObndCtrlRecord(this.getDBConnector(), oMbnSet, cell_code_list, cell_name_list, "MBN", false);
 	}
 
 	@Override

@@ -80,6 +80,7 @@ public class EcbActionCustInfoDMWatch extends DPFTActionTableWatch {
 		}
 		
 		ArrayList<String> cell_code_list = new ArrayList<String>();
+		ArrayList<String> cell_name_list = new ArrayList<String>();
 		for(int i = 0; i < dEcbSet.count(); i++){
 			DPFTOutboundDbo new_dbo = (DPFTOutboundDbo) oEcbSet.add();
 			new_dbo.setValue(dEcbSet.getDbo(i));
@@ -93,6 +94,9 @@ public class EcbActionCustInfoDMWatch extends DPFTActionTableWatch {
 			if(!cell_code_list.contains(new_dbo.getString("cell_code"))){
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
+			if(!cell_name_list.contains(new_dbo.getString("cellname"))){
+				cell_name_list.add(new_dbo.getString("cellname"));
+			}
 		}
 		oEcbSet.save();
 		
@@ -100,7 +104,7 @@ public class EcbActionCustInfoDMWatch extends DPFTActionTableWatch {
 		TFBUtil.processUsageCode(oEcbSet, "ECB");
 		
 		/*Write results to H_OUTBOUND Table*/
-		TFBUtil.generateObndCtrlRecord(connector, oEcbSet, cell_code_list, "ECB", true);
+		TFBUtil.generateObndCtrlRecord(connector, oEcbSet, cell_code_list, cell_name_list, "ECB", true);
 		oEcbSet.close();
 	}
 

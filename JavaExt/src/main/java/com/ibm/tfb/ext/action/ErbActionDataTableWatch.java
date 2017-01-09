@@ -71,6 +71,7 @@ public class ErbActionDataTableWatch extends DPFTActionTableWatch {
 		
 		/*Validate records with personal info data & add record to outbound data table*/		
 		ArrayList<String> cell_code_list = new ArrayList<String>();
+		ArrayList<String> cell_name_list = new ArrayList<String>();
 		for(int i = 0; i < dErbSet.count(); i++){
 			DPFTOutboundDbo new_dbo = (DPFTOutboundDbo) oErbSet.add();
 			new_dbo.setValue(dErbSet.getDbo(i));
@@ -80,6 +81,9 @@ public class ErbActionDataTableWatch extends DPFTActionTableWatch {
 			if(!cell_code_list.contains(new_dbo.getString("cell_code"))){
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
+			if(!cell_name_list.contains(new_dbo.getString("cellname"))){
+				cell_name_list.add(new_dbo.getString("cellname"));
+			}
 		}
 		oErbSet.save();
 		
@@ -87,7 +91,7 @@ public class ErbActionDataTableWatch extends DPFTActionTableWatch {
 		TFBUtil.processUsageCode(oErbSet, "ERB");
 		
 		/*Write results to H_OUTBOUND Table*/
-		TFBUtil.generateObndCtrlRecord(this.getDBConnector(), oErbSet, cell_code_list, "ERB", false);
+		TFBUtil.generateObndCtrlRecord(this.getDBConnector(), oErbSet, cell_code_list, cell_name_list, "ERB", false);
 
 	}
 

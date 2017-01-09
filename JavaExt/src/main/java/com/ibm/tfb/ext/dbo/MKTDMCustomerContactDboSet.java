@@ -95,6 +95,22 @@ public class MKTDMCustomerContactDboSet extends DPFTDboSet {
 		return getContactInfo(cust_id, TFBConstants.MKTDM_CONT_CD_ADDRCD_COMM, biz_type);
 	}
 	
+		/* 
+	 * add house address option start 
+	 * house address zipcode
+	 */
+	public String getAddrByBizTypeH(String cust_id, String biz_type) throws DPFTRuntimeException {
+		// TODO Auto-generated method stub
+		return getContactInfo(cust_id, TFBConstants.MKTDM_CONT_CD_HOU_COMM, biz_type);
+	}
+
+	public String getZipCodeByBizTypeH(String cust_id, String biz_type) throws DPFTRuntimeException {
+		return getContactInfo(cust_id, TFBConstants.MKTDM_CONT_CD_HOUZIP_COMM, biz_type);
+	}
+	/* 
+	 * end 
+	 */
+	 
 	public String getEmailByBizType(String cust_id, String biz_type) throws DPFTRuntimeException {
 		// TODO Auto-generated method stub
 		return getContactInfo(cust_id, TFBConstants.MKTDM_CONT_CD_EMAIL, biz_type);
@@ -132,18 +148,35 @@ public class MKTDMCustomerContactDboSet extends DPFTDboSet {
 			Object[] params = {template, p_code};
 			throw new DPFTInvalidSystemSettingException("SYSTEM", "DPFT0007E", params);
 		}
-		String[] p = pr.getPrioritySettings();
-		addr_info[0] = getAddrByBizType(cust_id,p[0]);
-		addr_info[1] = getZipCodeByBizType(cust_id, p[0]);
-		addr_info[2] = getAddrCodeByBizType(cust_id, p[0]);
-		if(addr_info[0] == null){
-			addr_info[0] = getAddrByBizType(cust_id,p[1]);
-			addr_info[1] = getZipCodeByBizType(cust_id, p[1]);
-			addr_info[2] = getAddrCodeByBizType(cust_id, p[1]);
+		if(p_code.equals("04") || p_code.equals("05") || p_code.equals("06")){
+			String[] p = pr.getPrioritySettings();
+			addr_info[0] = getAddrByBizTypeH(cust_id,p[0]);
+			addr_info[1] = getZipCodeByBizTypeH(cust_id, p[0]);
+			addr_info[2] = "none";
 			if(addr_info[0] == null){
-				addr_info[0] = getAddrByBizType(cust_id,p[2]);
-				addr_info[1] = getZipCodeByBizType(cust_id, p[2]);
-				addr_info[2] = getAddrCodeByBizType(cust_id, p[2]);
+				addr_info[0] = getAddrByBizType(cust_id,p[1]);
+				addr_info[1] = getZipCodeByBizType(cust_id, p[1]);
+				addr_info[2] = getAddrCodeByBizType(cust_id, p[1]);
+				if(addr_info[0] == null){
+					addr_info[0] = getAddrByBizType(cust_id,p[2]);
+					addr_info[1] = getZipCodeByBizType(cust_id, p[2]);
+					addr_info[2] = getAddrCodeByBizType(cust_id, p[2]);
+				}
+			}
+		}else{
+			String[] p = pr.getPrioritySettings();
+			addr_info[0] = getAddrByBizType(cust_id,p[0]);
+			addr_info[1] = getZipCodeByBizType(cust_id, p[0]);
+			addr_info[2] = getAddrCodeByBizType(cust_id, p[0]);
+			if(addr_info[0] == null){
+				addr_info[0] = getAddrByBizType(cust_id,p[1]);
+				addr_info[1] = getZipCodeByBizType(cust_id, p[1]);
+				addr_info[2] = getAddrCodeByBizType(cust_id, p[1]);
+				if(addr_info[0] == null){
+					addr_info[0] = getAddrByBizType(cust_id,p[2]);
+					addr_info[1] = getZipCodeByBizType(cust_id, p[2]);
+					addr_info[2] = getAddrCodeByBizType(cust_id, p[2]);
+				}
 			}
 		}
 		return addr_info;

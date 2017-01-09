@@ -75,6 +75,7 @@ public class WmsActionDataTableWatch extends DPFTActionTableWatch {
 		
 		/*Validate records with personal info data & add record to outbound data table*/		
 		ArrayList<String> cell_code_list = new ArrayList<String>();
+		ArrayList<String> cell_name_list = new ArrayList<String>();
 		String next_seq = TFBUtil.getNextActionPlanID();
 		DPFTLogger.info(this, "Generate SEQ = " + next_seq);
 		for(int i = 0; i < dWmsSet.count(); i++){
@@ -87,6 +88,9 @@ public class WmsActionDataTableWatch extends DPFTActionTableWatch {
 			if(!cell_code_list.contains(new_dbo.getString("cell_code"))){
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
+			if(!cell_name_list.contains(new_dbo.getString("cellname"))){
+				cell_name_list.add(new_dbo.getString("cellname"));
+			}
 		}
 		oWmsSet.save();
 		
@@ -94,7 +98,7 @@ public class WmsActionDataTableWatch extends DPFTActionTableWatch {
 		TFBUtil.processUsageCode(oWmsSet, "WMS");
 		
 		/*Write results to H_OUTBOUND Table*/
-		TFBUtil.generateObndCtrlRecord(this.getDBConnector(), oWmsSet, cell_code_list, "WMS", true);
+		TFBUtil.generateObndCtrlRecord(this.getDBConnector(), oWmsSet, cell_code_list, cell_name_list, "WMS", true);
 	}
 
 	@Override

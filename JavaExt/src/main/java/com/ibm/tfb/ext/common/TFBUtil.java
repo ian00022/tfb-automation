@@ -133,7 +133,7 @@ public class TFBUtil {
 		return sb.toString();
 	}
 
-	public static void generateObndCtrlRecord(DPFTConnector connector, DPFTDboSet oSet, ArrayList<String> cell_code_list, String chal_name, boolean hasHObnd) throws DPFTRuntimeException {
+	public static void generateObndCtrlRecord(DPFTConnector connector, DPFTDboSet oSet, ArrayList<String> cell_code_list, ArrayList<String> cell_name_list, String chal_name, boolean hasHObnd) throws DPFTRuntimeException {
 		DPFTDbo dbo = oSet.getDbo(0);
 		String qString = DPFTUtil.getFKQueryString(dbo);
 		if(qString == null){
@@ -146,6 +146,7 @@ public class TFBUtil {
 				DPFTLogger.info(TFBUtil.class.getName(), "Records exist in H_OUTBOUND...Delete All Records...");
 				hObndSet.deleteAll();
 			}
+			//  Divide outbound table by cell_code 
 			for(int i = 0; i < cell_code_list.size(); i++){
 				DPFTOutboundControlDbo new_hobnd = (DPFTOutboundControlDbo) hObndSet.add();
 				new_hobnd.setBasicInfo(dbo, "O_" + chal_name, chal_name);
@@ -159,6 +160,7 @@ public class TFBUtil {
 		for(int i = 0; i < cell_code_list.size(); i++){
 			int total_exclude_gk = 0, total_exclude = 0, total = 0;
 			String cell_code = cell_code_list.get(i);
+			String cell_name = cell_name_list.get(i);
 			for(int j = 0; j < oSet.count(); j++){
 				if(oSet.getDbo(j).getString("cell_code").equals(cell_code) 
 						&& oSet.getDbo(j).getString("process_status").equals(GlobalConstants.O_DATA_GK_EXCLUDE)){
@@ -172,7 +174,8 @@ public class TFBUtil {
 					total++;
 			}
 			int total_out = total - total_exclude_gk - total_exclude;
-			Object[] params = {dbo.getString("camp_code"), cell_code, String.valueOf(total), String.valueOf(total_exclude_gk), String.valueOf(total_exclude), String.valueOf(total_out)};
+			// - replace cell_code to cell_name for all chain
+			Object[] params = {dbo.getString("camp_code"), cell_name, String.valueOf(total), String.valueOf(total_exclude_gk), String.valueOf(total_exclude), String.valueOf(total_out)};
 			DPFTUtil.pushNotification(
 					DPFTUtil.getCampaignOwnerEmail(dbo.getString("camp_code")), 
 					new DPFTMessage("CUSTOM", "TFB00009I", params)

@@ -71,6 +71,7 @@ public class SfaActionDataTableWatch extends DPFTActionTableWatch {
 		
 		/*Validate records with personal info data & add record to outbound data table*/		
 		ArrayList<String> cell_code_list = new ArrayList<String>();
+		ArrayList<String> cell_name_list = new ArrayList<String>();
 		for(int i = 0; i < dSfaSet.count(); i++){
 			DPFTOutboundDbo new_dbo = (DPFTOutboundDbo) oSfaSet.add();
 			new_dbo.setValue(dSfaSet.getDbo(i));
@@ -81,6 +82,9 @@ public class SfaActionDataTableWatch extends DPFTActionTableWatch {
 			if(!cell_code_list.contains(new_dbo.getString("cell_code"))){
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
+			if(!cell_name_list.contains(new_dbo.getString("cellname"))){
+				cell_name_list.add(new_dbo.getString("cellname"));
+			}
 		}
 		oSfaSet.save();
 		
@@ -88,7 +92,7 @@ public class SfaActionDataTableWatch extends DPFTActionTableWatch {
 		TFBUtil.processUsageCode(oSfaSet, "SFA");
 		
 		/*Write results to H_OUTBOUND Table*/
-		TFBUtil.generateObndCtrlRecord(this.getDBConnector(), oSfaSet, cell_code_list, "SFA", false);
+		TFBUtil.generateObndCtrlRecord(this.getDBConnector(), oSfaSet, cell_code_list, cell_name_list, "SFA", false);
 	}
 
 	@Override

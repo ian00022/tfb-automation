@@ -127,6 +127,7 @@ public class NtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 		}
 		
 		ArrayList<String> cell_code_list = new ArrayList<String>();
+		ArrayList<String> cell_name_list = new ArrayList<String>();
 		for(int i = 0; i < dNtmSet.count(); i++){
 			DPFTOutboundDbo new_dbo = (DPFTOutboundDbo) oNtmSet.add();
 			new_dbo.setValue(dNtmSet.getDbo(i));
@@ -140,6 +141,9 @@ public class NtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 			if(!cell_code_list.contains(new_dbo.getString("cell_code"))){
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
+			if(!cell_name_list.contains(new_dbo.getString("cellname"))){
+				cell_name_list.add(new_dbo.getString("cellname"));
+			}
 		}
 		oNtmSet.save();
 		
@@ -147,7 +151,7 @@ public class NtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 		TFBUtil.processUsageCode(oNtmSet, "NTM");
 		
 		/*Write results to H_OUTBOUND Table*/
-		TFBUtil.generateObndCtrlRecord(connector, oNtmSet, cell_code_list, "NTM", true);
+		TFBUtil.generateObndCtrlRecord(connector, oNtmSet, cell_code_list, cell_name_list, "NTM", true);
 		oNtmSet.close();
 	}
 

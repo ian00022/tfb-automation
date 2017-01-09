@@ -85,6 +85,7 @@ public class QdmActionPersonalDataTableWatch extends DPFTActionTableWatch {
 		/*Validate records with personal info data & add record to outbound data table*/		
 		MKTDMCustomerContactDboSet custSet = (MKTDMCustomerContactDboSet) this.getDataSet();
 		ArrayList<String> cell_code_list = new ArrayList<String>();
+		ArrayList<String> cell_name_list = new ArrayList<String>();
 		long ps_start_time = System.currentTimeMillis();
 		for(int i = 0; i < dQdmSet.count(); i++){
 			String cust_id = dQdmSet.getDbo(i).getString("customer_id");
@@ -116,6 +117,9 @@ public class QdmActionPersonalDataTableWatch extends DPFTActionTableWatch {
 			if(!cell_code_list.contains(new_dbo.getString("cell_code"))){
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
+			if(!cell_name_list.contains(new_dbo.getString("cellname"))){
+				cell_name_list.add(new_dbo.getString("cellname"));
+			}
 			
 			if((i+1)%100 == 0)
 				DPFTLogger.debug(this, "Processed " + (i+1) + " records...");
@@ -128,7 +132,7 @@ public class QdmActionPersonalDataTableWatch extends DPFTActionTableWatch {
 		TFBUtil.processUsageCode(oQdmSet, "QDM");
 		
 		/*Write results to H_OUTBOUND Table*/
-		TFBUtil.generateObndCtrlRecord(connector, oQdmSet, cell_code_list, "QDM", true);
+		TFBUtil.generateObndCtrlRecord(connector, oQdmSet, cell_code_list, cell_name_list, "QDM", true);
 		oQdmSet.close();
 		
 		/*Set Result set for next action*/

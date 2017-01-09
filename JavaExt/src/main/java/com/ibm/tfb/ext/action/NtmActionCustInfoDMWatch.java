@@ -44,20 +44,20 @@ public class NtmActionCustInfoDMWatch extends DPFTActionTableWatch {
 	@Override
 	public void postAction() throws DPFTRuntimeException {
 		/*get data set from D_NTM*/
-		DPFTDboSet dCtmSet = ((DPFTActionTableWatch)this.getPreviousAction()).getDataSet();
+		DPFTDboSet dNtmSet = ((DPFTActionTableWatch)this.getPreviousAction()).getDataSet();
 		
 		/*get data set from Customer info*/
 		MKTDMCustomerDboSet custDboSet = (MKTDMCustomerDboSet) this.getDataSet();
 		
 		/*set value to personal info column*/
-		for(int i = 0; i < dCtmSet.count(); i++){
-			DPFTDbo dCtm = dCtmSet.getDbo(i);
-			dCtm.setValue("cust_name",   custDboSet.getCustName(dCtm.getString("customer_id")));
-			dCtm.setValue("sex"	      , custDboSet.getGender(dCtm.getString("customer_id")));
+		for(int i = 0; i < dNtmSet.count(); i++){
+			DPFTDbo dNtm = dNtmSet.getDbo(i);
+			dNtm.setValue("custname",   custDboSet.getCustName(dNtm.getString("customer_id")));
+			dNtm.setValue("sex"	    , custDboSet.getGender(dNtm.getString("customer_id")));
 		}
 		
 		/*set temp value to result set for next action*/
-		this.setResultSet(dCtmSet);
+		this.setResultSet(dNtmSet);
 	}
 
 	@Override
