@@ -88,6 +88,7 @@ public class EbnActionDataTableWatch extends DPFTActionTableWatch {
 				cell_name_list.add(new_dbo.getString("cellname"));
 			}
 		}
+		oEbnSet.setRefresh(false);
 		oEbnSet.save();
 		
 		/*Write usage codes to O_USAGECODE Table*/

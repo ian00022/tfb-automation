@@ -152,12 +152,11 @@ public class MKTDMCustomerContactDboSet extends DPFTDboSet {
 			String[] p = pr.getPrioritySettings();
 			addr_info[0] = getAddrByBizTypeH(cust_id,p[0]);
 			addr_info[1] = getZipCodeByBizTypeH(cust_id, p[0]);
-			addr_info[2] = "none";
-			if(addr_info[0] == null){
+			if(addr_info[0] == null || addr_info[2] == null){
 				addr_info[0] = getAddrByBizType(cust_id,p[1]);
 				addr_info[1] = getZipCodeByBizType(cust_id, p[1]);
 				addr_info[2] = getAddrCodeByBizType(cust_id, p[1]);
-				if(addr_info[0] == null){
+				if(addr_info[0] == null || addr_info[2] == null){
 					addr_info[0] = getAddrByBizType(cust_id,p[2]);
 					addr_info[1] = getZipCodeByBizType(cust_id, p[2]);
 					addr_info[2] = getAddrCodeByBizType(cust_id, p[2]);
@@ -168,15 +167,39 @@ public class MKTDMCustomerContactDboSet extends DPFTDboSet {
 			addr_info[0] = getAddrByBizType(cust_id,p[0]);
 			addr_info[1] = getZipCodeByBizType(cust_id, p[0]);
 			addr_info[2] = getAddrCodeByBizType(cust_id, p[0]);
-			if(addr_info[0] == null){
+			if(addr_info[0] == null || addr_info[2] == null){
 				addr_info[0] = getAddrByBizType(cust_id,p[1]);
 				addr_info[1] = getZipCodeByBizType(cust_id, p[1]);
 				addr_info[2] = getAddrCodeByBizType(cust_id, p[1]);
-				if(addr_info[0] == null){
+				if(addr_info[0] == null || addr_info[2] == null){
 					addr_info[0] = getAddrByBizType(cust_id,p[2]);
 					addr_info[1] = getZipCodeByBizType(cust_id, p[2]);
 					addr_info[2] = getAddrCodeByBizType(cust_id, p[2]);
 				}
+			}
+		}
+		return addr_info;
+	}
+	
+	
+	public String[] getPrioritizedAddrWithoutAddrCode(String cust_id, String template, String p_code) throws DPFTRuntimeException {
+		String[] addr_info = new String[2];
+
+		DPFTPrioritySettingDboSet pSet = DPFTEngine.getPriorityCodeSetting();
+		DPFTPrioritySettingDbo pr = pSet.getPrioritySetting(template, p_code);
+		if(pr == null){
+			Object[] params = {template, p_code};
+			throw new DPFTInvalidSystemSettingException("SYSTEM", "DPFT0007E", params);
+		}
+		String[] p = pr.getPrioritySettings();
+		addr_info[0] = getAddrByBizType(cust_id,p[0]);
+		addr_info[1] = getZipCodeByBizType(cust_id, p[0]);
+		if(addr_info[0] == null){
+			addr_info[0] = getAddrByBizType(cust_id,p[1]);
+			addr_info[1] = getZipCodeByBizType(cust_id, p[1]);
+			if(addr_info[0] == null){
+				addr_info[0] = getAddrByBizType(cust_id,p[2]);
+				addr_info[1] = getZipCodeByBizType(cust_id, p[2]);
 			}
 		}
 		return addr_info;

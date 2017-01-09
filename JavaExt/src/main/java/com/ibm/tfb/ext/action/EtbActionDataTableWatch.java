@@ -89,6 +89,7 @@ public class EtbActionDataTableWatch extends DPFTActionTableWatch {
 				cell_name_list.add(new_dbo.getString("cellname"));
 			}
 		}
+		oEtbSet.setRefresh(false);
 		oEtbSet.save();
 		
 		/*Write Usage code to O_USAGECODE*/

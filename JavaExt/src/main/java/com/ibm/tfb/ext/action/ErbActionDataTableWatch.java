@@ -85,6 +85,7 @@ public class ErbActionDataTableWatch extends DPFTActionTableWatch {
 				cell_name_list.add(new_dbo.getString("cellname"));
 			}
 		}
+		oErbSet.setRefresh(false);
 		oErbSet.save();
 		
 		/*Wrtie Usage code to O_USAGECODE*/

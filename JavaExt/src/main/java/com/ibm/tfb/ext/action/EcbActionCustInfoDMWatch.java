@@ -98,6 +98,7 @@ public class EcbActionCustInfoDMWatch extends DPFTActionTableWatch {
 				cell_name_list.add(new_dbo.getString("cellname"));
 			}
 		}
+		oEcbSet.setRefresh(false);
 		oEcbSet.save();
 		
 		/*Write usage codes to O_USAGECODE Table*/

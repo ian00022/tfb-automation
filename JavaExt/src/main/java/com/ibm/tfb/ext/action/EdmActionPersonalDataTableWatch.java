@@ -121,6 +121,7 @@ public class EdmActionPersonalDataTableWatch extends DPFTActionTableWatch {
 		}
 		long ps_fin_time = System.currentTimeMillis();
 		DPFTLogger.info(this, "Processed total " + dEdmSet.count() + ", process time = " + (ps_fin_time - ps_start_time)/60000 + " min.");
+		oEdmSet.setRefresh(false);
 		oEdmSet.save();
 		
 		/*Write usage codes to O_USAGECODE Table*/

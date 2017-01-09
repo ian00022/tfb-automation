@@ -84,6 +84,7 @@ public class CsrActionDataTableWatch extends DPFTActionTableWatch {
 				cell_name_list.add(new_dbo.getString("cellname"));
 			}
 		}
+		oCsrSet.setRefresh(false);
 		oCsrSet.save();
 		
 		/*Write usage codes to O_USAGECODE Table*/

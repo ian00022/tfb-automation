@@ -86,6 +86,7 @@ public class SfaActionDataTableWatch extends DPFTActionTableWatch {
 				cell_name_list.add(new_dbo.getString("cellname"));
 			}
 		}
+		oSfaSet.setRefresh(false);
 		oSfaSet.save();
 		
 		/*Write Usage code to O_USAGECODE*/
