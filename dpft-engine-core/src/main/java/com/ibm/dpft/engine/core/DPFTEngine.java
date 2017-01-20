@@ -20,6 +20,7 @@ import com.ibm.dpft.engine.core.exception.DPFTRuntimeException;
 import com.ibm.dpft.engine.core.taskplan.DPFTDataInboundWatcher;
 import com.ibm.dpft.engine.core.taskplan.DPFTDataOutboundPeriodicWatcher;
 import com.ibm.dpft.engine.core.taskplan.DPFTDataOutboundWatcher;
+import com.ibm.dpft.engine.core.taskplan.DPFTInstaFileWatcher;
 import com.ibm.dpft.engine.core.taskplan.DPFTResLocalFileWatcher;
 import com.ibm.dpft.engine.core.taskplan.DPFTResRemoteFileWatcher;
 import com.ibm.dpft.engine.core.taskplan.DPFTTaskPlan;
@@ -91,6 +92,7 @@ public class DPFTEngine {
 			rtplist.add(new DPFTDataOutboundPeriodicWatcher(GlobalConstants.DPFT_SYS_OBND_PERIODIC_RUNNER_ID));
 			rtplist.add(new DPFTResRemoteFileWatcher(GlobalConstants.DPFT_SYS_RES_GETFILE_RUNNER_ID));
 			rtplist.add(new DPFTResLocalFileWatcher(GlobalConstants.DPFT_SYS_RES_READFILE_RUNNER_ID));
+			rtplist.add(new DPFTInstaFileWatcher(GlobalConstants.DPFT_SYS_RES_INSTA_FILETRIGGER_RUNNER_ID));
 			return rtplist.toArray(new DPFTTaskPlan[rtplist.size()]);
 		}
 		return utplist.toArray(new DPFTTaskPlan[utplist.size()]);

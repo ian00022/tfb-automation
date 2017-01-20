@@ -24,7 +24,7 @@ public class DPFTActionRemoteFileWatch extends DPFTActionTableWatch {
 
 	@Override
 	public String getTableWatchCriteria() {
-		return "active=1";
+		return "active=1 and insta=0";
 	}
 
 	@Override
@@ -44,13 +44,13 @@ public class DPFTActionRemoteFileWatch extends DPFTActionTableWatch {
 										 , dbo.getString("cd_profile"));
 				String[] flist = dbo.getRemoteFileName();
 				String[] clist = dbo.getRemoteCtrlName();
-				cdutil.lock();
+//				cdutil.lock();
 				int rtnCode = cdutil.doFTP_Get(clist, flist);
 				if(rtnCode == GlobalConstants.ERROR_LEVEL_TRF_SUCCESS)
 					deleteRemoteFiles(cdutil, dbo, clist, flist);
-				cdutil.unlock();
+//				cdutil.unlock();
 			}catch(Exception e){
-				if(cdutil != null)cdutil.unlock();
+//				if(cdutil != null)cdutil.unlock();
 				if(e instanceof DPFTRuntimeException){
 					((DPFTRuntimeException)e).handleException();
 				}else{

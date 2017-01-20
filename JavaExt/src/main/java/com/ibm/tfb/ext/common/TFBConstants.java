@@ -29,6 +29,8 @@ public class TFBConstants {
 	
 	public static final String SFA_LZ_LEADTYPE_HL = "05";
 	public static final String SFA_LZ_LEADTYPE_PL = "06";
+	public static final String SFA_LZ_LEADTYPE_HL_BUCODE_H = "H";
+	public static final String SFA_LZ_LEADTYPE_HL_BUCODE_T = "T";
 	public static final String SFA_LZ_LEADTYPE_EBN_PRE_LOGON = "08";
 	public static final String SFA_LZ_LEADTYPE_EBN_POST_LOGON = "07";
 	public static final String SFA_PROP_CAPACITY_FOLDER = "sfa.capacity.dir";

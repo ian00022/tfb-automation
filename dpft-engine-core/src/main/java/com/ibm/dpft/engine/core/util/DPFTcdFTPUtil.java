@@ -29,20 +29,22 @@ public class DPFTcdFTPUtil extends DPFTFileFTPUtil {
 	
 	@Override
 	public int doFTP_Get(String[] c_in_list, String[] file_in_list) throws DPFTRuntimeException {
-		DPFTLogger.info(this, "Initializing cdFTP+ Process...");
-		initFTP(c_in_list, file_in_list);
-		DPFTLogger.info(this, "Ready to transfer Data files...");
-		get_D_File_OUT_FTPCmd2LocalDir();
-		DPFTLogger.info(this, "Executing cdFTP+ Command from bash...");
-		int rtnCode1 = execCdFTP();
-		DPFTLogger.info(this, "Ready to transfer Data files...");
-		get_H_File_OUT_FTPCmd2LocalDir();
-		DPFTLogger.info(this, "Executing cdFTP+ Command from bash...");
-		int rtnCode2 = execCdFTP();
-		if(rtnCode1 == GlobalConstants.ERROR_LEVEL_TRF_SUCCESS && rtnCode2 == GlobalConstants.ERROR_LEVEL_TRF_SUCCESS){
-			return GlobalConstants.ERROR_LEVEL_TRF_SUCCESS;
-		}else{
-			return GlobalConstants.ERROR_LEVEL_TRF_FAILURE;
+		synchronized(lock){
+			DPFTLogger.info(this, "Initializing cdFTP+ Process...");
+			initFTP(c_in_list, file_in_list);
+			DPFTLogger.info(this, "Ready to transfer Data files...");
+			get_D_File_OUT_FTPCmd2LocalDir();
+			DPFTLogger.info(this, "Executing cdFTP+ Command from bash...");
+			int rtnCode1 = execCdFTP();
+			DPFTLogger.info(this, "Ready to transfer Data files...");
+			get_H_File_OUT_FTPCmd2LocalDir();
+			DPFTLogger.info(this, "Executing cdFTP+ Command from bash...");
+			int rtnCode2 = execCdFTP();
+			if(rtnCode1 == GlobalConstants.ERROR_LEVEL_TRF_SUCCESS && rtnCode2 == GlobalConstants.ERROR_LEVEL_TRF_SUCCESS){
+				return GlobalConstants.ERROR_LEVEL_TRF_SUCCESS;
+			}else{
+				return GlobalConstants.ERROR_LEVEL_TRF_FAILURE;
+			}
 		}
 	}
 
@@ -325,12 +327,14 @@ public class DPFTcdFTPUtil extends DPFTFileFTPUtil {
 	}
 
 	public void doFTP_Del(String[] del_clist, String[] del_flist) throws DPFTRuntimeException {
-		DPFTLogger.info(this, "Initializing cdFTP+ Process...");
-		initFTP(del_clist, del_flist);
-		DPFTLogger.info(this, "Get File Success, removing files from remote cd server...");
-		del_Remote_File_OUT_FTPCmd2LocalDir();
-		DPFTLogger.info(this, "Executing cdFTP+ Command from bash...");
-		execCdFTP();
+		synchronized(lock){
+			DPFTLogger.info(this, "Initializing cdFTP+ Process...");
+			initFTP(del_clist, del_flist);
+			DPFTLogger.info(this, "Get File Success, removing files from remote cd server...");
+			del_Remote_File_OUT_FTPCmd2LocalDir();
+			DPFTLogger.info(this, "Executing cdFTP+ Command from bash...");
+			execCdFTP();
+		}
 	}
 
 

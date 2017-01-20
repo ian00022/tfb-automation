@@ -27,7 +27,7 @@ public class DPFTActionLocalFileWatch extends DPFTActionTableWatch {
 
 	@Override
 	public String getTableWatchCriteria() {
-		return "active=1";
+		return "active=1 and insta=0";
 	}
 
 	@Override
@@ -104,6 +104,7 @@ public class DPFTActionLocalFileWatch extends DPFTActionTableWatch {
 				
 				h.setValue("process_status", GlobalConstants.DPFT_CTRL_STAT_RUN);
 				h.setValue("process_time", DPFTUtil.getCurrentTimeStampAsString());
+				h.setValue("insta", f.getString("insta"));
 				
 				//send Notification
 				Object[] params = {h.getString("d_file"), h.getString("process_time")};

@@ -34,8 +34,8 @@ public class DPFTConnectionFactory {
 //				DPFTLogger.debug(DPFTConnectionFactory.class.getName(), "Connect to DB as " + cfg.getDBUserName());
 				prop.setProperty("user", cfg.getDBUserName());
 				prop.setProperty("password", cfg.getDBPassword());
-				prop.setProperty("oracle.jdbc.ReadTimeout", "6000000");
-				prop.setProperty("oracle.net.CONNECT_TIMEOUT", "6000000");
+				prop.setProperty("oracle.jdbc.ReadTimeout", "14400000");
+				prop.setProperty("oracle.net.CONNECT_TIMEOUT", "14400000");
 				conn = DriverManager.getConnection(cfg.getConnectionString(), prop);
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block

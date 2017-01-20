@@ -3,17 +3,16 @@ package com.ibm.tfb.ext.action;
 import com.ibm.dpft.engine.core.dbo.DPFTDbo;
 import com.ibm.dpft.engine.core.dbo.DPFTOutboundDbo;
 import com.ibm.dpft.engine.core.exception.DPFTRuntimeException;
-import com.ibm.tfb.ext.common.TFBConstants;
 
 public class SfaLzActionDataTableWatch extends LzActionDataTableWatch {
 
 	@Override
 	protected void setMoreValue(DPFTOutboundDbo new_dbo, DPFTDbo dbo) {
 		new_dbo.setValue("sfa_lead_id", new_dbo.getString("customer_id") + "||" + new_dbo.getString("treatment_code"));
-		if(dbo.getString("bu_code") != null){
-			//分別處理房信貸lead_type
-			new_dbo.setValue("lead_type", (dbo.getString("bu_code").equals("H"))?TFBConstants.SFA_LZ_LEADTYPE_HL:TFBConstants.SFA_LZ_LEADTYPE_PL);
-		}
+//		if(dbo.getString("bu_code") != null){
+//			//分別處理房信貸lead_type
+//			new_dbo.setValue("lead_type", (dbo.getString("bu_code").equals("H"))?TFBConstants.SFA_LZ_LEADTYPE_HL:TFBConstants.SFA_LZ_LEADTYPE_PL);
+//		}
 	}
 	
 	@Override

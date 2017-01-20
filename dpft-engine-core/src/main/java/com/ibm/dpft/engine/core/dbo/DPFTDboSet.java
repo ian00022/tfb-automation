@@ -260,8 +260,10 @@ public class DPFTDboSet {
 				connector.setInsert(newDbolist);
 				connector.doInsert();
 				connector.commit();
-				reset();
-				load();
+				if(tobeRefreshed){
+					reset();
+					load();
+				}
 			}
 			
 			//Do update
