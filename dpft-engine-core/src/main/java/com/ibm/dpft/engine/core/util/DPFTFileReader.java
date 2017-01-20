@@ -39,10 +39,10 @@ public class DPFTFileReader extends DPFTDataReader{
 		return f.exists();
 	}
 
-	public boolean canRead() {
-		File f = new File(fdir + File.separator + "lock");
-		return !f.exists();
-	}
+//	public boolean canRead() {
+//		File f = new File(fdir + File.separator + "lock");
+//		return !f.exists();
+//	}
 	
 	@Override
 	public boolean read(String filename) throws DPFTRuntimeException {
@@ -50,7 +50,8 @@ public class DPFTFileReader extends DPFTDataReader{
 	}
 
 	public boolean read(String filename, boolean move2Archive) throws DPFTRuntimeException {
-		if(exist(filename) && canRead() && layout != null){
+//		if(exist(filename) && canRead() && layout != null){
+		if(exist(filename) && layout != null){
 			fname = filename;
 			ResFileDataLayoutDetailDboSet layout_detail = layout.getLayoutDetail();
 			if(layout_detail == null){

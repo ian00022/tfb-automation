@@ -61,8 +61,8 @@ public abstract class LzActionDataTableWatch extends DPFTActionTableWatch {
 	@Override
 	public void postAction() throws DPFTRuntimeException {
 		Object[] params = {"留資"};
-		if(this.getDataSet().isEmpty())
-			throw new DPFTActionException(this, "CUSTOM", "TFB00001E", params);
+//		if(this.getDataSet().isEmpty())
+//			throw new DPFTActionException(this, "CUSTOM", "TFB00001E", params);
 		DPFTUtil.pushNotification(
 				new DPFTMessage("CUSTOM", "TFB00008I", params)
 		);
@@ -116,17 +116,34 @@ public abstract class LzActionDataTableWatch extends DPFTActionTableWatch {
 			new_dbo.setValue("process_status", GlobalConstants.O_DATA_OUTPUT);
 			setMoreValue(new_dbo, dLzSet.getDbo(i));
 		}
+		int quantity = oSet.count();
+		
+		//if empty data, add dummy data for output file
+		if(quantity == 0){
+			DPFTOutboundDbo new_dbo = (DPFTOutboundDbo) oSet.add();
+			new_dbo.setValue("timestamp", timestamp);
+			new_dbo.setValue("chal_name", chal_name);
+			new_dbo.setValue("cell_code", timestamp.substring(GlobalConstants.DFPT_DATE_FORMAT.length()));
+			new_dbo.setValue("offr_effectivedate", timestamp.substring(0, GlobalConstants.DFPT_DATE_FORMAT.length()));
+			for(String target_col: map.keySet()){
+				new_dbo.setValue(target_col, getSourceValue(null, map.get(target_col)));
+			}
+			new_dbo.setValue("process_status", GlobalConstants.O_DATA_DUMMY);
+		}
+		
 		oSet.save(false);
 		oSet.close();
 		
 		/*Write results to H_OUTBOUND Table*/
-		TFBUtil.generateObndCtrlForLZRecord(this.getDBConnector(), chal_name, timestamp, target_tbl, oSet.count());
+		TFBUtil.generateObndCtrlForLZRecord(this.getDBConnector(), chal_name, timestamp, target_tbl, quantity);
 	}
 
 	private Object getSourceValue(DPFTDbo dbo, String source_col) {
 		if(source_col.indexOf("{") == 0 
 				&& source_col.indexOf("}") == (source_col.length() - 1))
 			return source_col.substring(1, source_col.length() - 1);
+		if(dbo == null)
+			return null;
 		return dbo.getString(source_col);
 	}
 

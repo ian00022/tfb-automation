@@ -43,6 +43,7 @@ public class GlobalConstants {
 	public static final String DPFT_SYS_OBND_PERIODIC_RUNNER_ID = "DPFT04";
 	public static final String DPFT_SYS_RES_GETFILE_RUNNER_ID = "DPFT05";
 	public static final String DPFT_SYS_RES_READFILE_RUNNER_ID = "DPFT06";
+	public static final String DPFT_SYS_RES_INSTA_FILETRIGGER_RUNNER_ID = "DPFT07";
 	
 	/*DPFT task plan status definition*/
 	public static final String DPFT_TP_STAT_INIT =  "INIT";
@@ -104,6 +105,7 @@ public class GlobalConstants {
 	public static final String O_DATA_EXCLUDE    = "Exclude";
 	public static final String O_DATA_GK_EXCLUDE = "Exclude_GK";
 	public static final String O_DATA_OUTPUT     = "Output";
+	public static final String O_DATA_DUMMY      = "Dummy";
 	
 	
 	/*File meta constants*/

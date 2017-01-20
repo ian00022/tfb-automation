@@ -31,7 +31,7 @@ public class DPFTActionResControlTableWatch extends DPFTActionTableWatch {
 	@Override
 	public String getTableWatchCriteria() {
 		// TODO Auto-generated method stub
-		return "process_status='" + GlobalConstants.DPFT_CTRL_STAT_RUN + "'";
+		return "process_status='" + GlobalConstants.DPFT_CTRL_STAT_RUN + "' and insta=0";
 	}
 
 	@Override

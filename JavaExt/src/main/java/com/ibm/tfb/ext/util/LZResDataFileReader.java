@@ -1,7 +1,6 @@
 package com.ibm.tfb.ext.util;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -55,22 +54,12 @@ public class LZResDataFileReader extends DPFTFileReader {
 			new_data.setValue("data_datetime", data_datetime);
 		}
 		targetSet.save();
-		
-		ArrayList<String> bu_code_list = new ArrayList<String>();
-		for(int i = 0; i < targetSet.count(); i++){
-			if(!targetSet.getDbo(i).isNull("bu_code")){
-				if(!bu_code_list.contains(targetSet.getDbo(i).getString("bu_code")))
-					bu_code_list.add(targetSet.getDbo(i).getString("bu_code"));
-			}
-		}
-		if(bu_code_list.isEmpty()){
-			TFBUtil.generateLZIbndCtrlRecord(layout.getString("target_tbl"), data_datetime, chal_name);
-		}else{
-			for(String bu_code: bu_code_list){
-				TFBUtil.generateLZIbndCtrlRecord(layout.getString("target_tbl"), data_datetime, chal_name + "_" + bu_code);
-			}
-		}
+		generateLZIbndCtrlRecord(targetSet, data_datetime);
 		targetSet.close();
+	}
+
+	protected void generateLZIbndCtrlRecord(DPFTDboSet targetSet, String data_datetime) throws DPFTRuntimeException {
+		TFBUtil.generateLZIbndCtrlRecord(layout.getString("target_tbl"), data_datetime, chal_name);
 	}
 
 	private String getDD() {
