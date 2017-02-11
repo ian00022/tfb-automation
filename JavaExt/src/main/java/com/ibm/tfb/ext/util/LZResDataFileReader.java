@@ -19,6 +19,7 @@ import com.ibm.tfb.ext.common.TFBUtil;
 public class LZResDataFileReader extends DPFTFileReader {
 	private final static Pattern schedule_time_pattern = Pattern.compile("(20\\d{2}|19\\d{2})(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])(0[0-9]|1[0-9]|2[0-3])([0-5][0-9])");
 	private final static Pattern schedule_time_pattern2 = Pattern.compile("[_.](0[0-9]|1[0-9]|2[0-3])([0-5][0-9])[_.]");
+	private final static Pattern schedule_date_pattern = Pattern.compile("(20\\d{2}|19\\d{2})(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])");
 
 	public LZResDataFileReader(String dir, ResFileDataLayoutDbo resFileDataLayoutDbo, String chal_name) {
 		super(dir, resFileDataLayoutDbo, chal_name);
@@ -63,12 +64,24 @@ public class LZResDataFileReader extends DPFTFileReader {
 	}
 
 	private String getDD() {
-		SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DFPT_DATE_FORMAT);
 		StringBuilder sb = new StringBuilder();
-		sb.append(sdf.format(new Date())).append(parseScheduledTime(fname));
+		sb.append(parseScheduledDate(fname)).append(parseScheduledTime(fname));
 		return sb.toString();
 	}
 	
+	public String parseScheduledDate(String fname) {
+		Matcher m = schedule_date_pattern.matcher(fname);
+		String date = null;
+		if(m.find()){
+			date = m.group(1) + m.group(2) + m.group(3);
+		}
+		if(date == null){
+			SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DFPT_DATE_FORMAT);
+			date = sdf.format(new Date());
+		}
+		return date;
+	}
+
 	public String parseScheduledTime(String name) {
 		//test Pattern 1
 		Matcher m = schedule_time_pattern.matcher(name);
