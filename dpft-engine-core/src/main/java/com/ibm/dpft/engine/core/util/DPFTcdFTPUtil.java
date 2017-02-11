@@ -41,11 +41,25 @@ public class DPFTcdFTPUtil extends DPFTFileFTPUtil {
 			DPFTLogger.info(this, "Executing cdFTP+ Command from bash...");
 			int rtnCode2 = execCdFTP();
 			if(rtnCode1 == GlobalConstants.ERROR_LEVEL_TRF_SUCCESS && rtnCode2 == GlobalConstants.ERROR_LEVEL_TRF_SUCCESS){
-				return GlobalConstants.ERROR_LEVEL_TRF_SUCCESS;
+				if(isDataFileExist())
+					return GlobalConstants.ERROR_LEVEL_TRF_SUCCESS;
+				else
+					return GlobalConstants.ERROR_LEVEL_READ_FAILURE;
 			}else{
 				return GlobalConstants.ERROR_LEVEL_TRF_FAILURE;
 			}
 		}
+	}
+
+	private boolean isDataFileExist() {
+		boolean rtnV = true;
+		String ldir = this.getLocalDir();
+		for(String filename: d_file_list){
+			File f = new File(ldir + File.separator + filename);
+			if(!f.exists())
+				rtnV = false;
+		}
+		return rtnV;
 	}
 
 	public void unlock() {

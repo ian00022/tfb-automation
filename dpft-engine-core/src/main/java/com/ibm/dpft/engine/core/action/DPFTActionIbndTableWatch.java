@@ -40,7 +40,7 @@ public class DPFTActionIbndTableWatch extends DPFTActionTableWatch {
 	@Override
 	public String getTableWatchCriteria() {
 		/* Watch new insert records */
-		return "process_status='" + GlobalConstants.DPFT_CTRL_STAT_INIT + "' and gk_flg='Y' and rownum <= (3 - (select count(*) from h_inbound where process_status='R'))";
+		return "process_status='" + GlobalConstants.DPFT_CTRL_STAT_INIT + "' and gk_flg='Y' and rownum <= (3 - (select count(*) from h_inbound where process_status='R' and insta=0)) and insta=0";
 	}
 
 	@Override

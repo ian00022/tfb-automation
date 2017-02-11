@@ -383,6 +383,7 @@ public class TFBUtil {
 		ctrl.setValue("chal_name", chal_name);
 		ctrl.setValue("process_status", GlobalConstants.DPFT_CTRL_STAT_INIT);
 		ctrl.setValue("gk_flg"   , "Y");
+		ctrl.setValue("insta"    , "1");
 		cSet.save();
 		cSet.close();
 	}
@@ -413,6 +414,7 @@ public class TFBUtil {
 		new_hobnd.setValue("target_ds", target_tbl);
 		new_hobnd.setValue("quantity" , String.valueOf(quantity));
 		new_hobnd.setValue("del_quantity" , "0");
+		new_hobnd.setValue("insta"    , "1");
 		hObndSet.save();
 		hObndSet.close();
 		

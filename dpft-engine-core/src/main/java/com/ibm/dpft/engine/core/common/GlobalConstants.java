@@ -44,6 +44,9 @@ public class GlobalConstants {
 	public static final String DPFT_SYS_RES_GETFILE_RUNNER_ID = "DPFT05";
 	public static final String DPFT_SYS_RES_READFILE_RUNNER_ID = "DPFT06";
 	public static final String DPFT_SYS_RES_INSTA_FILETRIGGER_RUNNER_ID = "DPFT07";
+	public static final String DPFT_SYS_RES_INSTA_SYS_SCHEDULE_RUNNER_ID = "DPFT08";
+	public static final String DPFT_SYS_RES_INSTA_SYS_OBND_RUNNER_ID = "DPFT09";
+	
 	
 	/*DPFT task plan status definition*/
 	public static final String DPFT_TP_STAT_INIT =  "INIT";
@@ -197,5 +200,7 @@ public class GlobalConstants {
 	public static final String DPFT_AUTOMATION_UNICA_FLOWCHART_TYPE_G = "G";		//GK
 	public static final String DPFT_AUTOMATION_UNICA_FLOWCHART_TYPE_R = "R";
 	public static final String DPFT_AUTOMATION_UNICA_FLOWCHART_TYPE_RP = "RP";
+	
+	
 
 }

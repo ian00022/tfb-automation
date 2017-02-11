@@ -20,6 +20,8 @@ import com.ibm.dpft.engine.core.exception.DPFTRuntimeException;
 import com.ibm.dpft.engine.core.taskplan.DPFTDataInboundWatcher;
 import com.ibm.dpft.engine.core.taskplan.DPFTDataOutboundPeriodicWatcher;
 import com.ibm.dpft.engine.core.taskplan.DPFTDataOutboundWatcher;
+import com.ibm.dpft.engine.core.taskplan.DPFTInstaDataInboundWatcher;
+import com.ibm.dpft.engine.core.taskplan.DPFTInstaDataOutboundWatcher;
 import com.ibm.dpft.engine.core.taskplan.DPFTInstaFileWatcher;
 import com.ibm.dpft.engine.core.taskplan.DPFTResLocalFileWatcher;
 import com.ibm.dpft.engine.core.taskplan.DPFTResRemoteFileWatcher;
@@ -93,6 +95,8 @@ public class DPFTEngine {
 			rtplist.add(new DPFTResRemoteFileWatcher(GlobalConstants.DPFT_SYS_RES_GETFILE_RUNNER_ID));
 			rtplist.add(new DPFTResLocalFileWatcher(GlobalConstants.DPFT_SYS_RES_READFILE_RUNNER_ID));
 			rtplist.add(new DPFTInstaFileWatcher(GlobalConstants.DPFT_SYS_RES_INSTA_FILETRIGGER_RUNNER_ID));
+			rtplist.add(new DPFTInstaDataInboundWatcher(GlobalConstants.DPFT_SYS_RES_INSTA_SYS_SCHEDULE_RUNNER_ID));
+			rtplist.add(new DPFTInstaDataOutboundWatcher(GlobalConstants.DPFT_SYS_RES_INSTA_SYS_OBND_RUNNER_ID));
 			return rtplist.toArray(new DPFTTaskPlan[rtplist.size()]);
 		}
 		return utplist.toArray(new DPFTTaskPlan[utplist.size()]);
