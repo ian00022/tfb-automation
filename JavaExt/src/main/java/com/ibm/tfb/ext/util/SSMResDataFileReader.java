@@ -3,6 +3,9 @@ package com.ibm.tfb.ext.util;
 import java.util.HashMap;
 
 import com.ibm.dpft.engine.core.common.GlobalConstants;
+import com.ibm.dpft.engine.core.config.DPFTConfig;
+import com.ibm.dpft.engine.core.connection.DPFTConnectionFactory;
+import com.ibm.dpft.engine.core.connection.DPFTConnector;
 import com.ibm.dpft.engine.core.dbo.DPFTDbo;
 import com.ibm.dpft.engine.core.dbo.DPFTDboSet;
 import com.ibm.dpft.engine.core.dbo.ResFileDataLayoutDbo;
@@ -10,6 +13,7 @@ import com.ibm.dpft.engine.core.dbo.ResFileDataLayoutDetailDboSet;
 import com.ibm.dpft.engine.core.exception.DPFTInvalidSystemSettingException;
 import com.ibm.dpft.engine.core.exception.DPFTRuntimeException;
 import com.ibm.dpft.engine.core.util.DPFTFileReader;
+import com.ibm.dpft.engine.core.util.DPFTUtil;
 
 public class SSMResDataFileReader extends DPFTFileReader {
 
@@ -32,6 +36,7 @@ public class SSMResDataFileReader extends DPFTFileReader {
 		
 		DPFTDboSet targetSet = layout.getTargetTableDboSet();
 		HashMap<String, String> f_col_2_tgt_col_map = layout.getFileColumns2TargetColumnsMapping();
+		int i = 0;
 		for(HashMap<String, String> rowdata: read_data){
 			DPFTDbo new_data = targetSet.add();
 			new_data.setValue("chal_name", chal_name);
@@ -45,9 +50,23 @@ public class SSMResDataFileReader extends DPFTFileReader {
 			//Parse DestName field to get treatment code, customer_id
 			String[] ds = new_data.getString("resv1").split(GlobalConstants.FILE_DELIMETER_PIP);
 			if(ds.length == 3){
-				new_data.setValue("treatment_code", ds[1]);
-				new_data.setValue("customer_id", ds[2]);
+				DPFTConfig config = DPFTUtil.getSystemDBConfig();
+				DPFTConnector connector = DPFTConnectionFactory.initDPFTConnector(config);
+				DPFTDboSet IDSet = (DPFTDboSet) connector.getDboSet("DPFT_IDMAPPING");
+				IDSet.load();
+				IDSet.filter("TREATMENT_CODE", ds[1]);
+				// - recover customer_id (單向簡訊)
+				while( i < read_data.size()){
+					DPFTDbo reload_id = IDSet.getDbo(i);
+					if(reload_id.getColumnValue("id_number").equals(ds[2])){
+						new_data.setValue("treatment_code", ds[1]);
+						new_data.setValue("customer_id", reload_id.getColumnValue("customer_id"));
+						new_data.setValue("resv1", ds[0]+"||"+ds[1]+"||"+reload_id.getColumnValue("customer_id"));
+						break;
+					}
+				}
 			}
+			i++;
 		}
 		targetSet.save();
 		targetSet.close();

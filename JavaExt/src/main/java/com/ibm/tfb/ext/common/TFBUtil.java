@@ -47,12 +47,16 @@ public class TFBUtil {
 		return sb.toString();
 	}
 
-	public static String getDestNameString(DPFTDbo dbo) {
-		return dbo.getString("camp_code") + "||" + dbo.getString("treatment_code") + "||" + dbo.getString("customer_id");
+	public static String getDestNameString(DPFTDbo dbo, DPFTDbo id_dbo, String idnu) {
+		id_dbo.setValue("treatment_code", dbo.getString("treatment_code"));
+		id_dbo.setValue("customer_id", dbo.getString("customer_id"));
+		id_dbo.setValue("id_number", idnu);
+		return dbo.getString("camp_code") + "||" + dbo.getString("treatment_code") + "||" + idnu;
+		//return dbo.getString("camp_code") + "||" + dbo.getString("treatment_code") + "||" + dbo.getString("customer_id");
 	}
 
-	public static void setSSMHeaderProperties(DPFTDbo new_dbo, DPFTDbo data) {
-		new_dbo.setValue("destname", TFBUtil.getDestNameString(data));
+	public static void setSSMHeaderProperties(DPFTDbo new_dbo, DPFTDbo data, DPFTDbo id_dbo, String idnum) {
+		new_dbo.setValue("destname", TFBUtil.getDestNameString(data, id_dbo, idnum));
 		if(data.getString("isinteractive").equalsIgnoreCase("y")){
 //			new_dbo.setValue("username", DPFTEngine.getSystemProperties("TFB_SSM_I_USRNAME"));
 			new_dbo.setValue("password", DPFTEngine.getSystemProperties("TFB_SSM_I_USRPWD"));
@@ -71,8 +75,8 @@ public class TFBUtil {
 		return DPFTUtil.getDBConfig("MKTDM");
 	}
 
-	public static void setESMHeaderProperties(DPFTDbo new_dbo, DPFTDbo data) {
-		new_dbo.setValue("destname", TFBUtil.getDestNameString(data));
+	public static void setESMHeaderProperties(DPFTDbo new_dbo, DPFTDbo data, DPFTDbo id_dbo, String idnum) {
+		new_dbo.setValue("destname", TFBUtil.getDestNameString(data, id_dbo, idnum));
 		if(data.getString("isinteractive").equalsIgnoreCase("y")){
 //			new_dbo.setValue("username", DPFTEngine.getSystemProperties("TFB_ESM_I_USRNAME"));
 			new_dbo.setValue("password", DPFTEngine.getSystemProperties("TFB_ESM_I_USRPWD"));

@@ -72,6 +72,18 @@ public class EsmActionContactInfoDMWatch extends DPFTActionTableWatch {
 		DPFTConnector connector = DPFTConnectionFactory.initDPFTConnector(config);
 		DPFTOutboundDboSet oEsmSet = (DPFTOutboundDboSet) connector.getDboSet("O_ESM", qString);
 		oEsmSet.load();
+		
+		DPFTDboSet IDSet = (DPFTDboSet) connector.getDboSet("DPFT_IDMAPPING");
+		IDSet.load();
+		if(oEsmSet.getDbo(0) != null){
+			String idStr = (String)oEsmSet.getDbo(0).getColumnValue("TREATMENT_CODE");
+		    IDSet.filter("TREATMENT_CODE", idStr);
+		    if(IDSet.count() > 0){
+				DPFTLogger.info(this, "ID Records exist in output data set...Delete All Records...");
+				IDSet.deleteAll();
+			}
+		}
+		
 		/*Data set from "O_ESM" should be empty*/
 		if(oEsmSet.count() > 0){
 			DPFTLogger.info(this, "Records exist in output data set...Delete All Records...");
@@ -91,7 +103,9 @@ public class EsmActionContactInfoDMWatch extends DPFTActionTableWatch {
 			String mobile_no = custSet.getMobile(cust_id);
 			DPFTOutboundDbo new_dbo = (DPFTOutboundDbo) oEsmSet.add();
 			new_dbo.setValue(dEsmSet.getDbo(i));
-			TFBUtil.setESMHeaderProperties(new_dbo, dEsmSet.getDbo(i));
+			DPFTDbo id_dbo = (DPFTDbo) IDSet.add();
+			String id_num = String.format("%09d", i+1);
+			TFBUtil.setSSMHeaderProperties(new_dbo, dEsmSet.getDbo(i), id_dbo, "E"+id_num);
 			DPFTDbo dEsm = dEsmSet.getDbo(i);
 			if(dEsm.isNull("mobile_priority")){
 				/*use default mobile priority rule*/
@@ -129,6 +143,7 @@ public class EsmActionContactInfoDMWatch extends DPFTActionTableWatch {
 		DPFTLogger.info(this, "Processed total " + dEsmSet.count() + ", process time = " + (ps_fin_time - ps_start_time)/60000 + " min.");
 		oEsmSet.setRefresh(false);
 		oEsmSet.save();
+		IDSet.save();
 		
 		/*Write Usage code to O_USAGECODE*/
 		TFBUtil.processUsageCode(oEsmSet, "ESM");
@@ -136,6 +151,7 @@ public class EsmActionContactInfoDMWatch extends DPFTActionTableWatch {
 		/*Write results to H_OUTBOUND Table*/
 		TFBUtil.generateObndCtrlRecord(connector, oEsmSet, cell_code_list, cell_name_list, "ESM", true);
 		oEsmSet.close();
+		IDSet.close();
 	}
 
 	@Override

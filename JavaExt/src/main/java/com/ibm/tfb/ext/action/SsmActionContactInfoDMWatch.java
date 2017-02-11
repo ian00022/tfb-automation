@@ -72,6 +72,18 @@ public class SsmActionContactInfoDMWatch extends DPFTActionTableWatch {
 		DPFTConnector connector = DPFTConnectionFactory.initDPFTConnector(config);
 		DPFTOutboundDboSet oSsmSet = (DPFTOutboundDboSet) connector.getDboSet("O_SSM", qString);
 		oSsmSet.load();
+		
+		DPFTDboSet IDSet = (DPFTDboSet) connector.getDboSet("DPFT_IDMAPPING");
+		IDSet.load();
+		if(oSsmSet.getDbo(0) != null){
+			String idStr = (String)oSsmSet.getDbo(0).getColumnValue("TREATMENT_CODE");
+		    IDSet.filter("TREATMENT_CODE", idStr);
+		    if(IDSet.count() > 0){
+				DPFTLogger.info(this, "ID Records exist in output data set...Delete All Records...");
+				IDSet.deleteAll();
+			}
+		}
+		
 		/*Data set from "O_SSM" should be empty*/
 		if(oSsmSet.count() > 0){
 			DPFTLogger.info(this, "Records exist in output data set...Delete All Records...");
@@ -91,7 +103,9 @@ public class SsmActionContactInfoDMWatch extends DPFTActionTableWatch {
 			String mobile_no = custSet.getMobile(cust_id);
 			DPFTOutboundDbo new_dbo = (DPFTOutboundDbo) oSsmSet.add();
 			new_dbo.setValue(dSsmSet.getDbo(i));
-			TFBUtil.setSSMHeaderProperties(new_dbo, dSsmSet.getDbo(i));
+			DPFTDbo id_dbo = (DPFTDbo) IDSet.add();
+			String id_num = String.format("%09d", i+1);
+			TFBUtil.setSSMHeaderProperties(new_dbo, dSsmSet.getDbo(i), id_dbo, "S"+id_num);
 			DPFTDbo dSsm = dSsmSet.getDbo(i);
 			if(dSsm.isNull("mobile_priority")){
 				/*use default mobile priority rule*/
@@ -130,6 +144,7 @@ public class SsmActionContactInfoDMWatch extends DPFTActionTableWatch {
 		DPFTLogger.info(this, "Processed total " + dSsmSet.count() + ", process time = " + (ps_fin_time - ps_start_time)/60000 + " min.");
 		oSsmSet.setRefresh(false);
 		oSsmSet.save();
+		IDSet.save();
 		
 		/*Wrtie Usage Code to O_USAGECODE*/
 		TFBUtil.processUsageCode(oSsmSet, "SSM");
@@ -137,6 +152,7 @@ public class SsmActionContactInfoDMWatch extends DPFTActionTableWatch {
 		/*Write results to H_OUTBOUND Table*/
 		TFBUtil.generateObndCtrlRecord(connector, oSsmSet, cell_code_list, cell_name_list, "SSM", true);
 		oSsmSet.close();
+		IDSet.close();
 	}
 
 	@Override
