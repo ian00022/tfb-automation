@@ -194,23 +194,24 @@ public class MacroAUTO extends DPFTAutomationMacro {
 	}
 	
 	private int _runFlowChart(String cmd, String[] run_flowchart_orders, String flowchartype, DPFTAutomationCCTSet cctSet, String logfile) throws DPFTRuntimeException {
-		int idx = 0;
 		for(String filename: run_flowchart_orders){
 			DPFTBashRunner br = new DPFTBashRunner();
 			br.setBashCmd(buildFlowchartCmd(filename, cmd));
 			br.setLogFile(logfile + "_" + DPFTUtil.getCurrentTimeStampAsString().substring(0, GlobalConstants.DFPT_DATE_FORMAT.length()) + "_" + filename);
 			try {
-				Object[] params1 = {cctSet.getDbo(idx).getString("name")};
-				String cmp_owner = DPFTUtil.getCampaignOwnerEmail(cctSet.parseCampaignCode(flowchartype, cctSet.getDbo(idx).getString("name")));
+				Object[] params1 = {cctSet.getDbo(getIndiceByFName(filename, cctSet)).getString("name")};
+				String cmp_owner = DPFTUtil.getCampaignOwnerEmail(cctSet.parseCampaignCode(flowchartype, cctSet.getDbo(getIndiceByFName(filename, cctSet)).getString("name")));
 				DPFTUtil.pushNotification(
 						cmp_owner,
 						new DPFTMessage("SYSTEM", "DPFT0043I", params1)
 				);
 				int rc = br.execute();
 				if(rc == GlobalConstants.DPFT_AUTOMATION_PS_RC_NORMAL){
-					cctSet.getDbo(idx).setValue("cct_status", GlobalConstants.DPFT_AUTOMATION_FLOWCHAR_RUN_INPRG);
+//					cctSet.getDbo(idx).setValue("cct_status", GlobalConstants.DPFT_AUTOMATION_FLOWCHAR_RUN_INPRG);
+					setCCTStatusByFName(filename, cctSet, GlobalConstants.DPFT_AUTOMATION_FLOWCHAR_RUN_INPRG);
 				}else{
-					cctSet.getDbo(idx).setValue("cct_status", GlobalConstants.DPFT_AUTOMATION_FLOWCHAR_RUN_CMD_FAILED);
+//					cctSet.getDbo(idx).setValue("cct_status", GlobalConstants.DPFT_AUTOMATION_FLOWCHAR_RUN_CMD_FAILED);
+					setCCTStatusByFName(filename, cctSet, GlobalConstants.DPFT_AUTOMATION_FLOWCHAR_RUN_CMD_FAILED);
 					DPFTUtil.pushNotification(
 							cmp_owner,
 							new DPFTMessage("SYSTEM", "DPFT0042I", params1)
@@ -221,11 +222,20 @@ public class MacroAUTO extends DPFTAutomationMacro {
 				Object[] params = {br.getBashCmd()};
 				throw new DPFTAutomationException("SYSTEM", "AUTO0007E", params);
 			}
-			idx++;
 		}
 		return GlobalConstants.DPFT_AUTOMATION_PS_RC_NORMAL;
 	}
 
+
+	private int getIndiceByFName(String filename, DPFTAutomationCCTSet cctSet) throws DPFTRuntimeException {
+		int rtnV = 0;
+		for(int i = 0; i < cctSet.count(); i++){
+			if(cctSet.getDbo(i).getString("filename").equals(filename)){
+				return i;
+			}
+		}
+		return rtnV;
+	}
 
 	private int _runFlowChartByOrder(String cmd, String[] run_flowchart_orders, DPFTAutomationCCTSet cctSet, String logfile, String type, boolean failed_break) throws DPFTRuntimeException {
 		if(run_flowchart_orders.length == 0)
