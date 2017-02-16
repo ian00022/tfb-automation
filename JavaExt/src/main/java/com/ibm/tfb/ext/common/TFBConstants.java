@@ -42,4 +42,8 @@ public class TFBConstants {
 	public static final String ECB_RES_CODE_OPENED = "O";
 	public static final String ECB_RES_CODE_CLICKED= "C";
 	public static final Object ECB_RES_CODE_DISPATCH = "D";
+	
+	public static final String EBL_RES_CODE_DISPATCH = "D";
+	public static final String EBL_RES_CODE_CLICKED  = "C";
+	public static final String EBL_RES_CODE_OPENED   = "O";
 }
