@@ -60,7 +60,13 @@ public class DPFTFileReader extends DPFTDataReader{
 				throw new DPFTInvalidSystemSettingException("SYSTEM", "DPFT0031E", params);
 			}
 			try {
-				DPFTBytesBuffer buffer = new DPFTBytesBuffer(new File(fdir + File.separator + filename), layout.getEncoding());
+				String encode = layout.getEncoding();
+				if(encode.equalsIgnoreCase(GlobalConstants.FILE_ENCODE_BIG5)){
+					DPFTUtil.convertFileEncoding_f_Big5_t_UTF8(fdir + File.separator + filename);
+					encode = GlobalConstants.FILE_ENCODE_UTF8;
+				}
+				
+				DPFTBytesBuffer buffer = new DPFTBytesBuffer(new File(fdir + File.separator + filename), encode);
 				buffer.wrap();
 				int line_no = 1;
 				read_data.clear();
@@ -73,7 +79,7 @@ public class DPFTFileReader extends DPFTDataReader{
 					//parse line string
 					DPFTLogger.debug(this, "Read Line No." + line_no + " from " + filename + " =>" + buffer.getLineAsString(line_no));
 					try{
-						HashMap<String, String> row_data = (layout.isStaticMode())?readlineWithStaticLength(buffer.getLine(line_no), layout_detail):readline(buffer.getLineAsString(line_no), layout_detail);
+						HashMap<String, String> row_data = (layout.isStaticMode())?readlineWithStaticLength(buffer.getLine(line_no), layout_detail, encode):readline(buffer.getLineAsString(line_no), layout_detail);
 						if(isValidData(row_data)){
 							read_data.add(row_data);
 						}else{
@@ -191,7 +197,7 @@ public class DPFTFileReader extends DPFTDataReader{
 		return rtnData;
 	}
 	
-	private HashMap<String, String> readlineWithStaticLength(byte[] line_data, ResFileDataLayoutDetailDboSet layout_detail) throws NumberFormatException, DPFTRuntimeException, UnsupportedEncodingException {
+	private HashMap<String, String> readlineWithStaticLength(byte[] line_data, ResFileDataLayoutDetailDboSet layout_detail, String encode) throws NumberFormatException, DPFTRuntimeException, UnsupportedEncodingException {
 		String[] cols =  layout_detail.getColumnsInOrder();
 		HashMap<String, Integer> byte_len_map = layout_detail.getColumnsLengthMapping();
 		HashMap<String, String> rtnData = new HashMap<String, String>();
@@ -205,7 +211,7 @@ public class DPFTFileReader extends DPFTDataReader{
 					index = i+1;
 			}
 
-			String value = normalizedColValue(new String(subline_data, layout.getEncoding()), layout_detail.isNumber(col));
+			String value = normalizedColValue(new String(subline_data, encode), layout_detail.isNumber(col));
 			if(layout_detail.isDate(col))
 				value = layout_detail.normalizedDateString(col, value);
 			

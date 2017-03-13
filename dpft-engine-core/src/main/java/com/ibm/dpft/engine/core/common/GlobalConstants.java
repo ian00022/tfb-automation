@@ -158,6 +158,9 @@ public class GlobalConstants {
 	public static final String DPFT_SYS_PROP_AUTO_ENABLE     		= "sys.engine.auto.enabled";
 	public static final String DPFT_SYS_PROP_AUTO_MACRO_CMD_LOGPATH = "sys.engine.auto.macro.cmd.logpath";
 	public static final String DPFT_SYS_PROP_CONN_RETRY 			= "sys.connection.retry";
+	public static final String DPFT_SYS_PROP_SCRIPT_ROOT            = "sys.engine.script.root";
+	public static final String DPFT_SYS_PROP_SCRIPT_UCONV_BIG5_2_U8 = "sys.engine.script.uconv.big52U8";
+	public static final String DPFT_SYS_PROP_SCRIPT_UCONV_U8_2_BIG5 = "sys.engine.script.uconv.U82big5";
 	
 	/*Automation Constants definition*/
 	public static final String DPFT_AUTOMATION_TBL_STR = "Automation.TBL";

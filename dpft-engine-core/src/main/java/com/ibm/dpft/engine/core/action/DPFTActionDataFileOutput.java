@@ -115,7 +115,8 @@ public abstract class DPFTActionDataFileOutput extends DPFTAction implements DPF
 				}
 				
 				/*Write out files*/
-				doFileOut(file_out_list, file_charset_list);
+				doFileOut(file_out_list);
+				uconv(file_out_list, file_charset_list);
 				
 				
 				/*Compress file to .zip format if needed*/
@@ -154,6 +155,17 @@ public abstract class DPFTActionDataFileOutput extends DPFTAction implements DPF
 			}
 //		}
 		this.changeActionStatus(GlobalConstants.DPFT_ACTION_STAT_COMP);
+	}
+
+	private void uconv(HashMap<String, String> file_out_list, HashMap<String, String> file_charset_list) throws DPFTRuntimeException {
+		for(String filename: file_out_list.keySet()){
+			File f = new File(getOutFileLocalDir() + File.separator + filename);
+			if(f.exists()){
+				String target_encode = file_charset_list.get(filename);
+				if(target_encode.equalsIgnoreCase(GlobalConstants.FILE_ENCODE_BIG5))
+					DPFTUtil.convertFileEncoding_f_UTF8_t_Big5(filename);
+			}	
+		}		
 	}
 
 	private String[] doZipFiles(HashMap<String, String[]> file_compress_list, String z_file_name) throws DPFTRuntimeException {
@@ -216,7 +228,7 @@ public abstract class DPFTActionDataFileOutput extends DPFTAction implements DPF
 		dicSet.close();
 	}
 
-	private void doFileOut(HashMap<String, String> file_out_list, HashMap<String, String> file_charset_list) throws DPFTRuntimeException {
+	private void doFileOut(HashMap<String, String> file_out_list) throws DPFTRuntimeException {
 		// TODO Auto-generated method stub
 		for(String filename: file_out_list.keySet()){
 			try{
@@ -225,8 +237,10 @@ public abstract class DPFTActionDataFileOutput extends DPFTAction implements DPF
 					fdir.mkdirs();
 				}
 				File f = new File(getOutFileLocalDir() + File.separator + filename);
+//				Writer out = new BufferedWriter(new OutputStreamWriter(
+//						new FileOutputStream(f), file_charset_list.get(filename)));
 				Writer out = new BufferedWriter(new OutputStreamWriter(
-						new FileOutputStream(f), file_charset_list.get(filename)));
+						new FileOutputStream(f), GlobalConstants.FILE_ENCODE_UTF8));
 				out.write(file_out_list.get(filename));
 				out.flush();
 				out.close();

@@ -273,8 +273,10 @@ public class DPFTCSVFileFormatter extends DPFTFileFormatter {
 						s = truncateUTF8(s, length);
 						adj_len = getAdjustedLengthUTF8(s, length);
 					}else if(this.getFileEncoding().equals(GlobalConstants.FILE_ENCODE_BIG5)){
-						s = truncateBig5(s, length);
-						adj_len = getAdjustedLengthBig5(s, length);
+//						s = truncateBig5(s, length);
+//						adj_len = getAdjustedLengthBig5(s, length);
+						s = truncateBig5_f_UTF8(s, length);
+						adj_len = getAdjustedLengthBig5_f_UTF8(s, length);
 					}
 					format = "%1$-" + adj_len + "s";
 				}
@@ -292,49 +294,49 @@ public class DPFTCSVFileFormatter extends DPFTFileFormatter {
 		return s;
 	}
 	
-	private String truncateBig5(String s, int n) throws DPFTRuntimeException {
-		byte[] big5;
-		try{
-			big5 = s.getBytes("Big5");
-		} catch (UnsupportedEncodingException e) {
-			throw new DPFTDataFormatException("SYSTEM", "DPFT0013E", e);
-		}
-		if(big5.length < n) n = big5.length;
-		int n16 = 0;
-		int i = 0;
-		byte[] array = new byte[2];
-		while(i < n){
-			int adv = 1;
-			if(i+1 < big5.length){
-				array[0] = big5[i];
-				array[1] = big5[i+1];
-				
-				// 兩個位元組轉換為整數 
-	            int tmp = (short)((array[0] << 8) | 
-	                  (array[1] & 0xff)); 
-	            tmp = tmp & 0xFFFF; 
-
-	            // 判斷是否為BIG5漢字
-	            if(tmp >= 0xA440 && tmp < 0xFFFF){
-	            	if(i+1 >= n)
-	            		//over boundary, ignore this 2-byte character
-	            		break;
-	            	adv=2;
-				}
-	            
-	            // 判斷是否為BIG5特殊字元、標點符號
-	            if(tmp >= 0xA140 && tmp < 0xA3BF){
-	            	if(i+1 >= n)
-	            		//over boundary, ignore this 2-byte character
-	            		break;
-	            	adv=2;
-				}
-			}
-			i+=adv;
-            n16++;
-		}
-		return s.substring(0, n16);
-	}
+//	private String truncateBig5(String s, int n) throws DPFTRuntimeException {
+//		byte[] big5;
+//		try{
+//			big5 = s.getBytes("Big5");
+//		} catch (UnsupportedEncodingException e) {
+//			throw new DPFTDataFormatException("SYSTEM", "DPFT0013E", e);
+//		}
+//		if(big5.length < n) n = big5.length;
+//		int n16 = 0;
+//		int i = 0;
+//		byte[] array = new byte[2];
+//		while(i < n){
+//			int adv = 1;
+//			if(i+1 < big5.length){
+//				array[0] = big5[i];
+//				array[1] = big5[i+1];
+//				
+//				// 兩個位元組轉換為整數 
+//	            int tmp = (short)((array[0] << 8) | 
+//	                  (array[1] & 0xff)); 
+//	            tmp = tmp & 0xFFFF; 
+//
+//	            // 判斷是否為BIG5漢字
+//	            if(tmp >= 0xA440 && tmp < 0xFFFF){
+//	            	if(i+1 >= n)
+//	            		//over boundary, ignore this 2-byte character
+//	            		break;
+//	            	adv=2;
+//				}
+//	            
+//	            // 判斷是否為BIG5特殊字元、標點符號
+//	            if(tmp >= 0xA140 && tmp < 0xA3BF){
+//	            	if(i+1 >= n)
+//	            		//over boundary, ignore this 2-byte character
+//	            		break;
+//	            	adv=2;
+//				}
+//			}
+//			i+=adv;
+//            n16++;
+//		}
+//		return s.substring(0, n16);
+//	}
 
 	private String truncateUTF8(String s, int n) throws DPFTRuntimeException {
 	    byte[] utf8;
@@ -358,23 +360,46 @@ public class DPFTCSVFileFormatter extends DPFTFileFormatter {
 	    return s.substring(0,n16);
 	}
 	
-	private int getAdjustedLengthBig5(String s, int length) throws DPFTRuntimeException {
-		byte[] big5;
+	private String truncateBig5_f_UTF8(String s, int n) throws DPFTRuntimeException {
+	    byte[] utf8;
 		try {
-			big5 = s.getBytes("Big5");
+			utf8 = s.getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			throw new DPFTDataFormatException("SYSTEM", "DPFT0013E", e);
 		}
-		
-		if(s.length() == big5.length){
-			//No double-bytes characters
-			return length;
-		}
-		
-		int number_of_2_bytes_characters = big5.length - s.length();
-	    int adj_len = length - number_of_2_bytes_characters;
-		return adj_len;	
+	    if (utf8.length < n) n = utf8.length;
+	    int n16 = 0;
+	    int advance = 1;
+	    int i = 0;
+	    int big5_i = 0;
+	    while (i < n) {
+	      advance = 1;
+	      if ((utf8[i] & 0x80) == 0) {i += 1; big5_i += 1;}
+	      else if ((utf8[i] & 0xE0) == 0xC0) {i += 2; big5_i += 2;}
+	      else if ((utf8[i] & 0xF0) == 0xE0) {i += 3; big5_i += 2;}
+	      else { i += 4; advance = 2; big5_i += 2;}
+	      if (big5_i <= n) n16 += advance;
+	    }
+	    return s.substring(0,n16);
 	}
+	
+//	private int getAdjustedLengthBig5(String s, int length) throws DPFTRuntimeException {
+//		byte[] big5;
+//		try {
+//			big5 = s.getBytes("Big5");
+//		} catch (UnsupportedEncodingException e) {
+//			throw new DPFTDataFormatException("SYSTEM", "DPFT0013E", e);
+//		}
+//		
+//		if(s.length() == big5.length){
+//			//No double-bytes characters
+//			return length;
+//		}
+//		
+//		int number_of_2_bytes_characters = big5.length - s.length();
+//	    int adj_len = length - number_of_2_bytes_characters;
+//		return adj_len;	
+//	}
 
 	private int getAdjustedLengthUTF8(String s,int length) throws DPFTRuntimeException {
 		byte[] utf8;
@@ -397,6 +422,32 @@ public class DPFTCSVFileFormatter extends DPFTFileFormatter {
 		     else if ((utf8[i] & 0xE0) == 0xC0) {i += 2; number_of_muti_bytes_characters+=1;}
 		      else if ((utf8[i] & 0xF0) == 0xE0){i += 3; number_of_muti_bytes_characters+=2;}
 		      else { i += 4; number_of_muti_bytes_characters+=3;}
+	    }
+	    int adj_len = length - number_of_muti_bytes_characters;
+		return adj_len;	
+	}
+	
+	private int getAdjustedLengthBig5_f_UTF8(String s,int length) throws DPFTRuntimeException {
+		byte[] utf8;
+		try {
+			utf8 = s.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new DPFTDataFormatException("SYSTEM", "DPFT0013E", e);
+		}
+		
+		if(s.length() == utf8.length){
+			//No double-bytes characters
+			return length;
+		}
+		
+		int i = 0;
+		int number_of_muti_bytes_characters = 0;
+	    while (i < utf8.length) {
+	    	//String contain double-bytes characters, such as Chinese..
+	    	if ((utf8[i] & 0x80) == 0) i += 1;
+		     else if ((utf8[i] & 0xE0) == 0xC0) {i += 2; number_of_muti_bytes_characters+=1;}
+		      else if ((utf8[i] & 0xF0) == 0xE0){i += 3; number_of_muti_bytes_characters+=1;}
+		      else { i += 4; number_of_muti_bytes_characters+=1;}
 	    }
 	    int adj_len = length - number_of_muti_bytes_characters;
 		return adj_len;	

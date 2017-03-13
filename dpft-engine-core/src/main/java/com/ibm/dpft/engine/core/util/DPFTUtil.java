@@ -1,9 +1,13 @@
 package com.ibm.dpft.engine.core.util;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+
+import org.apache.commons.io.FilenameUtils;
+
 import com.ibm.dpft.engine.core.DPFTEngine;
 import com.ibm.dpft.engine.core.common.GlobalConstants;
 import com.ibm.dpft.engine.core.config.DPFTConfig;
@@ -14,6 +18,7 @@ import com.ibm.dpft.engine.core.dbo.DPFTNotificationDbo;
 import com.ibm.dpft.engine.core.dbo.DPFTNotificationDboSet;
 import com.ibm.dpft.engine.core.dbo.DPFTTriggerMapDefDboSet;
 import com.ibm.dpft.engine.core.dbo.UnicaCampaignDboSet;
+import com.ibm.dpft.engine.core.exception.DPFTAutomationException;
 import com.ibm.dpft.engine.core.exception.DPFTRuntimeException;
 
 public class DPFTUtil {
@@ -228,5 +233,41 @@ public class DPFTUtil {
 		sb.append("select distinct treatment_code from ")
 						.append("D_").append(set.getDbo(0).getString("chal_name"));
 		return sb.toString();
+	}
+
+	public static void convertFileEncoding_f_Big5_t_UTF8(String filename) throws DPFTRuntimeException {
+		String cmd = DPFTEngine.getSystemProperties(GlobalConstants.DPFT_SYS_PROP_SCRIPT_UCONV_BIG5_2_U8) + " %s";
+		String logfile = FilenameUtils.getFullPath(filename) + File.separator + "uconv" + File.separator + "big5_u8_" + FilenameUtils.getName(filename) + "." + DPFTUtil.getCurrentTimeStampAsString();
+		DPFTBashRunner  br = new DPFTBashRunner();
+		br.setBashCmd(String.format(cmd, filename));
+		br.setLogFile(logfile);
+		try {
+			int errorlevel = br.execute();
+			if(errorlevel != GlobalConstants.DPFT_AUTOMATION_PS_RC_NORMAL){
+				Object[] params = {cmd, String.valueOf(errorlevel)};
+				throw new DPFTAutomationException("SYSTEM", "AUTO0013E", params);
+			}
+		} catch (Exception e) {
+			Object[] params = {cmd};
+			throw new DPFTAutomationException("SYSTEM", "AUTO0007E", params, e);
+		}
+	}
+
+	public static void convertFileEncoding_f_UTF8_t_Big5(String filename) throws DPFTRuntimeException {
+		String cmd = DPFTEngine.getSystemProperties(GlobalConstants.DPFT_SYS_PROP_SCRIPT_UCONV_U8_2_BIG5) + " %s";
+		String logfile = FilenameUtils.getFullPath(filename) + File.separator + "uconv" + File.separator + "u8_big5" + FilenameUtils.getName(filename) + "." + DPFTUtil.getCurrentTimeStampAsString();
+		DPFTBashRunner  br = new DPFTBashRunner();
+		br.setBashCmd(String.format(cmd, filename));
+		br.setLogFile(logfile);
+		try {
+			int errorlevel = br.execute();
+			if(errorlevel != GlobalConstants.DPFT_AUTOMATION_PS_RC_NORMAL){
+				Object[] params = {cmd, String.valueOf(errorlevel)};
+				throw new DPFTAutomationException("SYSTEM", "AUTO0013E", params);
+			}
+		} catch (Exception e) {
+			Object[] params = {cmd};
+			throw new DPFTAutomationException("SYSTEM", "AUTO0007E", params, e);
+		}
 	}
 }
