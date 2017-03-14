@@ -295,7 +295,7 @@ public class DPFTCSVFileFormatter extends DPFTFileFormatter {
 	private String truncateBig5(String s, int n) throws DPFTRuntimeException {
 		byte[] big5;
 		try{
-			big5 = s.getBytes("Big5");
+			big5 = s.getBytes(GlobalConstants.FILE_ENCODE_BIG5);
 		} catch (UnsupportedEncodingException e) {
 			throw new DPFTDataFormatException("SYSTEM", "DPFT0013E", e);
 		}
@@ -361,7 +361,7 @@ public class DPFTCSVFileFormatter extends DPFTFileFormatter {
 	private int getAdjustedLengthBig5(String s, int length) throws DPFTRuntimeException {
 		byte[] big5;
 		try {
-			big5 = s.getBytes("Big5");
+			big5 = s.getBytes(GlobalConstants.FILE_ENCODE_BIG5);
 		} catch (UnsupportedEncodingException e) {
 			throw new DPFTDataFormatException("SYSTEM", "DPFT0013E", e);
 		}
