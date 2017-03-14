@@ -74,6 +74,11 @@ public class MKTDMCustomerContactDboSet extends DPFTDboSet {
 		return new MKTDMCustomerContactDbo(dboname, d, this);
 	}
 
+	public String getChnNameByBizType(String cust_id, String biz_type) throws DPFTRuntimeException {
+		return getContactInfo(cust_id, TFBConstants.MKTDM_CONT_CD_CHN_NAME, biz_type);
+	}
+	
+	
 	public String getAddrByBizType(String cust_id, String biz_type) throws DPFTRuntimeException {
 		// TODO Auto-generated method stub
 		return getContactInfo(cust_id, TFBConstants.MKTDM_CONT_CD_ADDR_COMM, biz_type);
@@ -124,12 +129,24 @@ public class MKTDMCustomerContactDboSet extends DPFTDboSet {
 		return getContactInfo(cust_id, TFBConstants.MKTDM_CONT_CD_TEL_NIGHT, biz_type);
 	}
 	
+	public String getOfficeTelAreaByBizType(String cust_id, String biz_type) throws DPFTRuntimeException {
+		return getContactInfo(cust_id, TFBConstants.MKTDM_CONT_CD_TEL_OFF_ARE, biz_type);
+	}
+	
 	public String getOfficeTelByBizType(String cust_id, String biz_type) throws DPFTRuntimeException {
 		return getContactInfo(cust_id, TFBConstants.MKTDM_CONT_CD_TEL_OFF, biz_type);
 	}
 	
 	public String getOfficeExtTelByBizType(String cust_id, String biz_type) throws DPFTRuntimeException {
 		return getContactInfo(cust_id, TFBConstants.MKTDM_CONT_CD_TEL_OFF_EXT, biz_type);
+	}
+
+	public String getCommTelAreByBizType(String cust_id, String biz_type) throws DPFTRuntimeException {
+		return getContactInfo(cust_id, TFBConstants.MKTDM_CONT_CD_COM_TEL_ARE, biz_type);
+	}
+	
+	public String getCommTelByBizType(String cust_id, String biz_type) throws DPFTRuntimeException {
+		return getContactInfo(cust_id, TFBConstants.MKTDM_CONT_CD_COM_TEL, biz_type);
 	}
 	
 	public String getMobileByBizType(String cust_id, String biz_type) throws DPFTRuntimeException {
@@ -194,7 +211,7 @@ public class MKTDMCustomerContactDboSet extends DPFTDboSet {
 		String[] p = pr.getPrioritySettings();
 		addr_info[0] = getAddrByBizType(cust_id,p[0]);
 		addr_info[1] = getZipCodeByBizType(cust_id, p[0]);
-		if(addr_info[0] == null){
+		if(addr_info[0] == null ){
 			addr_info[0] = getAddrByBizType(cust_id,p[1]);
 			addr_info[1] = getZipCodeByBizType(cust_id, p[1]);
 			if(addr_info[0] == null){
@@ -246,5 +263,27 @@ public class MKTDMCustomerContactDboSet extends DPFTDboSet {
 		return mobile;
 	}
 
+	public String getOfficePhoneByBizType(String cust_id, String biz_type) throws DPFTRuntimeException {
+		
+		String off_are = getContactInfo(cust_id, TFBConstants.MKTDM_CONT_CD_TEL_OFF_ARE, biz_type);
+		String off = getContactInfo(cust_id, TFBConstants.MKTDM_CONT_CD_TEL_OFF, biz_type);
+		String off_ext =  getContactInfo(cust_id, TFBConstants.MKTDM_CONT_CD_TEL_OFF_EXT, biz_type);
 
+		if(off_are == null && off_are == null)
+			return null;
+		
+		return off_are + off + (off_ext == null ? "" : "#" + off_ext);
+	}
+
+	public String getCommPhoneByBizType(String cust_id, String biz_type) throws DPFTRuntimeException {
+		
+		String comm_are = getContactInfo(cust_id, TFBConstants.MKTDM_CONT_CD_COM_TEL_ARE, biz_type);
+		String comm = getContactInfo(cust_id, TFBConstants.MKTDM_CONT_CD_COM_TEL, biz_type);
+
+		if(comm_are == null && comm == null)
+			return null;
+		
+		return comm_are + comm;
+	}	
+	
 }

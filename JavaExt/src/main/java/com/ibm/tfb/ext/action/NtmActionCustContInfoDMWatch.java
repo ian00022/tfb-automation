@@ -88,9 +88,18 @@ public class NtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 				mobile = contSet.getPrioritizedMobilePhone(dNtm.getString("customer_id"), "NTM_MBL", dNtm.getString("mobile_priority"));
 			}
 			dNtm.setValue("MobilePhone", mobile);
-			dNtm.setValue("HomePhone" , contSet.getDayTelByBizType(dNtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK));
-			dNtm.setValue("OfficePhone" , contSet.getOfficeTelByBizType(dNtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK));
-			dNtm.setValue("OfficePhoneExt" , contSet.getOfficeExtTelByBizType(dNtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK));
+			
+			dNtm.setValue("HomePhone" , contSet.getCommPhoneByBizType(dNtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_CC));
+			
+			String officeAre = contSet.getOfficeTelAreaByBizType(dNtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_CC);
+			String officePhone = contSet.getOfficeTelByBizType(dNtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_CC);
+			if(officeAre == null && officePhone == null){
+				dNtm.setValue("OfficePhone" , officePhone);
+			} else {
+				dNtm.setValue("OfficePhone" , (officeAre == null ? "" : officeAre) + (officePhone == null ? "" : officePhone));
+			}
+			
+			dNtm.setValue("OfficePhoneExt" , contSet.getOfficeExtTelByBizType(dNtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_CC));
 			
 			String email = null;
 			if(dNtm.isNull("email_priority")){

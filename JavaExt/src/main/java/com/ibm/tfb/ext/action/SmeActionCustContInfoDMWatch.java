@@ -21,7 +21,7 @@ import com.ibm.tfb.ext.common.TFBConstants;
 import com.ibm.tfb.ext.common.TFBUtil;
 import com.ibm.tfb.ext.dbo.MKTDMCustomerContactDboSet;
 
-public class CtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
+public class SmeActionCustContInfoDMWatch extends DPFTActionTableWatch {
 
 	@Override
 	public DPFTConfig getDBConfig() {
@@ -38,14 +38,10 @@ public class CtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 		StringBuilder sb = new StringBuilder();
 		sb.append("cust_id in (");
 		sb.append(TFBUtil.getCustomerSelectINString(this.getPreviousAction().getResultSet(), "customer_id"));
-		sb.append(") and cont_cd in ('" + TFBConstants.MKTDM_CONT_CD_CHN_NAME + "','"
-										+ TFBConstants.MKTDM_CONT_CD_ZIPCD_COMM + "','" 
+		sb.append(") and cont_cd in ('" + TFBConstants.MKTDM_CONT_CD_ZIPCD_COMM + "','" 
 										+ TFBConstants.MKTDM_CONT_CD_ADDR_COMM + "','" 
-										+ TFBConstants.MKTDM_CONT_CD_TEL_OFF_ARE + "','" 
-										+ TFBConstants.MKTDM_CONT_CD_TEL_OFF + "','"
-										+ TFBConstants.MKTDM_CONT_CD_TEL_OFF_EXT + "','"
-										+ TFBConstants.MKTDM_CONT_CD_COM_TEL_ARE + "','"
-										+ TFBConstants.MKTDM_CONT_CD_COM_TEL + "','"
+										+ TFBConstants.MKTDM_CONT_CD_TEL_DAY + "','" 
+										+ TFBConstants.MKTDM_CONT_CD_TEL_NIGHT + "','" 
 										+ TFBConstants.MKTDM_CONT_CD_MOBILE_1 + "','"
 										+ TFBConstants.MKTDM_CONT_CD_MOBILE_2 + "','"
 										+ TFBConstants.MKTDM_CONT_CD_EMAIL + "')");
@@ -61,62 +57,45 @@ public class CtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 	@Override
 	public void postAction() throws DPFTRuntimeException {
 		/*get D_CDM Set*/
-		DPFTDboSet dCtmSet = this.getPreviousAction().getResultSet();
+		DPFTDboSet dSmeSet = this.getPreviousAction().getResultSet();
 		
 		/*Contact data from MKTDM*/
 		MKTDMCustomerContactDboSet contSet = (MKTDMCustomerContactDboSet) this.getDataSet();
 
 		/*set Addr by IBM Campaign Priority setting*/
 		long ps_start_time = System.currentTimeMillis();
-		for(int i = 0; i < dCtmSet.count(); i++){
-			DPFTDbo dCtm = dCtmSet.getDbo(i);
-			
-			// customer name info, default bank, credit card have priority
-			String chn_name = contSet.getChnNameByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_CC);
-			if(chn_name != null){
-				dCtm.setValue("cust_name", chn_name);
-			}
-			
+		for(int i = 0; i < dSmeSet.count(); i++){
+			DPFTDbo dSme = dSmeSet.getDbo(i);
 			String[] addr_info = null;
-			if(dCtm.isNull("addr_priority")){
+			if(dSme.isNull("addr_priority")){
 				/*use default addr priority rule*/
-				addr_info = contSet.getPrioritizedAddrWithoutAddrCode(dCtm.getString("customer_id"), "CTM_ADDR", GlobalConstants.DPFT_DEFAULT_PRIORITY_CODE);
+				addr_info = contSet.getPrioritizedAddr(dSme.getString("customer_id"), "SME_ADDR", GlobalConstants.DPFT_DEFAULT_PRIORITY_CODE);
 			}else{
 				/*use ADDR_PRIORITY Setting*/
-				addr_info = contSet.getPrioritizedAddrWithoutAddrCode(dCtm.getString("customer_id"), "CTM_ADDR", dCtm.getString("addr_priority"));
+				addr_info = contSet.getPrioritizedAddr(dSme.getString("customer_id"), "SME_ADDR", dSme.getString("addr_priority"));
 			}
-			dCtm.setValue("addr", addr_info[0]);
-			dCtm.setValue("zip_cod", addr_info[1]);
+			dSme.setValue("addr", addr_info[0]);//客戶地址
+			//dSme.setValue("zip_cod", addr_info[1]);
 			
 			String mobile = null;
-			if(dCtm.isNull("mobile_priority")){
-				mobile = contSet.getPrioritizedMobilePhone(dCtm.getString("customer_id"), "CTM_MBL", GlobalConstants.DPFT_DEFAULT_PRIORITY_CODE);
+			if(dSme.isNull("mobile_priority")){
+				mobile = contSet.getPrioritizedMobilePhone(dSme.getString("customer_id"), "SME_MBL", GlobalConstants.DPFT_DEFAULT_PRIORITY_CODE);
 			}else{
-				mobile = contSet.getPrioritizedMobilePhone(dCtm.getString("customer_id"), "CTM_MBL", dCtm.getString("mobile_priority"));
+				mobile = contSet.getPrioritizedMobilePhone(dSme.getString("customer_id"), "SME_MBL", dSme.getString("mobile_priority"));
 			}
-			dCtm.setValue("mobile", mobile);
-			
-			dCtm.setValue("day_use" , contSet.getOfficePhoneByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_CC));
-			dCtm.setValue("night_use" , contSet.getCommPhoneByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_CC));
-			
-			String email = null;
-			if(dCtm.isNull("email_priority")){
-				/*use default email priority rule*/
-				email = contSet.getPrioritizedEmail(dCtm.getString("customer_id"), "CTM_MAIL", GlobalConstants.DPFT_DEFAULT_PRIORITY_CODE);
-			}else{
-				/*use email_priority Setting*/
-				email = contSet.getPrioritizedEmail(dCtm.getString("customer_id"), "CTM_MAIL", dCtm.getString("email_priority"));
-			}
-			dCtm.setValue("email", email);
-			
+			dSme.setValue("tel_no2", mobile);//客戶手機
+			//客戶市話
+			dSme.setValue("tel_no1" , contSet.getDayTelByBizType(dSme.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK));
+			//dSme.setValue("night_use" , contSet.getNightTelByBizType(dSme.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK));
+												
 			if((i+1)%100 == 0)
 				DPFTLogger.debug(this, "Processed " + (i+1) + " records...");
 		}
 		long ps_fin_time = System.currentTimeMillis();
-		DPFTLogger.info(this, "Processed total " + dCtmSet.count() + ", process time = " + (ps_fin_time - ps_start_time)/60000 + " min.");
+		DPFTLogger.info(this, "Processed total " + dSmeSet.count() + ", process time = " + (ps_fin_time - ps_start_time)/60000 + " min.");
 		
 		/*Set Query criteria for "O_CTM"*/
-		String qString = DPFTUtil.getFKQueryString(dCtmSet.getDbo(0));
+		String qString = DPFTUtil.getFKQueryString(dSmeSet.getDbo(0));
 		if(qString == null){
 			DPFTLogger.debug(this, "Built FK Query String Failed...");
 			return;
@@ -125,19 +104,19 @@ public class CtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 		
 		/*Get Data set from "O_CTM"*/
 		DPFTConnector connector = DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig());
-		DPFTOutboundDboSet oCtmSet = (DPFTOutboundDboSet) connector.getDboSet("O_CTM", qString);
-		oCtmSet.load();
+		DPFTOutboundDboSet oSmeSet = (DPFTOutboundDboSet) connector.getDboSet("O_SME", qString);
+		oSmeSet.load();
 		/*Data set from "O_CTM" should be empty*/
-		if(oCtmSet.count() > 0){
+		if(oSmeSet.count() > 0){
 			DPFTLogger.info(this, "Records exist in output data set...Delete All Records...");
-			oCtmSet.deleteAll();
+			oSmeSet.deleteAll();
 		}
 		
 		ArrayList<String> cell_code_list = new ArrayList<String>();
 		ArrayList<String> cell_name_list = new ArrayList<String>();
-		for(int i = 0; i < dCtmSet.count(); i++){
-			DPFTOutboundDbo new_dbo = (DPFTOutboundDbo) oCtmSet.add();
-			new_dbo.setValue(dCtmSet.getDbo(i));
+		for(int i = 0; i < dSmeSet.count(); i++){
+			DPFTOutboundDbo new_dbo = (DPFTOutboundDbo) oSmeSet.add();
+			new_dbo.setValue(dSmeSet.getDbo(i));
 			if(!isValidCustInfo(new_dbo)){
 				//Exclude records
 				new_dbo.setValue("process_status", GlobalConstants.O_DATA_EXCLUDE);
@@ -152,15 +131,14 @@ public class CtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 				cell_name_list.add(new_dbo.getString("cellname"));
 			}
 		}
-		oCtmSet.setRefresh(false);
-		oCtmSet.save();
+		oSmeSet.save();
 		
 		/*Write usage codes to O_USAGECODE Table*/
-		TFBUtil.processUsageCode(oCtmSet, "CTM");
+		TFBUtil.processUsageCode(oSmeSet, "CDM");
 		
 		/*Write results to H_OUTBOUND Table*/
-		TFBUtil.generateObndCtrlRecord(connector, oCtmSet, cell_code_list, cell_name_list, "CTM", true);
-		oCtmSet.close();
+		TFBUtil.generateObndCtrlRecord(connector, oSmeSet, cell_code_list, cell_name_list, "SME", true);
+		oSmeSet.close();
 	}
 
 	private boolean isValidCustInfo(DPFTOutboundDbo new_dbo) {
