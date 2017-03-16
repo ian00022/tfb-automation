@@ -2,6 +2,7 @@ package com.ibm.tfb.ext.common;
 
 public class TFBConstants {
 
+	public static final String MKTDM_CONT_CD_CHN_NAME 	= "001";
 	public static final String MKTDM_CONT_CD_EMAIL 		= "301";
 	public static final String MKTDM_CONT_CD_MOBILE_1 	= "111";
 	public static final String MKTDM_CONT_CD_MOBILE_2 	= "112";
@@ -9,7 +10,16 @@ public class TFBConstants {
 	public static final String MKTDM_CONT_CD_ADDR_COMM  = "212";
 	public static final String MKTDM_CONT_CD_ZIPCD_COMM = "211";
 	public static final String MKTDM_CONT_CD_TEL_DAY    = "131";
-	public static final String MKTDM_CONT_CD_TEL_NIGHT  = "132";
+	public static final String MKTDM_CONT_CD_TEL_NIGHT  = "132";	
+	public static final String MKTDM_CONT_CD_RES_ZIP    = "201";
+	public static final String MKTDM_CONT_CD_RES_ADDR   = "202";
+	public static final String MKTDM_CONT_CD_TEL_OFF_ARE= "121";
+	public static final String MKTDM_CONT_CD_TEL_OFF    = "122";
+	public static final String MKTDM_CONT_CD_TEL_OFF_EXT= "123";
+	public static final String MKTDM_CONT_CD_HOU_COMM   = "242";
+	public static final String MKTDM_CONT_CD_HOUZIP_COMM= "241";
+	public static final String MKTDM_CONT_CD_COM_TEL_ARE= "101";
+	public static final String MKTDM_CONT_CD_COM_TEL    = "102";
 	
 	public static final String MKTDM_CONT_BIZTYPE_BNK   = "BNK";
 	public static final String MKTDM_CONT_BIZTYPE_CC    = "CC" ;

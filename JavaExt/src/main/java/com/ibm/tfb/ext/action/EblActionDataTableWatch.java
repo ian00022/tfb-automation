@@ -71,6 +71,7 @@ public class EblActionDataTableWatch extends DPFTActionTableWatch {
 		
 		/*Validate records with personal info data & add record to outbound data table*/		
 		ArrayList<String> cell_code_list = new ArrayList<String>();
+		ArrayList<String> cell_name_list = new ArrayList<String>();
 		for(int i = 0; i < dEblSet.count(); i++){
 			DPFTOutboundDbo new_dbo = (DPFTOutboundDbo) oEblSet.add();
 			new_dbo.setValue(dEblSet.getDbo(i));
@@ -80,6 +81,9 @@ public class EblActionDataTableWatch extends DPFTActionTableWatch {
 			if(!cell_code_list.contains(new_dbo.getString("cell_code"))){
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
+			if(!cell_name_list.contains(new_dbo.getString("cellname"))){
+				cell_name_list.add(new_dbo.getString("cellname"));
+			}
 		}
 		oEblSet.setRefresh(false);
 		oEblSet.save();
@@ -88,7 +92,7 @@ public class EblActionDataTableWatch extends DPFTActionTableWatch {
 		TFBUtil.processUsageCode(oEblSet, "EBL");
 		
 		/*Write results to H_OUTBOUND Table*/
-		TFBUtil.generateObndCtrlRecord(this.getDBConnector(), oEblSet, cell_code_list, "EBL", false);
+		TFBUtil.generateObndCtrlRecord(this.getDBConnector(), oEblSet, cell_code_list, cell_name_list, "EBL", false);
 		oEblSet.close();
 	}
 

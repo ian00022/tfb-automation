@@ -46,13 +46,29 @@ public class TFBUtil {
 		  .append(" where ").append(fk_string);
 		return sb.toString();
 	}
-
-	public static String getDestNameString(DPFTDbo dbo) {
-		return dbo.getString("camp_code") + "||" + dbo.getString("treatment_code") + "||" + dbo.getString("customer_id");
+	
+	public static String buildCustomerSelectINString(DPFTDboSet set) throws DPFTRuntimeException{
+		if(set.isEmpty())
+			return "";
+		
+		String fk_string = DPFTUtil.getFKQueryString(set.getDbo(0));
+		StringBuilder sb = new StringBuilder();
+		sb.append("select customer_id from ")
+						.append(set.getDboname())
+		  .append(" where ").append(fk_string);
+		return sb.toString();
 	}
 
-	public static void setSSMHeaderProperties(DPFTDbo new_dbo, DPFTDbo data) {
-		new_dbo.setValue("destname", TFBUtil.getDestNameString(data));
+	public static String getDestNameString(DPFTDbo dbo, DPFTDbo id_dbo, String idnu) {
+		id_dbo.setValue("treatment_code", dbo.getString("treatment_code"));
+		id_dbo.setValue("customer_id", dbo.getString("customer_id"));
+		id_dbo.setValue("id_number", idnu);
+		return dbo.getString("camp_code") + "||" + dbo.getString("treatment_code") + "||" + idnu;
+		//return dbo.getString("camp_code") + "||" + dbo.getString("treatment_code") + "||" + dbo.getString("customer_id");
+	}
+
+	public static void setSSMHeaderProperties(DPFTDbo new_dbo, DPFTDbo data, DPFTDbo id_dbo, String idnum) {
+		new_dbo.setValue("destname", TFBUtil.getDestNameString(data, id_dbo, idnum));
 		if(data.getString("isinteractive").equalsIgnoreCase("y")){
 //			new_dbo.setValue("username", DPFTEngine.getSystemProperties("TFB_SSM_I_USRNAME"));
 			new_dbo.setValue("password", DPFTEngine.getSystemProperties("TFB_SSM_I_USRPWD"));
@@ -71,8 +87,8 @@ public class TFBUtil {
 		return DPFTUtil.getDBConfig("MKTDM");
 	}
 
-	public static void setESMHeaderProperties(DPFTDbo new_dbo, DPFTDbo data) {
-		new_dbo.setValue("destname", TFBUtil.getDestNameString(data));
+	public static void setESMHeaderProperties(DPFTDbo new_dbo, DPFTDbo data, DPFTDbo id_dbo, String idnum) {
+		new_dbo.setValue("destname", TFBUtil.getDestNameString(data, id_dbo, idnum));
 		if(data.getString("isinteractive").equalsIgnoreCase("y")){
 //			new_dbo.setValue("username", DPFTEngine.getSystemProperties("TFB_ESM_I_USRNAME"));
 			new_dbo.setValue("password", DPFTEngine.getSystemProperties("TFB_ESM_I_USRPWD"));
@@ -123,8 +139,17 @@ public class TFBUtil {
 		sb.append(String.valueOf(cal.get(Calendar.YEAR) - 1911)).append(String.format("%02d", cal.get(Calendar.MONTH)+1));
 		return sb.toString();
 	}
+	
+	// YYYY-MM-DD to yyyMMdd 
+	public static String getROCYearMonthDay(Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.valueOf(cal.get(Calendar.YEAR) - 1911)).append(String.format("%02d", cal.get(Calendar.MONTH)+1)).append(String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)));
+		return sb.toString();
+	}
 
-	public static void generateObndCtrlRecord(DPFTConnector connector, DPFTDboSet oSet, ArrayList<String> cell_code_list, String chal_name, boolean hasHObnd) throws DPFTRuntimeException {
+	public static void generateObndCtrlRecord(DPFTConnector connector, DPFTDboSet oSet, ArrayList<String> cell_code_list, ArrayList<String> cell_name_list, String chal_name, boolean hasHObnd) throws DPFTRuntimeException {
 		DPFTDbo dbo = oSet.getDbo(0);
 		String qString = DPFTUtil.getFKQueryString(dbo);
 		if(qString == null){
@@ -137,6 +162,7 @@ public class TFBUtil {
 				DPFTLogger.info(TFBUtil.class.getName(), "Records exist in H_OUTBOUND...Delete All Records...");
 				hObndSet.deleteAll();
 			}
+			//  Divide outbound table by cell_code 
 			for(int i = 0; i < cell_code_list.size(); i++){
 				DPFTOutboundControlDbo new_hobnd = (DPFTOutboundControlDbo) hObndSet.add();
 				new_hobnd.setBasicInfo(dbo, "O_" + chal_name, chal_name);
@@ -150,6 +176,7 @@ public class TFBUtil {
 		for(int i = 0; i < cell_code_list.size(); i++){
 			int total_exclude_gk = 0, total_exclude = 0, total = 0;
 			String cell_code = cell_code_list.get(i);
+			String cell_name = cell_name_list.get(i);
 			for(int j = 0; j < oSet.count(); j++){
 				if(oSet.getDbo(j).getString("cell_code").equals(cell_code) 
 						&& oSet.getDbo(j).getString("process_status").equals(GlobalConstants.O_DATA_GK_EXCLUDE)){
@@ -163,7 +190,8 @@ public class TFBUtil {
 					total++;
 			}
 			int total_out = total - total_exclude_gk - total_exclude;
-			Object[] params = {dbo.getString("camp_code"), cell_code, String.valueOf(total), String.valueOf(total_exclude_gk), String.valueOf(total_exclude), String.valueOf(total_out)};
+			// - replace cell_code to cell_name for all chain
+			Object[] params = {dbo.getString("camp_code"), cell_name, String.valueOf(total), String.valueOf(total_exclude_gk), String.valueOf(total_exclude), String.valueOf(total_out)};
 			DPFTUtil.pushNotification(
 					DPFTUtil.getCampaignOwnerEmail(dbo.getString("camp_code")), 
 					new DPFTMessage("CUSTOM", "TFB00009I", params)
@@ -210,8 +238,11 @@ public class TFBUtil {
 		for(int i = 0; i < oSet.count(); i++){
 			if(oSet.getDbo(i).isNull("usagecode"))
 				continue;
-			TFBUsageCodeDbo new_usgcode = (TFBUsageCodeDbo) oUsgSet.add();
-			new_usgcode.setInitialData(oSet.getDbo(i), chal_name);
+			String[] usageArray = oSet.getDbo(i).getString(("usagecode")).split(";");
+			for(String usage : usageArray) {
+				TFBUsageCodeDbo new_usgcode = (TFBUsageCodeDbo) oUsgSet.add();
+				new_usgcode.setInitialData(oSet.getDbo(i), chal_name, usage.toUpperCase()); 
+			}
 		}
 		oUsgSet.save();
 		oUsgSet.close();

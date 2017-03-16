@@ -38,10 +38,14 @@ public class CtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 		StringBuilder sb = new StringBuilder();
 		sb.append("cust_id in (");
 		sb.append(TFBUtil.getCustomerSelectINString(this.getPreviousAction().getResultSet(), "customer_id"));
-		sb.append(") and cont_cd in ('" + TFBConstants.MKTDM_CONT_CD_ZIPCD_COMM + "','" 
+		sb.append(") and cont_cd in ('" + TFBConstants.MKTDM_CONT_CD_CHN_NAME + "','"
+										+ TFBConstants.MKTDM_CONT_CD_ZIPCD_COMM + "','" 
 										+ TFBConstants.MKTDM_CONT_CD_ADDR_COMM + "','" 
-										+ TFBConstants.MKTDM_CONT_CD_TEL_DAY + "','" 
-										+ TFBConstants.MKTDM_CONT_CD_TEL_NIGHT + "','" 
+										+ TFBConstants.MKTDM_CONT_CD_TEL_OFF_ARE + "','" 
+										+ TFBConstants.MKTDM_CONT_CD_TEL_OFF + "','"
+										+ TFBConstants.MKTDM_CONT_CD_TEL_OFF_EXT + "','"
+										+ TFBConstants.MKTDM_CONT_CD_COM_TEL_ARE + "','"
+										+ TFBConstants.MKTDM_CONT_CD_COM_TEL + "','"
 										+ TFBConstants.MKTDM_CONT_CD_MOBILE_1 + "','"
 										+ TFBConstants.MKTDM_CONT_CD_MOBILE_2 + "','"
 										+ TFBConstants.MKTDM_CONT_CD_EMAIL + "')");
@@ -66,6 +70,13 @@ public class CtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 		long ps_start_time = System.currentTimeMillis();
 		for(int i = 0; i < dCtmSet.count(); i++){
 			DPFTDbo dCtm = dCtmSet.getDbo(i);
+			
+			// customer name info, default bank, credit card have priority
+			String chn_name = contSet.getChnNameByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_CC);
+			if(chn_name != null){
+				dCtm.setValue("cust_name", chn_name);
+			}
+			
 			String[] addr_info = null;
 			if(dCtm.isNull("addr_priority")){
 				/*use default addr priority rule*/
@@ -84,8 +95,9 @@ public class CtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 				mobile = contSet.getPrioritizedMobilePhone(dCtm.getString("customer_id"), "CTM_MBL", dCtm.getString("mobile_priority"));
 			}
 			dCtm.setValue("mobile", mobile);
-			dCtm.setValue("day_use" , contSet.getDayTelByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK));
-			dCtm.setValue("night_use" , contSet.getNightTelByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK));
+			
+			dCtm.setValue("day_use" , contSet.getOfficePhoneByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_CC));
+			dCtm.setValue("night_use" , contSet.getCommPhoneByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_CC));
 			
 			String email = null;
 			if(dCtm.isNull("email_priority")){
@@ -122,6 +134,7 @@ public class CtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 		}
 		
 		ArrayList<String> cell_code_list = new ArrayList<String>();
+		ArrayList<String> cell_name_list = new ArrayList<String>();
 		for(int i = 0; i < dCtmSet.count(); i++){
 			DPFTOutboundDbo new_dbo = (DPFTOutboundDbo) oCtmSet.add();
 			new_dbo.setValue(dCtmSet.getDbo(i));
@@ -135,6 +148,9 @@ public class CtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 			if(!cell_code_list.contains(new_dbo.getString("cell_code"))){
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
+			if(!cell_name_list.contains(new_dbo.getString("cellname"))){
+				cell_name_list.add(new_dbo.getString("cellname"));
+			}
 		}
 		oCtmSet.setRefresh(false);
 		oCtmSet.save();
@@ -143,7 +159,7 @@ public class CtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 		TFBUtil.processUsageCode(oCtmSet, "CTM");
 		
 		/*Write results to H_OUTBOUND Table*/
-		TFBUtil.generateObndCtrlRecord(connector, oCtmSet, cell_code_list, "CTM", true);
+		TFBUtil.generateObndCtrlRecord(connector, oCtmSet, cell_code_list, cell_name_list, "CTM", true);
 		oCtmSet.close();
 	}
 

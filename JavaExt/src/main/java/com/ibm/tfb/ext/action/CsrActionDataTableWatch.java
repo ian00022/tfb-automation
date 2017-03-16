@@ -71,6 +71,7 @@ public class CsrActionDataTableWatch extends DPFTActionTableWatch {
 		
 		/*Validate records with personal info data & add record to outbound data table*/		
 		ArrayList<String> cell_code_list = new ArrayList<String>();
+		ArrayList<String> cell_name_list = new ArrayList<String>();
 		for(int i = 0; i < dCsrSet.count(); i++){
 			DPFTOutboundDbo new_dbo = (DPFTOutboundDbo) oCsrSet.add();
 			new_dbo.setValue(dCsrSet.getDbo(i));
@@ -78,6 +79,9 @@ public class CsrActionDataTableWatch extends DPFTActionTableWatch {
 			//find distinct cell code
 			if(!cell_code_list.contains(new_dbo.getString("cell_code"))){
 				cell_code_list.add(new_dbo.getString("cell_code"));
+			}
+			if(!cell_name_list.contains(new_dbo.getString("cellname"))){
+				cell_name_list.add(new_dbo.getString("cellname"));
 			}
 		}
 		oCsrSet.setRefresh(false);
@@ -87,7 +91,7 @@ public class CsrActionDataTableWatch extends DPFTActionTableWatch {
 		TFBUtil.processUsageCode(oCsrSet, "CSR");
 		
 		/*Write results to H_OUTBOUND Table*/
-		TFBUtil.generateObndCtrlRecord(this.getDBConnector(), oCsrSet, cell_code_list, "CSR", true);
+		TFBUtil.generateObndCtrlRecord(this.getDBConnector(), oCsrSet, cell_code_list, cell_name_list, "CSR", true);
 	}
 
 	@Override

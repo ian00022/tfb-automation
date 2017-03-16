@@ -12,14 +12,14 @@ public class TFBUsageCodeDbo extends DPFTDbo {
 		// TODO Auto-generated constructor stub
 	}
 
-	public void setInitialData(DPFTDbo dbo, String chal_name) {
+	public void setInitialData(DPFTDbo dbo, String chal_name, String usagecode) {
 		// TODO Auto-generated method stub
 		this.setValue("chal_name", chal_name);
 		this.setValue("camp_code", dbo.getString("camp_code"));
 		this.setValue("timestamp", dbo.getString("timestamp"));
 		this.setValue("cell_code", dbo.getString("cell_code"));
 		this.setValue("customer_id", dbo.getString("customer_id"));
-		this.setValue("usagecode", dbo.getString("usagecode"));
+		this.setValue("usagecode", usagecode);
 		this.setValue("process_status", dbo.getString("process_status"));
 		
 	}

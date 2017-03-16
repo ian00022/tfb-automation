@@ -75,6 +75,7 @@ public class LtmActionDataTableWatch extends DPFTActionTableWatch {
 		
 		/*Validate records with personal info data & add record to outbound data table*/		
 		ArrayList<String> cell_code_list = new ArrayList<String>();
+		ArrayList<String> cell_name_list = new ArrayList<String>();
 		for(int i = 0; i < dLtmSet.count(); i++){
 			DPFTOutboundDbo new_dbo = (DPFTOutboundDbo) oLtmSet.add();
 			new_dbo.setValue(dLtmSet.getDbo(i));
@@ -84,6 +85,9 @@ public class LtmActionDataTableWatch extends DPFTActionTableWatch {
 			if(!cell_code_list.contains(new_dbo.getString("cell_code"))){
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
+			if(!cell_name_list.contains(new_dbo.getString("cellname"))){
+				cell_name_list.add(new_dbo.getString("cellname"));
+			}
 		}
 		oLtmSet.setRefresh(false);
 		oLtmSet.save();
@@ -92,7 +96,7 @@ public class LtmActionDataTableWatch extends DPFTActionTableWatch {
 //		TFBUtil.processUsageCode(oLtmSet, "LTM");
 		
 		/*Write results to H_OUTBOUND Table*/
-		TFBUtil.generateObndCtrlRecord(this.getDBConnector(), oLtmSet, cell_code_list, "LTM", true);
+		TFBUtil.generateObndCtrlRecord(this.getDBConnector(), oLtmSet, cell_code_list, cell_name_list, "LTM", true);
 	}
 
 	@Override

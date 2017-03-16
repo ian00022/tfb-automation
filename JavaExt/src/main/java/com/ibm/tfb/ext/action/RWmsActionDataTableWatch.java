@@ -75,6 +75,7 @@ public class RWmsActionDataTableWatch extends DPFTActionTableWatch {
 		
 		/*Validate records with personal info data & add record to outbound data table*/		
 		ArrayList<String> cell_code_list = new ArrayList<String>();
+		ArrayList<String> cell_name_list = new ArrayList<String>();
 		for(int i = 0; i < dRWmsSet.count(); i++){
 			DPFTOutboundDbo new_dbo = (DPFTOutboundDbo) oRWmsSet.add();
 			new_dbo.setValue(dRWmsSet.getDbo(i));
@@ -84,11 +85,14 @@ public class RWmsActionDataTableWatch extends DPFTActionTableWatch {
 			if(!cell_code_list.contains(new_dbo.getString("cell_code"))){
 				cell_code_list.add(new_dbo.getString("cell_code"));
 			}
+			if(!cell_name_list.contains(new_dbo.getString("cellname"))){
+				cell_name_list.add(new_dbo.getString("cellname"));
+			}
 		}
 		oRWmsSet.save();
 		
 		/*Write results to H_OUTBOUND Table*/
-		TFBUtil.generateObndCtrlRecord(this.getDBConnector(), oRWmsSet, cell_code_list, "RWMS", true);
+		TFBUtil.generateObndCtrlRecord(this.getDBConnector(), oRWmsSet, cell_code_list, cell_name_list, "RWMS", true);
 	}
 
 	@Override

@@ -81,10 +81,12 @@ public class EdmActionPersonalDataTableWatch extends DPFTActionTableWatch {
 		/*Validate records with personal info data & add record to outbound data table*/		
 		MKTDMCustomerContactDboSet custSet = (MKTDMCustomerContactDboSet) this.getDataSet();
 		ArrayList<String> cell_code_list = new ArrayList<String>();
+		ArrayList<String> cell_name_list = new ArrayList<String>();
 		long ps_start_time = System.currentTimeMillis();
 		for(int i = 0; i < dEdmSet.count(); i++){
 			String cust_id = dEdmSet.getDbo(i).getString("customer_id");
 			String email = custSet.getEmail(cust_id);
+			
 			DPFTOutboundDbo new_dbo = (DPFTOutboundDbo) oEdmSet.add();
 			new_dbo.setValue(dEdmSet.getDbo(i));
 			DPFTDbo dEdm = dEdmSet.getDbo(i);
@@ -99,6 +101,8 @@ public class EdmActionPersonalDataTableWatch extends DPFTActionTableWatch {
 			if(email == null){
 				//person record doesn't have email info
 				new_dbo.setValue("process_status", GlobalConstants.O_DATA_EXCLUDE);
+			}else if(!email.contains("@")){	//	edm判斷+@
+				new_dbo.setValue("process_status", GlobalConstants.O_DATA_EXCLUDE);
 			}else{
 				//person record has email info
 				new_dbo.setValue("email", email);
@@ -107,6 +111,9 @@ public class EdmActionPersonalDataTableWatch extends DPFTActionTableWatch {
 			//find distinct cell code
 			if(!cell_code_list.contains(new_dbo.getString("cell_code"))){
 				cell_code_list.add(new_dbo.getString("cell_code"));
+			}
+			if(!cell_name_list.contains(new_dbo.getString("cellname"))){
+				cell_name_list.add(new_dbo.getString("cellname"));
 			}
 			
 			if((i+1)%100 == 0)
@@ -121,7 +128,7 @@ public class EdmActionPersonalDataTableWatch extends DPFTActionTableWatch {
 		TFBUtil.processUsageCode(oEdmSet, "EDM");
 		
 		/*Write results to H_OUTBOUND Table*/
-		TFBUtil.generateObndCtrlRecord(connector, oEdmSet, cell_code_list, "EDM", true);
+		TFBUtil.generateObndCtrlRecord(connector, oEdmSet, cell_code_list, cell_name_list, "EDM", true);
 		oEdmSet.close();
 		
 		/*Set Result set for next action*/
