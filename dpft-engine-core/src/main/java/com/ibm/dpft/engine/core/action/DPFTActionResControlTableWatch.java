@@ -94,6 +94,10 @@ public class DPFTActionResControlTableWatch extends DPFTActionTableWatch {
 				}
 			}catch(Exception e){
 				h.error();
+				//thread interrupted throw out InterruptedException
+				if(e instanceof InterruptedException)
+					throw e;
+				
 				if(e instanceof DPFTRuntimeException){
 					((DPFTRuntimeException) e).handleException();
 				}else{

@@ -51,6 +51,11 @@ public class DPFTActionRemoteFileWatch extends DPFTActionTableWatch {
 //				cdutil.unlock();
 			}catch(Exception e){
 //				if(cdutil != null)cdutil.unlock();
+				
+				//thread interrupted throw out InterruptedException
+				if(e instanceof InterruptedException)
+					throw e;
+				
 				if(e instanceof DPFTRuntimeException){
 					((DPFTRuntimeException)e).handleException();
 				}else{

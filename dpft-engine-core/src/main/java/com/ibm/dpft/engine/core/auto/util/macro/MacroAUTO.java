@@ -154,6 +154,8 @@ public class MacroAUTO extends DPFTAutomationMacro {
 			t.setArchiveInfo(sSet.getDbo(i), timestamp);
 		}
 		sSet.deleteAll();
+		tSet.setRefresh(false);
+		sSet.setRefresh(false);
 		tSet.save();
 		sSet.save();
 		sSet.close();

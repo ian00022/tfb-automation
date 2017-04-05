@@ -43,6 +43,10 @@ public class DPFTActionLocalFileWatch extends DPFTActionTableWatch {
 			try{
 				readLocalFiles((ResFileDirSettingDbo) fSet.getDbo(i), hSet);
 			}catch(Exception e){
+				//thread interrupted throw out InterruptedException
+				if(e instanceof InterruptedException)
+					throw e;
+				
 				if(e instanceof DPFTRuntimeException){
 					((DPFTRuntimeException)e).handleException();
 				}else{

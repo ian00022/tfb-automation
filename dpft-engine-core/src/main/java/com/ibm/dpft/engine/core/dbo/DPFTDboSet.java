@@ -26,6 +26,10 @@ public class DPFTDboSet {
 	
 	private DPFTConnector connector = null;
 	private String dboname = null; 
+	public String getDboname() {
+		return dboname;
+	}
+
 	private List<DPFTDbo> dboset = null;
 	private List<DPFTDbo> _dboset = null;
 	private HashMap<String, String> filter = new HashMap<String, String>();
@@ -387,5 +391,13 @@ public class DPFTDboSet {
 
 	public void setRefresh(boolean tobeRefreshed) {
 		this.tobeRefreshed = tobeRefreshed;
+	}
+
+	public HashMap<String, String> getKeyValueMap(String key_col, String value_col) throws DPFTRuntimeException {
+		HashMap<String, String> map = new HashMap<String, String>();
+		for(int i = 0; i < count(); i++){
+			map.put(this.getDbo(i).getString(key_col), this.getDbo(i).getString(value_col));
+		}
+		return map;
 	}
 }

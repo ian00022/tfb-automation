@@ -45,6 +45,9 @@ public class SSMIntResDataFileReader extends DPFTFileReader {
 			//Find recent same DestNo. in O_SSM Table, set treatment_code, customer_id info
 			DPFTDbo oSsm = getRelatedOutboundData(new_data);
 			if(oSsm == null){
+				oSsm = getRelatedLZSOutboundData(new_data);
+			}
+			if(oSsm == null){
 				continue;
 			}
 			new_data.setValue("treatment_code", oSsm.getString("treatment_code"));
@@ -52,6 +55,13 @@ public class SSMIntResDataFileReader extends DPFTFileReader {
 		}
 		targetSet.save();
 		targetSet.close();
+	}
+
+	private DPFTDbo getRelatedLZSOutboundData(DPFTDbo new_data) throws DPFTRuntimeException {
+		DPFTDboSet set = new_data.getDboSet("O_LZS", "destno='" + new_data.getString("resv1") + "' and isinteractive='Y'");
+		set.orderby("timestamp", DPFTDboSet.TYPE_DATETIME);
+		set.close();
+		return set.getDbo(0);
 	}
 
 	private DPFTDbo getRelatedOutboundData(DPFTDbo new_data) throws DPFTRuntimeException {
