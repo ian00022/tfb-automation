@@ -141,7 +141,7 @@ public class MacroAUTO extends DPFTAutomationMacro {
 	}
 
 
-	public int Archive(String dbname, String source_tbl, String target_tbl) throws DPFTRuntimeException{
+	public int Archive(String dbname, String source_tbl, String target_tbl) throws DPFTRuntimeException, SQLException{
 		DPFTLogger.debug(this, "Invoke " + this.getInvokeMethod() + " in MACRO AUTO");
 		DPFTDboSet sSet = DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getDBConfig(dbname)).getDboSet(source_tbl);
 		DPFTArchiveDboSet tSet = (DPFTArchiveDboSet) DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getDBConfig(dbname)).getDboSet(target_tbl);
@@ -153,12 +153,11 @@ public class MacroAUTO extends DPFTAutomationMacro {
 			DPFTArchiveDbo t = (DPFTArchiveDbo) tSet.add();
 			t.setArchiveInfo(sSet.getDbo(i), timestamp);
 		}
-		sSet.deleteAll();
+		tSet.setRefresh(false);
 		tSet.save();
-		sSet.save();
 		sSet.close();
 		tSet.close();
-		return GlobalConstants.DPFT_AUTOMATION_PS_RC_NORMAL;
+		return Truncate(dbname, source_tbl);
 	}
 	
 	public int Truncate(String dbname, String source_tbl) throws DPFTRuntimeException, SQLException{

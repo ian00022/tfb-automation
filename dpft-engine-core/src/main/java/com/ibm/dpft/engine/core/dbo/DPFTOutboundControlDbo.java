@@ -60,6 +60,9 @@ public class DPFTOutboundControlDbo extends DPFTDbo {
 		int num_exclude = 0;
 		int num_output = 0;
 		for(int i = 0; i < oSet.count(); i++){
+			if(oSet.getDbo(i).tobeDeleted())
+				continue;
+			
 			if(oSet.getDbo(i).getString("cell_code").equals(cell_code) 
 					&& oSet.getDbo(i).getString("process_status").equals(GlobalConstants.O_DATA_OUTPUT)){
 				num_output++;

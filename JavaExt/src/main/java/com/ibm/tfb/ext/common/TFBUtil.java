@@ -46,6 +46,18 @@ public class TFBUtil {
 		  .append(" where ").append(fk_string);
 		return sb.toString();
 	}
+	
+	public static String buildCustomerSelectINString(DPFTDboSet set) throws DPFTRuntimeException{
+		if(set.isEmpty())
+			return "";
+		
+		String fk_string = DPFTUtil.getFKQueryString(set.getDbo(0));
+		StringBuilder sb = new StringBuilder();
+		sb.append("select customer_id from ")
+						.append(set.getDboname())
+		  .append(" where ").append(fk_string);
+		return sb.toString();
+	}
 
 	public static String getDestNameString(DPFTDbo dbo, DPFTDbo id_dbo, String idnu) {
 		id_dbo.setValue("treatment_code", dbo.getString("treatment_code"));
@@ -54,9 +66,17 @@ public class TFBUtil {
 		return dbo.getString("camp_code") + "||" + dbo.getString("treatment_code") + "||" + idnu;
 		//return dbo.getString("camp_code") + "||" + dbo.getString("treatment_code") + "||" + dbo.getString("customer_id");
 	}
-
+	
+	public static String getDestNameString(DPFTDbo dbo) {
+		return dbo.getString("camp_code") + "||" + dbo.getString("treatment_code") + "||" + dbo.getString("customer_id");
+	}
+	
+	public static void setSSMHeaderProperties(DPFTDbo new_dbo, DPFTDbo data) {
+		setSSMHeaderProperties(new_dbo, data, null, null);
+	}
+	
 	public static void setSSMHeaderProperties(DPFTDbo new_dbo, DPFTDbo data, DPFTDbo id_dbo, String idnum) {
-		new_dbo.setValue("destname", TFBUtil.getDestNameString(data, id_dbo, idnum));
+		new_dbo.setValue("destname", (id_dbo != null)?TFBUtil.getDestNameString(data, id_dbo, idnum):TFBUtil.getDestNameString(data));
 		if(data.getString("isinteractive").equalsIgnoreCase("y")){
 //			new_dbo.setValue("username", DPFTEngine.getSystemProperties("TFB_SSM_I_USRNAME"));
 			new_dbo.setValue("password", DPFTEngine.getSystemProperties("TFB_SSM_I_USRPWD"));
