@@ -44,7 +44,7 @@ public class DPFTAutomationPsInstanceSet extends DPFTDboSet {
 	
 	@Override
 	public void save() throws DPFTRuntimeException {
-		DPFTAutomationInstLogSet hisSet = (DPFTAutomationInstLogSet) this.getDBConnector().getDboSet("DPFT_AUTOMATION_INST_LOG");
+		DPFTAutomationInstLogSet hisSet = (DPFTAutomationInstLogSet) this.getDBConnector().getDboSet("DPFT_AUTOMATION_INST_LOG", "rownum<=1");
 		for(int i = 0; i < count(); i++){
 			if(this.getDbo(i).tobeAdded() || this.getDbo(i).tobeSaved()){
 				hisSet.addHistory(this.getDbo(i));

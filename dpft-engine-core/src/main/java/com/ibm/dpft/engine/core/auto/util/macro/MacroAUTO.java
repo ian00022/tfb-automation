@@ -144,7 +144,7 @@ public class MacroAUTO extends DPFTAutomationMacro {
 	public int Archive(String dbname, String source_tbl, String target_tbl) throws DPFTRuntimeException, SQLException{
 		DPFTLogger.debug(this, "Invoke " + this.getInvokeMethod() + " in MACRO AUTO");
 		DPFTDboSet sSet = DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getDBConfig(dbname)).getDboSet(source_tbl);
-		DPFTArchiveDboSet tSet = (DPFTArchiveDboSet) DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getDBConfig(dbname)).getDboSet(target_tbl);
+		DPFTArchiveDboSet tSet = (DPFTArchiveDboSet) DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getDBConfig(dbname)).getDboSet(target_tbl, "rownum<=1");
 		if(sSet.isEmpty())
 			//Do nothing, return Normal
 			return GlobalConstants.DPFT_AUTOMATION_PS_RC_NORMAL;
