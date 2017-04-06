@@ -57,6 +57,7 @@ public class DPFTActionLocalFileWatch extends DPFTActionTableWatch {
 				
 			
 		}
+		hSet.setRefresh(false);
 		hSet.save();
 		hSet.close();
 		this.setResultSet(fSet);
@@ -119,7 +120,7 @@ public class DPFTActionLocalFileWatch extends DPFTActionTableWatch {
 
 	private DPFTInboundControlDboSet getRespondControlSet() throws DPFTRuntimeException {
 		try {
-			return (DPFTInboundControlDboSet) this.getDBConnector().getDboSet("H_INBOUND_RES");
+			return (DPFTInboundControlDboSet) this.getDBConnector().getDboSet("H_INBOUND_RES", "rownum<=1");
 		} catch (DPFTConnectionException e) {
 			throw new DPFTActionException(this, "SYSTEM", "DPFT0003E", e);
 		}
