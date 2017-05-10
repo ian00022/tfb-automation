@@ -1,5 +1,6 @@
 package com.ibm.dpft.engine.core.connection;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -196,7 +197,7 @@ public class DPFTStatement {
 	}
 
 
-	public List<HashMap<String, Object>> doQuery() throws SQLException {
+	public List<HashMap<String, Object>> doQuery() throws SQLException, UnsupportedEncodingException {
 		// TODO Auto-generated method stub
 		if(pstmt == null)
 			return null;
@@ -222,7 +223,8 @@ public class DPFTStatement {
 					else
 						data.put(colName, new Date(rs.getDate(index).getTime()));
 				}else{
-					data.put(colName, rs.getString(index));
+//					data.put(colName, rs.getString(index));
+					data.put(colName, new String(rs.getBytes(index), GlobalConstants.FILE_ENCODE_UTF8));
 				}
 //				DPFTLogger.debug(this, "ColName :" + colName + " Col Value = " + rs.getString(index));
 			}
