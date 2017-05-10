@@ -126,11 +126,15 @@ public class DPFTConnector {
 		return stmt;
 	}
 
-	public List<HashMap<String, Object>> retrieveDataFromCurrentStmt() throws SQLException {
+	public List<HashMap<String, Object>> retrieveDataFromCurrentStmt() throws DPFTRuntimeException {
 		// TODO Auto-generated method stub
 		if(stmt == null)
 			return null;
-		return stmt.doQuery();
+		try {
+			return stmt.doQuery();
+		} catch (Exception e) {
+			throw new DPFTConnectionException("SYSTEM", "COMM0005E", e);
+		} 
 		
 	}
 
@@ -243,7 +247,7 @@ public class DPFTConnector {
 		}
 	}
 	
-	public DPFTDboSet execSQL(String script) throws SQLException {
+	public DPFTDboSet execSQL(String script) throws SQLException, DPFTRuntimeException {
 		stmt = this.generateSQLStmt(GlobalConstants.DB_STMT_TYPE_SQL);
 		stmt.setSQL(script);
 		stmt.prepareStatement();
