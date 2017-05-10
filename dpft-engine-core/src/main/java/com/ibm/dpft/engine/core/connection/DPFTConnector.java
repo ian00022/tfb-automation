@@ -28,7 +28,7 @@ public class DPFTConnector {
 		db_cfg = cfg;
 		
 		add2ConnectionPool(conn);
-		logPoolSummary();
+		//logPoolSummary();
 	}
 	
 	private void add2ConnectionPool(Connection connection) {
@@ -168,7 +168,7 @@ public class DPFTConnector {
 			stmt.close();
 		if(conn != null)
 			conn.close();
-		logPoolSummary();
+		//logPoolSummary();
 	}
 
 	public void setUpdate(List<DPFTDbo> updateDbolist) throws SQLException {

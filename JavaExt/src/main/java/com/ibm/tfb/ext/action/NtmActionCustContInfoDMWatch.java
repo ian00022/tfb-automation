@@ -46,8 +46,11 @@ public class NtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 										+ TFBConstants.MKTDM_CONT_CD_MOBILE_2 + "','"
 										+ TFBConstants.MKTDM_CONT_CD_RES_ZIP + "','"
 										+ TFBConstants.MKTDM_CONT_CD_RES_ADDR + "','"
+										+ TFBConstants.MKTDM_CONT_CD_TEL_OFF_ARE + "','"
 										+ TFBConstants.MKTDM_CONT_CD_TEL_OFF + "','"
 										+ TFBConstants.MKTDM_CONT_CD_TEL_OFF_EXT + "','"
+										+ TFBConstants.MKTDM_CONT_CD_COM_TEL_ARE + "','"
+										+ TFBConstants.MKTDM_CONT_CD_COM_TEL + "','"
 										+ TFBConstants.MKTDM_CONT_CD_EMAIL + "')");
 		DPFTLogger.info(this, "Table select where = " + sb.toString());
 		return sb.toString();

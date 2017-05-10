@@ -73,15 +73,12 @@ public class SsmActionContactInfoDMWatch extends DPFTActionTableWatch {
 		DPFTOutboundDboSet oSsmSet = (DPFTOutboundDboSet) connector.getDboSet("O_SSM", qString);
 		oSsmSet.load();
 		
-		DPFTDboSet IDSet = (DPFTDboSet) connector.getDboSet("DPFT_IDMAPPING");
+		String idStr = (String)dSsmSet.getDbo(0).getColumnValue("TREATMENT_CODE");
+		DPFTDboSet IDSet = (DPFTDboSet) connector.getDboSet("DPFT_IDMAPPING", "TREATMENT_CODE = '" +idStr+"'");
 		IDSet.load();
-		if(oSsmSet.getDbo(0) != null){
-			String idStr = (String)oSsmSet.getDbo(0).getColumnValue("TREATMENT_CODE");
-		    IDSet.filter("TREATMENT_CODE", idStr);
-		    if(IDSet.count() > 0){
-				DPFTLogger.info(this, "ID Records exist in output data set...Delete All Records...");
-				IDSet.deleteAll();
-			}
+		if(IDSet.count() > 0){
+			DPFTLogger.info(this, "ID Records exist in output data set...Delete All Records...");
+			IDSet.deleteAll();
 		}
 		
 		/*Data set from "O_SSM" should be empty*/

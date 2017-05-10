@@ -14,6 +14,7 @@ import com.ibm.dpft.engine.core.util.DPFTFileReader;
 import com.ibm.dpft.engine.core.util.DPFTUtil;
 
 public class LTMResDataFileReader extends DPFTFileReader {
+	private static final String lz_type = "SFA";
 
 	public LTMResDataFileReader(String dir, ResFileDataLayoutDbo resFileDataLayoutDbo, String chal_name) {
 		super(dir, resFileDataLayoutDbo, chal_name);
@@ -40,9 +41,15 @@ public class LTMResDataFileReader extends DPFTFileReader {
 			ht.put(keyObj.getColumnValue("TREATMENT_CODE"), keyObj.getColumnValue("CHAL_NAME"));
 		}
 		DPFTDboSet targetSet = layout.getTargetTableDboSet();
+		DPFTDboSet targetLzSet = DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig())
+				.getDboSet("RSP_MAIN_LZ", "rownum <= 10");
 		HashMap<String, String> f_col_2_tgt_col_map = layout.getFileColumns2TargetColumnsMapping();
 		for(HashMap<String, String> rowdata: read_data){
-			DPFTDbo new_data = targetSet.add();
+			DPFTDbo new_data = null;
+			if(rowdata.get("TREATMENT_CODE") != null && rowdata.get("TREATMENT_CODE").indexOf(lz_type) != -1)
+				new_data = targetLzSet.add();
+			else 
+				new_data = targetSet.add();
 			new_data.setValue("process_time", timestamp);
 			for(String col: rowdata.keySet()){
 				if(f_col_2_tgt_col_map.get(col) == null)
@@ -52,7 +59,11 @@ public class LTMResDataFileReader extends DPFTFileReader {
 					new_data.setValue("chal_name", ht.get(rowdata.get(col)));
 			}
 		}
+
+		targetLzSet.save();
 		targetSet.save();
+		targetLzSet.close();
 		targetSet.close();
+
 	}
 }

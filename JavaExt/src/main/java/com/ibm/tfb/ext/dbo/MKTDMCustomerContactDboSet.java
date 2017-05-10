@@ -169,7 +169,7 @@ public class MKTDMCustomerContactDboSet extends DPFTDboSet {
 			String[] p = pr.getPrioritySettings();
 			addr_info[0] = getAddrByBizTypeH(cust_id,p[0]);
 			addr_info[1] = getZipCodeByBizTypeH(cust_id, p[0]);
-			if(addr_info[0] == null || addr_info[2] == null){
+			if(addr_info[0] == null){
 				addr_info[0] = getAddrByBizType(cust_id,p[1]);
 				addr_info[1] = getZipCodeByBizType(cust_id, p[1]);
 				addr_info[2] = getAddrCodeByBizType(cust_id, p[1]);

@@ -42,9 +42,9 @@ public class DPFTConnectionFactory {
 				DPFTLogger.error(DPFTConnectionFactory.class.getName(), "SQL Error when getting connection instance:", e);
 				if(retry_num <= retry_limit){
 					try {
-						//Retry after 10 sec.
+						//Retry after 1 min.
 						retry_num++;
-						Thread.sleep(10000);
+						Thread.sleep(60000);
 					} catch (InterruptedException e1) {
 						e1.printStackTrace();
 					}

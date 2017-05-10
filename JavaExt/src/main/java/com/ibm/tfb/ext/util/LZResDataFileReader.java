@@ -17,8 +17,12 @@ import com.ibm.dpft.engine.core.util.DPFTFileReader;
 import com.ibm.tfb.ext.common.TFBUtil;
 
 public class LZResDataFileReader extends DPFTFileReader {
+	//YYYYMMDDHHmmss
 	private final static Pattern schedule_time_pattern = Pattern.compile("(20\\d{2}|19\\d{2})(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])(0[0-9]|1[0-9]|2[0-3])([0-5][0-9])");
+	//HHmm
 	private final static Pattern schedule_time_pattern2 = Pattern.compile("[_.](0[0-9]|1[0-9]|2[0-3])([0-5][0-9])[_.]");
+	//YYYYMMDDHH
+	private final static Pattern schedule_time_pattern3 = Pattern.compile("(20\\d{2}|19\\d{2})(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])(0[0-9]|1[0-9]|2[0-3])");
 	private final static Pattern schedule_date_pattern = Pattern.compile("(20\\d{2}|19\\d{2})(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])");
 
 	public LZResDataFileReader(String dir, ResFileDataLayoutDbo resFileDataLayoutDbo, String chal_name) {
@@ -94,6 +98,13 @@ public class LZResDataFileReader extends DPFTFileReader {
 			m = schedule_time_pattern2.matcher(name);
 			if(m.find()){
 				time = m.group(1) + m.group(2);
+			}
+		}
+		if(time == null){
+			//test Pattern 3
+			m = schedule_time_pattern3.matcher(name);
+			if(m.find()){
+				time = m.group(4);
 			}
 		}
 		return time;

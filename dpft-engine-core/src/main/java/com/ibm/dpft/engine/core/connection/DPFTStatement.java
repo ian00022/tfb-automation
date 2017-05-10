@@ -24,7 +24,7 @@ public class DPFTStatement {
 	private List<DPFTDbo> update_dbos = null;
 	private List<DPFTDbo> insert_dbos = null;
 	private List<DPFTDbo> delete_dbos = null;
-	private final int MAX_BATCH_SIZE = 50000;
+	private final int MAX_BATCH_SIZE = 10000;
 
 	public DPFTStatement(String stmtype, DPFTConnector conn) {
 		// TODO Auto-generated constructor stub

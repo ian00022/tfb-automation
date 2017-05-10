@@ -165,7 +165,8 @@ public class BdmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 
 	private boolean isValidCustInfo(DPFTDbo dBdm) {
 		// TODO Auto-generated method stub
-		return !dBdm.isNull("addr") && !dBdm.isNull("addr_code");
+		//return !dBdm.isNull("addr") && !dBdm.isNull("addr_code");
+		return !dBdm.isNull("addr") ;
 	}
 
 	@Override

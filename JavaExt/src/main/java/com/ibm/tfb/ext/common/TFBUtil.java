@@ -63,6 +63,8 @@ public class TFBUtil {
 		id_dbo.setValue("treatment_code", dbo.getString("treatment_code"));
 		id_dbo.setValue("customer_id", dbo.getString("customer_id"));
 		id_dbo.setValue("id_number", idnu);
+		String timestamp = DPFTUtil.getCurrentTimeStampAsString();
+		id_dbo.setValue("set_date", timestamp);
 		return dbo.getString("camp_code") + "||" + dbo.getString("treatment_code") + "||" + idnu;
 		//return dbo.getString("camp_code") + "||" + dbo.getString("treatment_code") + "||" + dbo.getString("customer_id");
 	}

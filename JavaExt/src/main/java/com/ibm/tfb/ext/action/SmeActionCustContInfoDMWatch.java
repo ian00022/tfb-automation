@@ -134,7 +134,7 @@ public class SmeActionCustContInfoDMWatch extends DPFTActionTableWatch {
 		oSmeSet.save();
 		
 		/*Write usage codes to O_USAGECODE Table*/
-		TFBUtil.processUsageCode(oSmeSet, "CDM");
+		TFBUtil.processUsageCode(oSmeSet, "SME");
 		
 		/*Write results to H_OUTBOUND Table*/
 		TFBUtil.generateObndCtrlRecord(connector, oSmeSet, cell_code_list, cell_name_list, "SME", true);
@@ -143,7 +143,7 @@ public class SmeActionCustContInfoDMWatch extends DPFTActionTableWatch {
 
 	private boolean isValidCustInfo(DPFTOutboundDbo new_dbo) {
 		//check phone info
-		if(new_dbo.isNull("mobile") && new_dbo.isNull("day_use") && new_dbo.isNull("night_use"))
+		if(new_dbo.isNull("tel_no1") && new_dbo.isNull("tel_no2"))
 			return false;
 		return true;
 	}
