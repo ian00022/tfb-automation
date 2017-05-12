@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.FileUtils;
+
 import com.ibm.dpft.engine.core.common.GlobalConstants;
 import com.ibm.dpft.engine.core.connection.DPFTConnectionFactory;
 import com.ibm.dpft.engine.core.connection.DPFTConnector;
@@ -225,11 +227,12 @@ public abstract class DPFTActionDataFileOutput extends DPFTAction implements DPF
 					fdir.mkdirs();
 				}
 				File f = new File(getOutFileLocalDir() + File.separator + filename);
-				Writer out = new BufferedWriter(new OutputStreamWriter(
-						new FileOutputStream(f), file_charset_list.get(filename)));
-				out.write(file_out_list.get(filename));
-				out.flush();
-				out.close();
+//				Writer out = new BufferedWriter(new OutputStreamWriter(
+//						new FileOutputStream(f), file_charset_list.get(filename)));
+//				out.write(file_out_list.get(filename));
+//				out.flush();
+//				out.close();
+				FileUtils.writeStringToFile(f, file_out_list.get(filename), file_charset_list.get(filename));
 			}catch(Exception e){
 				Object[] params = {filename};
 				throw new DPFTDataFormatException("SYSTEM", "DPFT0015E", params);
