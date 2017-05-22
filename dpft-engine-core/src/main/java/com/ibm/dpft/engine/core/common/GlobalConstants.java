@@ -131,7 +131,7 @@ public class GlobalConstants {
 	
 	/*File Encode Constants*/
 	public static final String FILE_ENCODE_UTF8         = "UTF-8";
-	public static final String FILE_ENCODE_BIG5         = "MS950";
+	public static final String FILE_ENCODE_BIG5         = "Cp950";
 	
 	/*File name pattern constants*/
 	public static final String FILE_PATTERN_CNST_SYSDATE     = "$SYSDATE";
