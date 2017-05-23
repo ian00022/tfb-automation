@@ -1,11 +1,8 @@
 package com.ibm.dpft.engine.core.action;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.zip.ZipEntry;
@@ -228,35 +225,14 @@ public abstract class DPFTActionDataFileOutput extends DPFTAction implements DPF
 					fdir.mkdirs();
 				}
 				File f = new File(getOutFileLocalDir() + File.separator + filename);
-//				Writer out = new BufferedWriter(new OutputStreamWriter(
-//						new FileOutputStream(f), file_charset_list.get(filename)));
-//				out.write(file_out_list.get(filename));
-//				out.flush();
-//				out.close();
 				String datastring = file_out_list.get(filename);
 				String charset = file_charset_list.get(filename);
-				if(charset.equalsIgnoreCase(GlobalConstants.FILE_ENCODE_BIG5))
-					datastring = convertString(datastring, charset);
-					
 				FileUtils.writeStringToFile(f, datastring, charset);
 			}catch(Exception e){
 				Object[] params = {filename};
 				throw new DPFTDataFormatException("SYSTEM", "DPFT0015E", params);
 			}
 		}
-	}
-
-	private String convertString(String datastring, String charset) throws IOException {
-		ByteArrayInputStream bais = new ByteArrayInputStream(datastring.getBytes(GlobalConstants.FILE_ENCODE_UTF8));
-		ByteArrayOutputStream boas =new ByteArrayOutputStream ();
-		byte[] buffer = new byte[1024];
-		int length;
-		while ((length = bais.read(buffer)) != -1) {
-			boas.write(buffer, 0, length);
-		}
-		// StandardCharsets.UTF_8.name() > JDK 7
-		return boas.toString(charset);
-
 	}
 
 	@Override

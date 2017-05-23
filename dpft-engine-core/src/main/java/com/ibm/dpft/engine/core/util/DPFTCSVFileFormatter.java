@@ -272,9 +272,9 @@ public class DPFTCSVFileFormatter extends DPFTFileFormatter {
 					if(this.getFileEncoding().equals(GlobalConstants.FILE_ENCODE_UTF8)){
 						s = truncateUTF8(s, length);
 						adj_len = getAdjustedLengthUTF8(s, length);
-					}else if(this.getFileEncoding().equalsIgnoreCase(GlobalConstants.FILE_ENCODE_BIG5)){
-						s = truncateBig5(s, length);
-						adj_len = getAdjustedLengthBig5(s, length);
+					}else if(this.getFileEncoding().toUpperCase().indexOf(GlobalConstants.FILE_ENCODE_BIG5) != -1){
+						s = truncateBig5(s, length, this.getFileEncoding());
+						adj_len = getAdjustedLengthBig5(s, length, getFileEncoding());
 					}
 					format = "%1$-" + adj_len + "s";
 				}
@@ -292,10 +292,10 @@ public class DPFTCSVFileFormatter extends DPFTFileFormatter {
 		return s;
 	}
 	
-	private String truncateBig5(String s, int n) throws DPFTRuntimeException {
+	private String truncateBig5(String s, int n, String encode) throws DPFTRuntimeException {
 		byte[] big5;
 		try{
-			big5 = s.getBytes(GlobalConstants.FILE_ENCODE_BIG5);
+			big5 = s.getBytes(encode);
 		} catch (UnsupportedEncodingException e) {
 			throw new DPFTDataFormatException("SYSTEM", "DPFT0013E", e);
 		}
@@ -358,10 +358,10 @@ public class DPFTCSVFileFormatter extends DPFTFileFormatter {
 	    return s.substring(0,n16);
 	}
 	
-	private int getAdjustedLengthBig5(String s, int length) throws DPFTRuntimeException {
+	private int getAdjustedLengthBig5(String s, int length, String encode) throws DPFTRuntimeException {
 		byte[] big5;
 		try {
-			big5 = s.getBytes(GlobalConstants.FILE_ENCODE_BIG5);
+			big5 = s.getBytes(encode);
 		} catch (UnsupportedEncodingException e) {
 			throw new DPFTDataFormatException("SYSTEM", "DPFT0013E", e);
 		}
