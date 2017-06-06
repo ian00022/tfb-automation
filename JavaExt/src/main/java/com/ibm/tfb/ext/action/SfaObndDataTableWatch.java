@@ -7,7 +7,7 @@ public class SfaObndDataTableWatch extends DPFTActionObndPeriodicDataTableWatch 
 	public String getTableWatchCriteria() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(super.getTableWatchCriteria());
-		sb.append(" chal_name='").append(this.getInitialData().getString("chal_name")).append("'");
+		sb.append(" and chal_name='").append(this.getInitialData().getString("chal_name")).append("'");
 		return sb.toString();
 	}
 

@@ -42,7 +42,8 @@ public class BdmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 		StringBuilder sb = new StringBuilder();
 		sb.append("cust_id in (");
 		sb.append(TFBUtil.getCustomerSelectINString(this.getPreviousAction().getResultSet(), "customer_id"));
-		sb.append(") and cont_cd in ('" + TFBConstants.MKTDM_CONT_CD_ZIPCD_COMM + "','" + TFBConstants.MKTDM_CONT_CD_ADDR_COMM + "','" + TFBConstants.MKTDM_CONT_CD_ADDRCD_COMM + "','" + TFBConstants.MKTDM_CONT_CD_HOU_COMM + "')");
+		sb.append(") and cont_cd in ('" + TFBConstants.MKTDM_CONT_CD_ZIPCD_COMM + "','" + TFBConstants.MKTDM_CONT_CD_ADDR_COMM + "','" + TFBConstants.MKTDM_CONT_CD_ADDRCD_COMM + "','" 
+					+ TFBConstants.MKTDM_CONT_CD_HOU_COMM + "','" + TFBConstants.MKTDM_CONT_CD_HOUZIP_COMM + "','" + TFBConstants.MKTDM_CONT_CD_HOUCD_COMM + "')");
 		DPFTLogger.info(this, "Table select where = " + sb.toString());
 		return sb.toString();
 	}

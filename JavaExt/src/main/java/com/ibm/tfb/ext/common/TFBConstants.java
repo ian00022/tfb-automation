@@ -18,6 +18,7 @@ public class TFBConstants {
 	public static final String MKTDM_CONT_CD_TEL_OFF_EXT= "123";
 	public static final String MKTDM_CONT_CD_HOU_COMM   = "242";
 	public static final String MKTDM_CONT_CD_HOUZIP_COMM= "241";
+	public static final String MKTDM_CONT_CD_HOUCD_COMM = "245";
 	public static final String MKTDM_CONT_CD_COM_TEL_ARE= "101";
 	public static final String MKTDM_CONT_CD_COM_TEL    = "102";
 	

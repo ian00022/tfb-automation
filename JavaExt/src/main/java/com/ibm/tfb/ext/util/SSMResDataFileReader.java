@@ -3,6 +3,9 @@ package com.ibm.tfb.ext.util;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.ibm.dpft.engine.core.common.GlobalConstants;
 import com.ibm.dpft.engine.core.config.DPFTConfig;
@@ -49,6 +52,32 @@ public class SSMResDataFileReader extends DPFTFileReader {
 		}
 		_IDSet.close();
 		DPFTDboSet IDSet;
+		
+		Map<String, String> tCode = new HashMap<String, String>();
+		if(read_data.size() != 0){
+		//  build treatment_code query string for load DPFT_IDMAPPING 
+			StringBuilder sb = new StringBuilder();
+			sb.append( "TREATMENT_CODE" + " in (");
+			for(HashMap<String, String> rowdata: read_data){
+				String[] ds = rowdata.get("DestName").split(GlobalConstants.FILE_DELIMETER_PIP);
+				if(StringUtils.isNotBlank(ds[1]) && !tCode.containsKey(ds[1])){
+					tCode.put(ds[1], ds[1]);
+					sb.append("'" + ds[1] + "',");
+				}
+			}
+		
+			IDSet = (DPFTDboSet) connector.getDboSet("DPFT_IDMAPPING", sb.substring(0, sb.length()-1) + ")");
+			IDSet.load();
+			tCode.clear();
+			
+			for(int i=0; i <IDSet.count(); i++){
+				DPFTDbo  IDDbo =  IDSet.getDbo(i);
+				tCode.put(IDDbo.getString("TREATMENT_CODE")+IDDbo.getString("ID_NUMBER"), IDDbo.getString("CUSTOMER_ID"));
+			}
+			
+			IDSet.close();
+		}
+		
 		for(HashMap<String, String> rowdata: read_data){
 			DPFTDbo new_data = targetSet.add();
 			new_data.setValue("chal_name", chal_name);
@@ -60,21 +89,13 @@ public class SSMResDataFileReader extends DPFTFileReader {
 			}
 			//Parse DestName field to get treatment code, customer_id
 			String[] ds = new_data.getString("resv1").split(GlobalConstants.FILE_DELIMETER_PIP);
-			IDSet = (DPFTDboSet) connector.getDboSet("DPFT_IDMAPPING", "TREATMENT_CODE = '"+ds[1]+"' AND ID_NUMBER = '"+ds[2]+"'");
-			IDSet.load();
-			if(ds.length == 3 && !IDSet.isEmpty()){
-				DPFTDbo reload_id = IDSet.getDbo(0);
-				if(reload_id.getColumnValue("id_number").equals(ds[2])){
+			
+			if(ds.length == 3){
+					String customerId = tCode.containsKey(ds[1]+ds[2]) ? tCode.get(ds[1]+ds[2]) : ds[2];
 					new_data.setValue("treatment_code", ds[1]);
-					new_data.setValue("customer_id", reload_id.getColumnValue("customer_id"));
-					new_data.setValue("resv1", ds[0]+"||"+ds[1]+"||"+reload_id.getColumnValue("customer_id"));
-				}
+					new_data.setValue("customer_id", customerId);
+					new_data.setValue("resv1", ds[0]+"||"+ds[1]+"||"+customerId);
 			}
-			if(read_data.indexOf(rowdata) % 500 == 0){
-				targetSet.save();
-				targetSet.clear();
-			}
-			IDSet.close();
 		}
 		targetSet.save();
 		targetSet.close();

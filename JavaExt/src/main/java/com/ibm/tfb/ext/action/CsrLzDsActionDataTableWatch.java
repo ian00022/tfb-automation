@@ -64,10 +64,10 @@ public class CsrLzDsActionDataTableWatch extends LzActionDataTableWatch {
 		//MKT_CUST_CC_ATTR
 		DPFTDboSet custCCAttrInfo =  (DPFTDboSet) this.getDBConnector().getDboSet("MKT_CUST_CC_ATTR", custString.toString());
 		custCCAttrInfo.load();
-		Hashtable<Object, Object> ht = new Hashtable<Object, Object>();
+		Hashtable<Object, Object> bscore = new Hashtable<Object, Object>();
 		for(int i=0;i<custCCAttrInfo.count();i++){
 			DPFTDbo keyObj = custCCAttrInfo.getDbo(i);
-			ht.put(keyObj.getColumnValue("CUST_ID"), keyObj.getColumnValue("BS_CD_CURT"));
+			bscore.put(keyObj.getColumnValue("CUST_ID"), keyObj.getColumnValue("BS_CD_CURT"));
 		}
 		
 		
@@ -98,9 +98,13 @@ public class CsrLzDsActionDataTableWatch extends LzActionDataTableWatch {
 			new_dbo.setValue("cell_code", timestamp.substring(GlobalConstants.DFPT_DATE_FORMAT.length()));
 			new_dbo.setValue("offr_effectivedate", timestamp.substring(0, GlobalConstants.DFPT_DATE_FORMAT.length()));
 			new_dbo.setValue("cname", custDbo.getCustName(dLzSet.getDbo(i).getString("customer_id")));
-			new_dbo.setValue("PHONEMOBILE", custInfo.getMobileByBizType(dLzSet.getDbo(i).getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK));
+			String mobile = custInfo.getMobileByBizType(dLzSet.getDbo(i).getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_CC);
+			if(mobile == null){
+				mobile = custInfo.getMobileByBizType(dLzSet.getDbo(i).getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK);
+			}
+			new_dbo.setValue("PHONEMOBILE", mobile);
 			
-			new_dbo.setValue("RESV3", ht.get(dLzSet.getDbo(i).getString("customer_id")));
+			new_dbo.setValue("RESV3", bscore.get(dLzSet.getDbo(i).getString("customer_id")));
 
 			
 			for(String target_col: map.keySet()){
