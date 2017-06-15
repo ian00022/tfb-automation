@@ -58,6 +58,24 @@ public class TFBUtil {
 		  .append(" where ").append(fk_string);
 		return sb.toString();
 	}
+	
+	// create query string by target DboSet  format_example :column in ("A","B","C")
+	public static String buildColumnSelectINString(DPFTDboSet set, String column, String target) throws DPFTRuntimeException{
+		if(set.isEmpty())
+			return "";
+		
+		StringBuilder qString = new StringBuilder();
+		qString.append(column + " in (");
+		for(int i = 0; i < set.count(); i++){
+			qString.append("'" + set.getDbo(i).getString(target) + "'");
+			if( i != set.count()-1){
+				qString.append(",");
+			}
+		}
+		qString.append(")");
+		DPFTLogger.info(TFBUtil.class.getName(), " where = " + qString.toString());
+		return qString.toString();
+	}	
 
 	public static String getDestNameString(DPFTDbo dbo, DPFTDbo id_dbo, String idnu) {
 		id_dbo.setValue("treatment_code", dbo.getString("treatment_code"));

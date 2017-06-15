@@ -274,7 +274,7 @@ public class MKTDMCustomerContactDboSet extends DPFTDboSet {
 		String off = getContactInfo(cust_id, TFBConstants.MKTDM_CONT_CD_TEL_OFF, biz_type);
 		String off_ext =  getContactInfo(cust_id, TFBConstants.MKTDM_CONT_CD_TEL_OFF_EXT, biz_type);
 
-		if(off_are == null && off_are == null)
+		if(off_are == null && off == null)
 			return null;
 		
 		return off_are + off + (off_ext == null ? "" : "#" + off_ext);
