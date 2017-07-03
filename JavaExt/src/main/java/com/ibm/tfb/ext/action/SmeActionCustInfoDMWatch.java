@@ -49,7 +49,7 @@ public class SmeActionCustInfoDMWatch extends DPFTActionTableWatch {
 		/*get data set from Customer info*/
 		MKTDMCustomerDboSet custDboSet = (MKTDMCustomerDboSet) this.getDataSet();
 			
-		String custString = TFBUtil.buildColumnSelectINString(dSmeSet, "cust_id", "resp_id");
+		String custString = "cust_id in (" + TFBUtil.getColumnSelectINString("resp_id", "D_SME", DPFTUtil.getFKQueryString(dSmeSet.getDbo(0))) + ")";
 		// MKT_CUST
 		MKTDMCustomerDboSet custDbo = (MKTDMCustomerDboSet) this.getDBConnector().getDboSet(DPFTEngine.getSystemProperties("mktdb.tbl.cust"), custString);
 		custDbo.load();

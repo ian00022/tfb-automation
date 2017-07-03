@@ -39,7 +39,7 @@ public class SmeActionCustContInfoDMWatch extends DPFTActionTableWatch {
 		sb.append("cust_id in (");
 		sb.append(TFBUtil.getCustomerSelectINString(this.getPreviousAction().getResultSet(), "customer_id"));
 		sb.append(") and cont_cd in ('" + TFBConstants.MKTDM_CONT_CD_ZIPCD_COMM + "','" + TFBConstants.MKTDM_CONT_CD_ADDR_COMM + "','" 
-										+ TFBConstants.MKTDM_CONT_CD_TEL_OFF_ARE + "','" + TFBConstants.MKTDM_CONT_CD_TEL_OFF + "','" + TFBConstants.MKTDM_CONT_CD_TEL_OFF_EXT + "','"
+										+ TFBConstants.MKTDM_CONT_CD_TEL_OFF_ARE + "','" + TFBConstants.MKTDM_CONT_CD_TEL_OFF + "','" + TFBConstants.MKTDM_CONT_CD_TEL_OFF_EXT + "','" + TFBConstants.MKTDM_CONT_CD_TEL_DAY + "','"
 										+ TFBConstants.MKTDM_CONT_CD_MOBILE_1 + "','" + TFBConstants.MKTDM_CONT_CD_MOBILE_2 + "','"
 										+ TFBConstants.MKTDM_CONT_CD_EMAIL + "')");
 		DPFTLogger.info(this, "Table select where = " + sb.toString());
@@ -59,6 +59,19 @@ public class SmeActionCustContInfoDMWatch extends DPFTActionTableWatch {
 		/*Contact data from MKTDM*/
 		MKTDMCustomerContactDboSet contSet = (MKTDMCustomerContactDboSet) this.getDataSet();
 
+		StringBuilder respString = new StringBuilder();
+		respString.append("cust_id in (");
+		respString.append(TFBUtil.getColumnSelectINString("resp_id", "D_SME", DPFTUtil.getFKQueryString(dSmeSet.getDbo(0))));
+		respString.append(") and cont_cd in ('" + TFBConstants.MKTDM_CONT_CD_TEL_OFF_ARE + "','"
+				+ TFBConstants.MKTDM_CONT_CD_TEL_OFF + "','"
+				+ TFBConstants.MKTDM_CONT_CD_TEL_OFF_EXT + "','" + TFBConstants.MKTDM_CONT_CD_TEL_DAY + "','"
+				+ TFBConstants.MKTDM_CONT_CD_MOBILE_1 + "')");
+
+		DPFTLogger.info(this, "Table select where = " + respString.toString());
+		
+		//MKT_CUST_CONT
+		MKTDMCustomerContactDboSet respInfo = (MKTDMCustomerContactDboSet) this.getDBConnector().getDboSet(DPFTEngine.getSystemProperties("mktdb.tbl.cust.cont"), respString.toString());
+		respInfo.load();
 		/*set Addr by IBM Campaign Priority setting*/
 		long ps_start_time = System.currentTimeMillis();
 		for(int i = 0; i < dSmeSet.count(); i++){
@@ -72,7 +85,6 @@ public class SmeActionCustContInfoDMWatch extends DPFTActionTableWatch {
 				addr_info = contSet.getPrioritizedAddrWithoutAddrCode(dSme.getString("customer_id"), "SME_ADDR", dSme.getString("addr_priority"));
 			}
 			dSme.setValue("addr", addr_info[0]);//客戶地址
-			//dSme.setValue("zip_cod", addr_info[1]);
 			
 			String mobile = null;
 			if(dSme.isNull("mobile_priority")){
@@ -83,31 +95,22 @@ public class SmeActionCustContInfoDMWatch extends DPFTActionTableWatch {
 			dSme.setValue("tel_no2", mobile);//客戶手機
 			//客戶市話
 			dSme.setValue("tel_no1" , contSet.getOfficePhoneByBizType(dSme.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK));
+			if(dSme.isNull("tel_no1"))
+				dSme.setValue("tel_no1" , contSet.getDayTelByBizType(dSme.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK));
 			
-			
+			// 市話手機沒資料，取負責責人市話手機
 			if(dSme.isNull("tel_no1") && dSme.isNull("tel_no2")){
 				
-				StringBuilder custInfoString = new StringBuilder();
-				custInfoString.append(TFBUtil.buildColumnSelectINString(dSmeSet, "cust_id", "resp_id"));
-				custInfoString.append(" and cont_cd in ('" + TFBConstants.MKTDM_CONT_CD_TEL_OFF_ARE + "','"
-						+ TFBConstants.MKTDM_CONT_CD_TEL_OFF + "','"
-						+ TFBConstants.MKTDM_CONT_CD_TEL_OFF_EXT + "','" 
-						+ TFBConstants.MKTDM_CONT_CD_MOBILE_1 + "')");
-
-				DPFTLogger.info(this, "Table select where = " + custInfoString.toString());
-				
-				//MKT_CUST_CONT
-				MKTDMCustomerContactDboSet respInfo = (MKTDMCustomerContactDboSet) this.getDBConnector().getDboSet(DPFTEngine.getSystemProperties("mktdb.tbl.cust.cont"), custInfoString.toString());
-				respInfo.load();
-				
 				if(dSme.isNull("mobile_priority")){
-					mobile = respInfo.getPrioritizedMobilePhone(dSme.getString("customer_id"), "SME_MBL", GlobalConstants.DPFT_DEFAULT_PRIORITY_CODE);
+					mobile = respInfo.getPrioritizedMobilePhone(dSme.getString("resp_id"), "SME_MBL", GlobalConstants.DPFT_DEFAULT_PRIORITY_CODE);
 				}else{
-					mobile = respInfo.getPrioritizedMobilePhone(dSme.getString("customer_id"), "SME_MBL", dSme.getString("mobile_priority"));
+					mobile = respInfo.getPrioritizedMobilePhone(dSme.getString("resp_id"), "SME_MBL", dSme.getString("mobile_priority"));
 				}
 				dSme.setValue("tel_no2", mobile);//客戶手機
-				//客戶市話
-				dSme.setValue("tel_no1" , respInfo.getOfficePhoneByBizType(dSme.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK));
+				//負責人市話
+				dSme.setValue("tel_no1" , respInfo.getOfficePhoneByBizType(dSme.getString("resp_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK));
+				if(dSme.isNull("tel_no1"))
+					dSme.setValue("tel_no1" , respInfo.getDayTelByBizType(dSme.getString("resp_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK));
 				
 			}
 			
