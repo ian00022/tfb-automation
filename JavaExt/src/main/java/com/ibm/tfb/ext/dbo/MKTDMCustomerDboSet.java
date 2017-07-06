@@ -50,6 +50,9 @@ public class MKTDMCustomerDboSet extends DPFTDboSet {
 //				return dbo.getString(colname);
 //			}
 //		}
+			if(vMap.get(cust_id) == null){
+				return null;
+			}
 		return vMap.get(cust_id).getString(colname);
 	}
 

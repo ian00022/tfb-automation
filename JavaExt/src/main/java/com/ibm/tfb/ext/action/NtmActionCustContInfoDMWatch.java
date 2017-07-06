@@ -76,13 +76,16 @@ public class NtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 			String[] addr_info = null;
 			if(dNtm.isNull("addr_priority")){
 				/*use default addr priority rule*/
-				addr_info = contSet.getPrioritizedAddr(dNtm.getString("customer_id"), "NTM_ADDR", GlobalConstants.DPFT_DEFAULT_PRIORITY_CODE);
+				addr_info = contSet.getPrioritizedAddrWithoutAddrCode(dNtm.getString("customer_id"), "NTM_ADDR", GlobalConstants.DPFT_DEFAULT_PRIORITY_CODE);
 			}else{
 				/*use ADDR_PRIORITY Setting*/
-				addr_info = contSet.getPrioritizedAddr(dNtm.getString("customer_id"), "NTM_ADDR", dNtm.getString("addr_priority"));
+				addr_info = contSet.getPrioritizedAddrWithoutAddrCode(dNtm.getString("customer_id"), "NTM_ADDR", dNtm.getString("addr_priority"));
 			}
 			dNtm.setValue("ContactAddr", addr_info[0]);
 			dNtm.setValue("ContactZipCode", addr_info[1]);
+			
+			dNtm.setValue("ResidentAddr",contSet.getResidentAddrCodeByBizType(dNtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_CC));
+			dNtm.setValue("ResidentZipCode",contSet.getResidentZipCodeByBizType(dNtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_CC));
 			
 			String mobile = null;
 			if(dNtm.isNull("mobile_priority")){

@@ -83,6 +83,9 @@ public class WmsActionDataTableWatch extends DPFTActionTableWatch {
 			new_dbo.setValue(dWmsSet.getDbo(i));
 			new_dbo.setValue("actionplan_id", next_seq);
 			new_dbo.setValue("process_status", GlobalConstants.O_DATA_OUTPUT);
+			// exclude without branch_nbr
+			if(dWmsSet.getDbo(i).getString("branch_nbr") == null)
+				new_dbo.setValue("process_status", GlobalConstants.O_DATA_EXCLUDE);
 			
 			//find distinct cell code
 			if(!cell_code_list.contains(new_dbo.getString("cell_code"))){
