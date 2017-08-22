@@ -39,6 +39,14 @@ public class DPFTActionRemoteFileWatch extends DPFTActionTableWatch {
 			DPFTcdFTPUtil cdutil = null;
 			try{
 				ResFileDirSettingDbo dbo = (ResFileDirSettingDbo) fSet.getDbo(i);
+				
+				// reduce lz execute times, between start_time and end_time only 
+				if(dbo.getString("start_time") != null && dbo.getString("end_time") != null){
+					String process_HHmm = DPFTUtil.getCurrentTimeStampAsString().substring(8,12);
+						if(Integer.valueOf(process_HHmm) < Integer.valueOf(dbo.getString("start_time")) || Integer.valueOf(process_HHmm) > Integer.valueOf(dbo.getString("end_time")))
+							continue;
+				}
+				
 				cdutil = new DPFTcdFTPUtil(dbo.getString("ldir")
 										 , dbo.getString("dir")
 										 , dbo.getString("cd_profile"));

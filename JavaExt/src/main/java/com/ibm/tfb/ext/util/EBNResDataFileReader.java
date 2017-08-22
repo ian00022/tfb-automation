@@ -2,6 +2,7 @@ package com.ibm.tfb.ext.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -49,7 +50,9 @@ public class EBNResDataFileReader extends DPFTFileReader {
 		targetSet.setNeedAdd2DelTableFlg(false);
 		
 		HashMap<String, String> f_col_2_tgt_col_map = layout.getFileColumns2TargetColumnsMapping();
-		DPFTDboSet oEbnSet = DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig()).getDboSet("O_EBN", "msg_typ in ('02', '03') and process_status='Output'");
+		DPFTDboSet oEbnSet = DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig()).getDboSet("O_EBN", "msg_typ in ('02', '03') and process_status='Output' AND OFFR_EFFECTIVEDATE > " + getEffectiveDate(new Date(), -60));
+		HashMap<String, HashMap<String, String>> type02 = new HashMap<String, HashMap<String, String>>();
+		HashMap<String, HashMap<String, String>> type03 = new HashMap<String, HashMap<String, String>>();
 		for(HashMap<String, String> rowdata: read_data){
 			//skip unrelated ebn response data
 			String type = getMsgType(rowdata);
@@ -68,26 +71,35 @@ public class EBNResDataFileReader extends DPFTFileReader {
 				}
 				new_data.setValue("treatment_code", getTreatmentCode(rowdata.get("QUERY_STRING")));
 				new_data.setValue("res_code", RES_CODE_CONTACT);
-			}else if(type.equals(MSG_TYPE_02) || type.equals(MSG_TYPE_03)){
-				//get T-1 records from O_EBN for customer_id
-				for(int i = 0; i < oEbnSet.count(); i++){
-					DPFTDbo oEbn = oEbnSet.getDbo(i);
-					if(!oEbn.getString("customer_id").equals(rowdata.get("COMPANY_UID"))
-							|| !oEbn.getString("msg_typ").equals(type))
-						continue;
-					
-					if(isEffectiveCampaign(oEbn, rowdata.get("ACCESS_TIME"))){
-						DPFTDbo data = targetSet.add();
-						data.setValue("chal_name", chal_name);
-						data.setValue("process_time", timestamp);
-						data.setValue("treatment_code", oEbn.getString("treatment_code"));
-						data.setValue("customer_id",oEbn.getString("customer_id"));
-						data.setValue("res_code", RES_CODE_CONTACT);
-						data.setValue("res_date", rowdata.get("ACCESS_TIME"));
-					}
+			}else if(type.equals(MSG_TYPE_02) ){
+				type02.put(rowdata.get("COMPANY_UID"), rowdata);
+			}else if(type.equals(MSG_TYPE_03)){
+				type03.put(rowdata.get("COMPANY_UID"), rowdata);
+			}
+		}
+		
+		for(int i = 0; i < oEbnSet.count(); i++){
+			DPFTDbo oEbn = oEbnSet.getDbo(i);
+			
+			HashMap<String, String> rowdata = null;
+			if(oEbn.getString("msg_typ").equals(MSG_TYPE_02)){
+				rowdata = type02.get(oEbn.getString("customer_id"));
+			}else if(oEbn.getString("msg_typ").equals(MSG_TYPE_03)){
+				rowdata = type03.get(oEbn.getString("customer_id"));
+			}
+			if(rowdata != null) {
+				if(isEffectiveCampaign(oEbn, rowdata.get("ACCESS_TIME"))){
+					DPFTDbo data = targetSet.add();
+					data.setValue("chal_name", chal_name);
+					data.setValue("process_time", timestamp);
+					data.setValue("treatment_code", oEbn.getString("treatment_code"));
+					data.setValue("customer_id",oEbn.getString("customer_id"));
+					data.setValue("res_code", RES_CODE_CONTACT);
+					data.setValue("res_date", rowdata.get("ACCESS_TIME"));
 				}
 			}
 		}
+
 		oEbnSet.close();
 		targetSet.save();
 		targetSet.close();
@@ -147,4 +159,10 @@ public class EBNResDataFileReader extends DPFTFileReader {
 		return qstring.indexOf(STR_TCODE) != -1;
 	}
 
+	private static String getEffectiveDate(Date dt, int diff) {
+        Calendar ca = Calendar.getInstance();
+        ca.setTime(dt);
+        ca.add(Calendar.DATE, diff);
+        return new SimpleDateFormat(GlobalConstants.DFPT_DATE_FORMAT).format(ca.getTime());
+    }
 }
