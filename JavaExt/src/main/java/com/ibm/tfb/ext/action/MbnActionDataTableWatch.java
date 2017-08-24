@@ -6,6 +6,7 @@ import com.ibm.dpft.engine.core.action.DPFTActionTableWatch;
 import com.ibm.dpft.engine.core.common.GlobalConstants;
 import com.ibm.dpft.engine.core.config.DPFTConfig;
 import com.ibm.dpft.engine.core.connection.DPFTConnectionFactory;
+import com.ibm.dpft.engine.core.dbo.DPFTDbo;
 import com.ibm.dpft.engine.core.dbo.DPFTDboSet;
 import com.ibm.dpft.engine.core.dbo.DPFTInboundControlDboSet;
 import com.ibm.dpft.engine.core.util.DPFTLogger;
@@ -79,6 +80,21 @@ public class MbnActionDataTableWatch extends DPFTActionTableWatch {
 		for(int i = 0; i < dMbnSet.count(); i++){
 			DPFTOutboundDbo new_dbo = (DPFTOutboundDbo) oMbnSet.add();
 			new_dbo.setValue(dMbnSet.getDbo(i));
+			
+			//replace keyword with url
+			DPFTDbo dMbn = dMbnSet.getDbo(i);
+			String context = dMbn.getString("CONTENT_TXT");
+			for (int j = 1 ; j < 6 ; j++){
+			
+				String text = dMbn.getString("URL_TEXT" + String.valueOf(j));
+				String url = dMbn.getString("URL" + String.valueOf(j));
+				
+				if(text != null){	
+					context = context.replaceFirst(text, "<a href=\"javascript:window.open('" + url + "','_system');\" class=\"link1\">" + text + "</a>");
+				}
+			}
+			new_dbo.setValue("CONTENT_TXT" , context);
+			
 			new_dbo.setValue("process_status", GlobalConstants.O_DATA_OUTPUT);
 			
 			//find distinct cell code
