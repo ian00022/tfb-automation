@@ -272,7 +272,7 @@ public class DPFTCSVFileFormatter extends DPFTFileFormatter {
 					if(this.getFileEncoding().equals(GlobalConstants.FILE_ENCODE_UTF8)){
 						s = truncateUTF8(s, length);
 						adj_len = getAdjustedLengthUTF8(s, length);
-					}else if(this.getFileEncoding().toUpperCase().indexOf(GlobalConstants.FILE_ENCODE_BIG5) != -1){
+					}else if(this.getFileEncoding().toUpperCase().matches(GlobalConstants.FILE_ENCODE_BIG5)){
 						s = truncateBig5(s, length, this.getFileEncoding());
 						adj_len = getAdjustedLengthBig5(s, length, getFileEncoding());
 					}
