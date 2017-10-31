@@ -39,7 +39,7 @@ public class QdmActionDataTableWatch extends DPFTActionTableWatch {
 
 	@Override
 	public void postAction() throws DPFTRuntimeException {
-		Object[] params = {"Questionnaire Mail Hunter"};
+		Object[] params = {"Survey Mail Hunter"};
 		if(this.getDataSet().isEmpty())
 			throw new DPFTActionException(this, "CUSTOM", "TFB00001E", params);
 		DPFTUtil.pushNotification(

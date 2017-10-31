@@ -3,6 +3,7 @@ package com.ibm.tfb.ext.util;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -78,9 +79,16 @@ public class SSMResDataFileReader extends DPFTFileReader {
 			IDSet.close();
 		}
 		
+		DPFTDboSet keySet = (DPFTDboSet) DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig()).getDboSet("RSP_MAIN_SMS_TEMP");
+		keySet.load();
+		Hashtable<Object, Object> ht = new Hashtable<Object, Object>();
+		for(int i=0;i<keySet.count();i++){
+			DPFTDbo keyObj = keySet.getDbo(i);
+			ht.put(keyObj.getColumnValue("TREATMENT_CODE"), keyObj.getColumnValue("CHAL_NAME"));
+		}
+		
 		for(HashMap<String, String> rowdata: read_data){
 			DPFTDbo new_data = targetSet.add();
-			new_data.setValue("chal_name", chal_name);
 			new_data.setValue("process_time", timestamp);
 			for(String col: rowdata.keySet()){
 				if(f_col_2_tgt_col_map.get(col) == null)
@@ -95,6 +103,7 @@ public class SSMResDataFileReader extends DPFTFileReader {
 					new_data.setValue("treatment_code", ds[1]);
 					new_data.setValue("customer_id", customerId);
 					new_data.setValue("resv1", ds[0]+"||"+ds[1]+"||"+customerId);
+					new_data.setValue("chal_name", ht.get(ds[1]));
 			}
 		}
 		targetSet.save();
