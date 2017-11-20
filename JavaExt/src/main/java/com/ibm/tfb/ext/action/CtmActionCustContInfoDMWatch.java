@@ -46,6 +46,8 @@ public class CtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 										+ TFBConstants.MKTDM_CONT_CD_TEL_OFF_EXT + "','"
 										+ TFBConstants.MKTDM_CONT_CD_COM_TEL_ARE + "','"
 										+ TFBConstants.MKTDM_CONT_CD_COM_TEL + "','"
+										+ TFBConstants.MKTDM_CONT_CD_TEL_DAY + "','"
+										+ TFBConstants.MKTDM_CONT_CD_TEL_NIGHT + "','"
 										+ TFBConstants.MKTDM_CONT_CD_MOBILE_1 + "','"
 										+ TFBConstants.MKTDM_CONT_CD_MOBILE_2 + "','"
 										+ TFBConstants.MKTDM_CONT_CD_EMAIL + "')");
@@ -89,16 +91,51 @@ public class CtmActionCustContInfoDMWatch extends DPFTActionTableWatch {
 			dCtm.setValue("zip_cod", addr_info[1]);
 			
 			String mobile = null;
+			String day_use = null;
+			String night_use = null;
 			if(dCtm.isNull("mobile_priority")){
 				mobile = contSet.getPrioritizedMobilePhone(dCtm.getString("customer_id"), "CTM_MBL", GlobalConstants.DPFT_DEFAULT_PRIORITY_CODE);
+				
+				day_use = contSet.getDayTelByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK);
+				night_use = contSet.getNightTelByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK);
+				if(day_use == null)
+					day_use = contSet.getOfficePhoneByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_CC);
+				if(night_use == null)
+					night_use = contSet.getCommPhoneByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_CC);
+				
 			}else{
 				mobile = contSet.getPrioritizedMobilePhone(dCtm.getString("customer_id"), "CTM_MBL", dCtm.getString("mobile_priority"));
+				String[] p = contSet.getPrioritized("CTM_MBL", dCtm.getString("mobile_priority"));
+				
+				if(TFBConstants.MKTDM_CONT_BIZTYPE_BNK.equals(p[0])){
+					// BNK -> CC priority
+					day_use = contSet.getDayTelByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK);
+					night_use = contSet.getNightTelByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK);
+					if(day_use == null)
+						day_use = contSet.getOfficePhoneByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_CC);
+					if(night_use == null) 
+						night_use = contSet.getCommPhoneByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_CC);
+				}else{
+					// CC -> BNK priority
+					day_use = contSet.getOfficePhoneByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_CC);
+					night_use = contSet.getCommPhoneByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_CC);
+					if(day_use == null)
+						day_use = contSet.getDayTelByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK);
+					if(night_use == null)
+						night_use = contSet.getNightTelByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_BNK);
+				}
 			}
 			dCtm.setValue("mobile", mobile);
 			
-			dCtm.setValue("day_use" , contSet.getOfficePhoneByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_CC));
-			dCtm.setValue("night_use" , contSet.getCommPhoneByBizType(dCtm.getString("customer_id"), TFBConstants.MKTDM_CONT_BIZTYPE_CC));
-			
+			if(day_use != null){
+				day_use = day_use.replaceAll("\\s+", "");
+			}
+			if(night_use != null){
+				night_use = night_use.replaceAll("\\s+", "");
+			}
+			dCtm.setValue("day_use", day_use);
+			dCtm.setValue("night_use", night_use);
+					
 			String email = null;
 			if(dCtm.isNull("email_priority")){
 				/*use default email priority rule*/

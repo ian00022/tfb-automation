@@ -291,4 +291,15 @@ public class MKTDMCustomerContactDboSet extends DPFTDboSet {
 		return comm_are + comm;
 	}	
 	
+	public String[] getPrioritized(String template, String p_code) throws DPFTRuntimeException {
+		
+		DPFTPrioritySettingDboSet pSet = DPFTEngine.getPriorityCodeSetting();
+		DPFTPrioritySettingDbo pr = pSet.getPrioritySetting(template, p_code);
+		if(pr == null){
+			Object[] params = {template, p_code};
+			throw new DPFTInvalidSystemSettingException("SYSTEM", "DPFT0007E", params);
+		}
+		String[] p = pr.getPrioritySettings();
+		return p;
+	}
 }
