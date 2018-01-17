@@ -80,14 +80,15 @@ public class FudActionBusinessDayTableWatch extends DPFTActionTableWatch {
 			new_dbo.setValue(dFudSet.getDbo(i));
 			
 			cal.setDate(dFud.getDate("st_dt"));
-			// START_DATE 放 T+1
-			cal.getAfterDate(Integer.valueOf(1));	  
+			// START_DATE 放 T+1 
+			//cal.getAfterDate(1);	  
 			new_dbo.setValue("st_dt", TFBUtil.getROCYearMonthDay(cal.CalendarToDate()));
+			
 			// 計算 有效日期
 			if(dFud.isNull("DURATION_DAYS")){
 				new_dbo.setValue("en_dt", TFBUtil.getROCYearMonthDay(new_dbo.getDate("en_dt")));
 			}else {
-				cal.getAfterDate(Integer.valueOf(dFud.getString("DURATION_DAYS")));
+				cal.getAfterDate(Integer.valueOf(dFud.getString("DURATION_DAYS")) - 1);
 				new_dbo.setValue("en_dt", TFBUtil.getROCYearMonthDay(cal.CalendarToDate()));
 			}
 
