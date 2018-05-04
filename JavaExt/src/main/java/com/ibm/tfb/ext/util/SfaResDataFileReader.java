@@ -14,7 +14,7 @@ import com.ibm.dpft.engine.core.util.DPFTFileReader;
 import com.ibm.dpft.engine.core.util.DPFTUtil;
 
 public class SfaResDataFileReader extends DPFTFileReader {
-	private static final String lz_type = "05,06,07,08";
+	private static final String lz_type = "05,06,07,08,H1,H2,I1,I2,F1,F2";
 
 	public SfaResDataFileReader(String dir, ResFileDataLayoutDbo resFileDataLayoutDbo, String chal_name) {
 		super(dir, resFileDataLayoutDbo, chal_name);

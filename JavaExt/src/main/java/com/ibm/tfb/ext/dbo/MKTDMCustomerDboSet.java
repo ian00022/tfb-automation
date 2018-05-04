@@ -88,6 +88,8 @@ public class MKTDMCustomerDboSet extends DPFTDboSet {
 //				return DPFTUtil.convertDateObject2DateString(dbo.getDate(colname), GlobalConstants.DFPT_DATE_FORMAT);
 //			}
 //		}
+		if(vMap.get(cust_id) == null)
+			return null;
 		return DPFTUtil.convertDateObject2DateString(vMap.get(cust_id).getDate(colname), GlobalConstants.DFPT_DATE_FORMAT);
 	}
 }
