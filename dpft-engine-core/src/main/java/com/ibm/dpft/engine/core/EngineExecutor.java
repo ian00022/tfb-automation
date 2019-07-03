@@ -10,8 +10,12 @@ public class EngineExecutor {
 	private static DPFTEngine engine;
 	private static int mode = 0;
 	private static final int ARG_OPTION_R = 1;
+	private static final int ARG_OPTION_S = 2;
 	private static final int ARG_OPTION_ERR = -1;
+	private static final String KEY_AUTOSCRIPT = "sys.auto.script";
 
+	
+	
 	public static void main(String[] args) throws DPFTRuntimeException{	
 		/*set engine db connection properties*/
 		engine = new DPFTEngine();
@@ -36,8 +40,8 @@ public class EngineExecutor {
 		do{
 			try{
 				if(isFatalError){
-					DPFTLogger.info(EngineExecutor.class.getName(), "Engine encounter fatal Errors... Try to restart...");
-					engine.resume();
+					DPFTLogger.info(EngineExecutor.class.getName(), "Engine encounter fatal Errors... Terminate Engine PROGRAM!!!");
+					System.exit(ARG_OPTION_ERR);
 				}
 				if(engine.isAutomationModeActive()){
 					engine.startAutomationMode();
@@ -71,6 +75,13 @@ public class EngineExecutor {
 				DPFTLogger.error(EngineExecutor.class.getName(), "Error when add user defined taskplan...", e);
 				mode = ARG_OPTION_ERR;
 			}
+		case ARG_OPTION_S:
+			try {
+				DPFTEngine.setSystemProperty(KEY_AUTOSCRIPT, arg);
+			}catch(Exception e) {
+				DPFTLogger.error(EngineExecutor.class.getName(), "Error when set Custom Automation Script...", e);
+				mode = ARG_OPTION_ERR;
+			}
 		}
 		
 	}
@@ -80,6 +91,8 @@ public class EngineExecutor {
 		case "run":
 			mode = ARG_OPTION_R;
 			break;
+		case "script":
+			mode = ARG_OPTION_S;
 		default:
 			DPFTLogger.error(EngineExecutor.class.getName(), "Passing Argument is not valid...");
 			mode = ARG_OPTION_ERR;

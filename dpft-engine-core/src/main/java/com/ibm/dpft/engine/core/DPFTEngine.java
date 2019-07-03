@@ -126,6 +126,12 @@ public class DPFTEngine {
 	public static String getSystemProperties(String key){
 		return prop.getProperty(key);
 	}
+	
+	public static void setSystemProperty(String key, String value) {
+		if(prop == null)
+			prop = new Properties();
+		prop.put(key, value);
+	}
 
 	private Properties getConfigProperites() throws DPFTRuntimeException {
 		if(prop != null)
