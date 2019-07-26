@@ -254,6 +254,13 @@ public class DPFTConnector {
 		return new DPFTDboSet(this, this.retrieveDataFromCurrentStmt());
 	}
 	
+	public void executeUpdateDelete(String script) throws SQLException {
+		stmt = this.generateSQLStmt(GlobalConstants.DB_STMT_TYPE_SQL);
+		stmt.setSQL(script);
+		stmt.prepareStatement();
+		stmt.doSQL();
+	}
+	
 	public void truncate(String tablename) throws SQLException {
 		stmt = this.generateSQLStmt(GlobalConstants.DB_STMT_TYPE_SQL);
 		stmt.setSQL("truncate table " + tablename);

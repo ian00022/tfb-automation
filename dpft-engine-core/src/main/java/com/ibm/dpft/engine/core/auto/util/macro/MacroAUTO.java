@@ -173,6 +173,19 @@ public class MacroAUTO extends DPFTAutomationMacro {
 		return GlobalConstants.DPFT_AUTOMATION_PS_RC_NORMAL;
 	}
 	
+	public int execSQL(String dbname, String script) throws DPFTRuntimeException, SQLException{
+		DPFTLogger.debug(this, "Invoke " + this.getInvokeMethod() + " in MACRO AUTO");
+		DPFTConnector connector = DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getDBConfig(dbname), false);
+		try {
+			connector.executeUpdateDelete(script);
+		} catch (SQLException e) {
+			connector.close();
+			Object[] params = {script};
+			throw new DPFTAutomationException("SYSTEM", "AUTO0026E", params);
+		}
+		return GlobalConstants.DPFT_AUTOMATION_PS_RC_NORMAL;
+	}
+	
 	
 	public int RunFlowChart(String cmd, String type, String logfile, String seq_run_flg, String failed_break_flg) throws DPFTRuntimeException{
 		DPFTLogger.debug(this, "Invoke " + this.getInvokeMethod() + " in MACRO AUTO");

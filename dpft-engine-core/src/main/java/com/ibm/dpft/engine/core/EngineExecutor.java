@@ -43,7 +43,8 @@ public class EngineExecutor {
 					DPFTLogger.info(EngineExecutor.class.getName(), "Engine encounter fatal Errors... Terminate Engine PROGRAM!!!");
 					System.exit(ARG_OPTION_ERR);
 				}
-				if(engine.isAutomationModeActive()){
+				if(engine.isAutomationModeActive() || mode == ARG_OPTION_S){
+					mode = 0;
 					engine.startAutomationMode();
 				}
 				if(engine.isResume()){
@@ -93,6 +94,7 @@ public class EngineExecutor {
 			break;
 		case "script":
 			mode = ARG_OPTION_S;
+			break;
 		default:
 			DPFTLogger.error(EngineExecutor.class.getName(), "Passing Argument is not valid...");
 			mode = ARG_OPTION_ERR;
@@ -101,9 +103,11 @@ public class EngineExecutor {
 
 	private static void _init() throws DPFTRuntimeException {
 		engine.initialize();
-		if(engine.isAutomationModeActive())
+		if(engine.isAutomationModeActive()|| mode == ARG_OPTION_S) {
 			engine.startAutomationMode();
-		else
+			mode = 0;
+		}else {
 			engine.start();	
+		}
 	}
 }
