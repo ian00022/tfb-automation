@@ -72,4 +72,12 @@ public class DPFTPCmdBuilder {
 				has_ftp_cmd = true;
 		}
 	}
+	
+	public void move(String[] flist, String remoteDir) {
+		for(String fn : flist){
+			sb.append("rename ").append(fn).append(" " + remoteDir + fn).append(GlobalConstants.FILE_EOL);
+			if(!has_ftp_cmd)
+				has_ftp_cmd = true;
+		}
+	}
 }

@@ -350,6 +350,49 @@ public class DPFTcdFTPUtil extends DPFTFileFTPUtil {
 			execCdFTP();
 		}
 	}
+	
+	public void doFTP_Move(String[] file_list, String remoteDir) throws DPFTRuntimeException {
+		synchronized(lock){
+			DPFTLogger.info(this, "Initializing cdFTP+ Process...");
+			initFTP(file_list, file_list);
+			DPFTLogger.info(this, "Get File Success, move files to another remote dir from remote cd server...");
+			mov_Remote_File_OUT_FTPCmd2RemoteDir(remoteDir);
+			DPFTLogger.info(this, "Executing cdFTP+ Command from bash...");
+			execCdFTP();
+		}
+	}
+
+	private void mov_Remote_File_OUT_FTPCmd2RemoteDir(String remoteDir) throws DPFTRuntimeException {
+		String ldir = getLocalDir();
+		File fdir = new File(ldir);
+		if(!fdir.exists()){
+			fdir.mkdirs();
+		}
+		
+		DPFTPCmdBuilder cb = new DPFTPCmdBuilder(GlobalConstants.FTP_MODE_BINARY);
+		cb.cd(getRemoteDir());
+		cb.prompt(false);
+		cb.move(d_file_list.toArray(new String[d_file_list.size()]), remoteDir);
+		cb.quit();
+		
+		if(cb.hasFTPCmd()){
+			try{
+				ftp_cmd_file_name = ldir + File.separator + "cmd" + File.separator + "mov_" + timestamp + ".FTP";
+				ftp_logfile = ldir + File.separator + "log" + File.separator + "mov_" + timestamp;
+				File outfile = new File(ftp_cmd_file_name);
+				if(!outfile.getParentFile().exists())
+					outfile.getParentFile().mkdirs();
+				Writer out = new BufferedWriter(new OutputStreamWriter(
+						new FileOutputStream(outfile), "UTF-8"));
+				out.write(cb.toString());
+				out.flush();
+				out.close();
+			}catch(Exception e){
+				throw new DPFTFileTransferException("SYSTEM", "DPFT0019E", e);
+			}
+		}
+		
+	}
 
 
 }
