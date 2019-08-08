@@ -95,6 +95,14 @@ public class TFBUtil {
 		return DPFTUtil.getDBConfig("MKTDM");
 	}
 
+	public static DPFTConfig getMTSFAConfig() {
+		return DPFTUtil.getDBConfig("MTSFA");
+	}
+	
+	public static DPFTConfig getSSDOPConfig() {
+		return DPFTUtil.getDBConfig("SSDOP");
+	}
+	
 	public static void setESMHeaderProperties(DPFTDbo new_dbo, DPFTDbo data, DPFTDbo id_dbo, String idnum) {
 		new_dbo.setValue("destname", TFBUtil.getDestNameString(data, id_dbo, idnum));
 		if(data.getString("isinteractive").equalsIgnoreCase("y")){
