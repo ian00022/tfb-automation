@@ -51,21 +51,21 @@ public class WmsActionResDataWatchEFL extends DPFTActionTableWatch {
 		DPFTDboSet set = this.getDataSet();
 		if (!set.isEmpty()) {
 
-			DPFTDboSet mvpSet = DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig()).getDboSet("RSP_MAIN", "chal_name='EFL'");
+			DPFTDboSet eflSet = DPFTConnectionFactory.initDPFTConnector(DPFTUtil.getSystemDBConfig()).getDboSet("RSP_MAIN", "chal_name='EFL'");
 
 			for (int i = 0; i < set.count(); i++) {
 
-				DPFTDbo mvp = mvpSet.add();
-				mvp.setValue("TREATMENT_CODE", set.getDbo(i).getString("TREATMENT_CODE"));
-				mvp.setValue("CUSTOMER_ID", set.getDbo(i).getString("CUST_ID"));
-				mvp.setValue("RES_DATE", set.getDbo(i).getString("RESP_DATE"));
-				mvp.setValue("RES_CODE", set.getDbo(i).getString("RESP_CODE"));
-				mvp.setValue("RESV1", set.getDbo(i).getString("RESV1"));
-				mvp.setValue("RESV2", set.getDbo(i).getString("RESV2"));
+				DPFTDbo efl = eflSet.add();
+				efl.setValue("TREATMENT_CODE", set.getDbo(i).getString("TREATMENT_CODE"));
+				efl.setValue("CUSTOMER_ID", set.getDbo(i).getString("CUST_ID"));
+				efl.setValue("RES_DATE", set.getDbo(i).getString("RESP_DATE"));
+				efl.setValue("RES_CODE", set.getDbo(i).getString("RESP_CODE"));
+				efl.setValue("RESV1", set.getDbo(i).getString("RESV1"));
+				efl.setValue("RESV2", set.getDbo(i).getString("RESV2"));
 			}
 
-			mvpSet.save();
-			mvpSet.close();
+			eflSet.save();
+			eflSet.close();
 		}
 
 	}
