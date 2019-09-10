@@ -13,9 +13,9 @@ import com.ibm.dpft.engine.core.exception.DPFTInvalidSystemSettingException;
 import com.ibm.dpft.engine.core.exception.DPFTRuntimeException;
 import com.ibm.dpft.engine.core.util.DPFTFileReader;
 
-public class FormResDataFileReader extends DPFTFileReader {
+public class LotteryResDataFileReader extends DPFTFileReader {
 
-	public FormResDataFileReader(String dir, ResFileDataLayoutDbo resFileDataLayoutDbo, String chal_name) {
+	public LotteryResDataFileReader(String dir, ResFileDataLayoutDbo resFileDataLayoutDbo, String chal_name) {
 		super(dir, resFileDataLayoutDbo, chal_name);
 	}
 
